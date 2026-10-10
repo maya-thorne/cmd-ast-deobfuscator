@@ -14,10 +14,10 @@
 **Multi-Pass Abstract Syntax Tree & Lexical Deobfuscation Engine for Windows Command Scripts (`cmd.exe` / `.bat`)**
 
 [![CI](https://github.com/maya-thorne/cmd-ast-deobfuscator/actions/workflows/ci.yml/badge.svg)](https://github.com/maya-thorne/cmd-ast-deobfuscator/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: MT--SRL](https://img.shields.io/badge/License-MT--SRL-blue.svg)](LICENSE)
 [![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://www.python.org/)
 [![Ghidra: RE Forensics](https://img.shields.io/badge/Ghidra-Ghidra%20Binary%20Forensics-red.svg)](docs/BATCH_OBFUSCATION_DEEP_REVERSE_ENGINEERING_ANALYSIS.md)
-[![Detection: Sigma & YARA](https://img.shields.io/badge/Detection-Sigma%20%26%20YARA-purple.svg)](rules/)
+[![Detection: Sigma & YARA](https://img.shields.io/badge/Detection-Sigma%20%26%20YARA-purple.svg)](references/detection_rules/)
 
 <sub>Engineered by **[Maya Thorne](https://github.com/maya-thorne)** · Binary Exploitation & Reverse Engineering Systems Architect</sub>
 
@@ -247,10 +247,10 @@ Target Executables Triaged:
 
 ## 🚨 Detection Engineering (YARA & Sigma Rules)
 
-Production-ready detection rules targeting evasive batch artifacts are located in [`rules/`](rules/):
+Production-ready detection rules targeting evasive batch artifacts are located in [`references/detection_rules/`](references/detection_rules/):
 
-- **Sigma**: [`rules/sigma_batch_obfuscation.yml`](rules/sigma_batch_obfuscation.yml) — Detects high caret frequency (`^ > 10`), environment variable slicing (`%COMSPEC:~`), and nested subshell concatenations.
-- **YARA**: [`rules/yara_batch_obfuscation.yar`](rules/yara_batch_obfuscation.yar) — Pattern matching for Somalifuscator signatures, 0xidiz3r arrays, and Bat2Exe PE dropper stubs.
+- **Sigma**: [`references/detection_rules/sigma_batch_obfuscation.yml`](references/detection_rules/sigma_batch_obfuscation.yml) — Detects high caret frequency (`^ > 10`), environment variable slicing (`%COMSPEC:~`), and nested subshell concatenations.
+- **YARA**: [`references/detection_rules/yara_batch_obfuscation.yar`](references/detection_rules/yara_batch_obfuscation.yar) — Pattern matching for Somalifuscator signatures, 0xidiz3r arrays, and Bat2Exe PE dropper stubs.
 
 ---
 
@@ -270,18 +270,24 @@ cd cmd-ast-deobfuscator
 ### CLI Command Options
 
 ```bash
-# Deobfuscate a single batch file
-python src/deobfuscator_engine.py -i samples/01_env_slicing_sample.bat -o deobfuscated_output.bat
+# Parse batch script and display ASCII Abstract Syntax Tree
+python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat --tree
 
-# Verbose inspection mode with pass-by-pass telemetry
-python src/deobfuscator_engine.py -i samples/02_caret_and_quote_sample.bat --verbose
+# Output Mermaid flowchart diagram of AST structure
+python src/cli.py -c "set X=calc & %X%.exe" --mermaid
+
+# Output JSON AST dump
+python src/cli.py -c "set X=calc & %X%.exe" --json
+
+# Deobfuscate batch script using compiler AST normalizer
+python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat -o deobfuscated_output.bat
 ```
 
 ---
 
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 6 fundamental deobfuscation invariants:
+The test suite validates 16 fundamental compiler, lexer, automaton, and AST normalization invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -289,6 +295,16 @@ python -m unittest discover -s tests -v
 
 ### Invariant Test Results:
 ```text
+test_automaton_state_transitions (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_lexer_caret_and_quote_tokenization (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_lexer_percent_variable_detection (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_normalizer_caret_stripping (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_normalizer_environment_slicing (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_normalizer_symbol_table_propagation (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_parser_command_chaining (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_parser_parenthesized_block (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_visualizer_ascii_tree (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_visualizer_mermaid_and_json (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_bootstrap_set_chain (test_deobfuscator.TestBatchDeobfuscator) ... ok
 test_builtin_env_negative_slicing (test_deobfuscator.TestBatchDeobfuscator) ... ok
 test_caret_escaping_outside_quotes (test_deobfuscator.TestBatchDeobfuscator) ... ok
@@ -297,7 +313,7 @@ test_environment_variable_slicing (test_deobfuscator.TestBatchDeobfuscator) ... 
 test_string_substitution (test_deobfuscator.TestBatchDeobfuscator) ... ok
 
 ----------------------------------------------------------------------
-Ran 6 tests in 0.002s
+Ran 16 tests in 0.003s
 
 OK
 ```
@@ -310,43 +326,42 @@ OK
 cmd-ast-deobfuscator/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                     # Automated GitHub Actions test workflow
+│       └── ci.yml                     # Automated GitHub Actions CI workflow
 ├── docs/
 │   ├── assets/
 │   │   └── locales/                   # 10 localized dark terminal SVG banners
-│   │       ├── en/banner.svg
-│   │       ├── ko/banner.svg
-│   │       └── ...
-│   ├── locales/                       # 9 localized README documentation files
-│   │   ├── ko.md
-│   │   ├── zh-CN.md
-│   │   └── ...
-│   ├── BATCH_OBFUSCATION_DEEP_REVERSE_ENGINEERING_ANALYSIS.md
-│   ├── BATCH_OBFUSCATION_ENCYCLOPEDIA.md
-│   ├── CLASSIC_TO_MODERN_EVOLUTION.md
-│   ├── BATCLOAK_SCRUBCRYPT_DEEP_DIVE.md
-│   └── HUGGINGFACE_AI_MODELS_AND_DATASETS.md
+│   ├── locales/                       # 9 localized documentation guides
+│   ├── AST_NODE_ARCHITECTURE.md       # Visitor pattern AST node hierarchy & invariants
+│   ├── CMD_EXE_EBNF_GRAMMAR.md        # Formal EBNF grammar specification for cmd.exe
+│   └── PUSHDOWN_AUTOMATA_SPECIFICATION.md # Pushdown Automaton state transition tables
+├── memory/                            # Worker context, anti-patterns & feedback audit
 ├── references/
-│   ├── references_index.json          # Index of 41 curated GitHub repositories
-│   ├── huggingface-ai/                # 13 Hugging Face models & datasets
-│   └── source-dissections/            # Line-by-line analyses of 7 open-source tools
-├── rules/
-│   ├── sigma_batch_obfuscation.yml    # Enterprise Sigma detection rule
-│   └── yara_batch_obfuscation.yar     # YARA malware identification signatures
-├── samples/                           # Obfuscated samples & verified clean counterparts
+│   ├── classic_samples/               # Obfuscated corpus & verified clean counterparts
+│   ├── detection_rules/               # Sigma detection rules & YARA malware signatures
+│   ├── huggingface-ai/                # 13 Hugging Face deobfuscation datasets & models
+│   └── source-dissections/            # Forensic line-by-line dissections of 7 tools
 ├── src/
-│   └── deobfuscator_engine.py         # 6-Pass Static AST Evaluation Engine
+│   ├── __init__.py                    # Clean export of 19 AST compiler symbols
+│   ├── ast_nodes.py                   # Node hierarchy (ScriptNode, CommandNode, etc.)
+│   ├── automaton.py                   # Pushdown automaton state transition engine
+│   ├── cli.py                         # UTF-8 CLI runner with --tree, --mermaid, --json
+│   ├── deobfuscator_engine.py         # Multi-pass static AST evaluation engine
+│   ├── lexer.py                       # cmd.exe 5-phase lexical analyzer
+│   ├── normalizer.py                  # Environment variable expansion & AST normalizer
+│   ├── parser.py                      # Recursive descent pushdown AST parser
+│   └── visualizer.py                  # ASCII tree, Mermaid diagrams, and JSON visualizer
 ├── tests/
-│   └── test_deobfuscator.py           # Invariant test suite
-├── LICENSE                            # MIT License
-└── README.md                          # Primary English Documentation
+│   ├── test_ast_suite.py              # Compiler, lexer, automaton, AST invariant tests
+│   └── test_deobfuscator.py           # Evaluation engine invariant test suite
+├── LICENSE                            # Maya Thorne Research License (MT-SRL)
+└── README.md                          # Primary English documentation
 ```
 
 ---
 
 ## ⚖️ License & Responsible Disclosure
 
-This project is licensed under the **MIT License** — see [`LICENSE`](LICENSE) for details.
+This project is licensed under the **Maya Thorne Systems & Security Research License (MT-SRL)** — see [`LICENSE`](LICENSE) for details.
 
 > **Responsible Security Notice**: This software and associated research documentation are provided strictly for defensive security research, malware analysis, incident response, and academic education. All reverse engineering experiments were conducted within isolated offline sandbox environments.
 

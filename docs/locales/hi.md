@@ -14,10 +14,10 @@
 **विंडोज बैच स्क्रिप्ट्स (`cmd.exe` / `.bat`) के लिए मल्टी-पास एब्सट्रैक्ट सिंटेक्स ट्री और लेक्सिकल डीओबफस्केशन इंजन**
 
 [![CI](https://github.com/maya-thorne/cmd-ast-deobfuscator/actions/workflows/ci.yml/badge.svg)](https://github.com/maya-thorne/cmd-ast-deobfuscator/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: MT--SRL](https://img.shields.io/badge/License-MT--SRL-blue.svg)](LICENSE)
 [![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://www.python.org/)
 [![Ghidra: RE Forensics](https://img.shields.io/badge/Ghidra-Ghidra%20%E0%A4%AC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%E0%A5%80%20%E0%A4%B0%E0%A4%BF%E0%A4%B5%E0%A4%B0%E0%A5%8D%E0%A4%B8%20%E0%A4%87%E0%A4%82%E0%A4%9C%E0%A5%80%E0%A4%A8%E0%A4%BF%E0%A4%AF%E0%A4%B0%E0%A4%BF%E0%A4%82%E0%A4%97-red.svg)](docs/BATCH_OBFUSCATION_DEEP_REVERSE_ENGINEERING_ANALYSIS.md)
-[![Detection: Sigma & YARA](https://img.shields.io/badge/Detection-Sigma%20%E0%A4%94%E0%A4%B0%20YARA%20%E0%A4%A8%E0%A4%BF%E0%A4%AF%E0%A4%AE-purple.svg)](rules/)
+[![Detection: Sigma & YARA](https://img.shields.io/badge/Detection-Sigma%20%E0%A4%94%E0%A4%B0%20YARA%20%E0%A4%A8%E0%A4%BF%E0%A4%AF%E0%A4%AE-purple.svg)](references/detection_rules/)
 
 <sub>निर्माता: **[Maya Thorne](https://github.com/maya-thorne)** · बाइनरी एक्सप्लॉइट और रिवर्स इंजीनियरिंग सिस्टम्स आर्किटेक्ट</sub>
 
@@ -247,10 +247,10 @@ Target Executables Triaged:
 
 ## 🚨 Detection Engineering (YARA & Sigma Rules)
 
-Production-ready detection rules targeting evasive batch artifacts are located in [`rules/`](rules/):
+Production-ready detection rules targeting evasive batch artifacts are located in [`rules/`](references/detection_rules/):
 
-- **Sigma**: [`rules/sigma_batch_obfuscation.yml`](rules/sigma_batch_obfuscation.yml) — Detects high caret frequency (`^ > 10`), environment variable slicing (`%COMSPEC:~`), and nested subshell concatenations.
-- **YARA**: [`rules/yara_batch_obfuscation.yar`](rules/yara_batch_obfuscation.yar) — Pattern matching for Somalifuscator signatures, 0xidiz3r arrays, and Bat2Exe PE dropper stubs.
+- **Sigma**: [`references/detection_rules/sigma_batch_obfuscation.yml`](references/detection_rules/sigma_batch_obfuscation.yml) — Detects high caret frequency (`^ > 10`), environment variable slicing (`%COMSPEC:~`), and nested subshell concatenations.
+- **YARA**: [`references/detection_rules/yara_batch_obfuscation.yar`](references/detection_rules/yara_batch_obfuscation.yar) — Pattern matching for Somalifuscator signatures, 0xidiz3r arrays, and Bat2Exe PE dropper stubs.
 
 ---
 
@@ -270,18 +270,24 @@ cd cmd-ast-deobfuscator
 ### CLI Command Options
 
 ```bash
-# Deobfuscate a single batch file
-python src/deobfuscator_engine.py -i samples/01_env_slicing_sample.bat -o deobfuscated_output.bat
+# Parse batch script and display ASCII Abstract Syntax Tree
+python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat --tree
 
-# Verbose inspection mode with pass-by-pass telemetry
-python src/deobfuscator_engine.py -i samples/02_caret_and_quote_sample.bat --verbose
+# Output Mermaid flowchart diagram of AST structure
+python src/cli.py -c "set X=calc & %X%.exe" --mermaid
+
+# Output JSON AST dump
+python src/cli.py -c "set X=calc & %X%.exe" --json
+
+# Deobfuscate batch script using compiler AST normalizer
+python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat -o deobfuscated_output.bat
 ```
 
 ---
 
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 6 fundamental deobfuscation invariants:
+The test suite validates 16 fundamental compiler, lexer, automaton, and AST normalization invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -289,6 +295,16 @@ python -m unittest discover -s tests -v
 
 ### Invariant Test Results:
 ```text
+test_automaton_state_transitions (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_lexer_caret_and_quote_tokenization (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_lexer_percent_variable_detection (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_normalizer_caret_stripping (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_normalizer_environment_slicing (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_normalizer_symbol_table_propagation (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_parser_command_chaining (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_parser_parenthesized_block (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_visualizer_ascii_tree (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_visualizer_mermaid_and_json (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_bootstrap_set_chain (test_deobfuscator.TestBatchDeobfuscator) ... ok
 test_builtin_env_negative_slicing (test_deobfuscator.TestBatchDeobfuscator) ... ok
 test_caret_escaping_outside_quotes (test_deobfuscator.TestBatchDeobfuscator) ... ok
@@ -297,7 +313,7 @@ test_environment_variable_slicing (test_deobfuscator.TestBatchDeobfuscator) ... 
 test_string_substitution (test_deobfuscator.TestBatchDeobfuscator) ... ok
 
 ----------------------------------------------------------------------
-Ran 6 tests in 0.002s
+Ran 16 tests in 0.003s
 
 OK
 ```
@@ -338,7 +354,7 @@ cmd-ast-deobfuscator/
 │   └── deobfuscator_engine.py         # 6-Pass Static AST Evaluation Engine
 ├── tests/
 │   └── test_deobfuscator.py           # Invariant test suite
-├── LICENSE                            # MIT License
+├── LICENSE                            # Maya Thorne Research License (MT-SRL)
 └── README.md                          # Primary English Documentation
 ```
 
@@ -346,7 +362,7 @@ cmd-ast-deobfuscator/
 
 ## ⚖️ License & Responsible Disclosure
 
-This project is licensed under the **MIT License** — see [`LICENSE`](LICENSE) for details.
+This project is licensed under the **Maya Thorne Systems & Security Research License (MT-SRL)** — see [`LICENSE`](LICENSE) for details.
 
 > **Responsible Security Notice**: This software and associated research documentation are provided strictly for defensive security research, malware analysis, incident response, and academic education. All reverse engineering experiments were conducted within isolated offline sandbox environments.
 
