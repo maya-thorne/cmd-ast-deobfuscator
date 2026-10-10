@@ -57,6 +57,10 @@
 
 ### 🔄 Multi-Pass Deobfuscation Pipeline
 
+<p align="center">
+  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/cmd_ast_pipeline_architecture.svg" alt="cmd-ast-deobfuscator Architecture" width="100%" /></a>
+</p>
+
 ```mermaid
 flowchart TD
     In["📄 混淆的批处理原始脚本"] --> P1["1️⃣ 第1轮：编码检测与 BOM 清洗"]

@@ -57,6 +57,10 @@
 
 ### 🔄 Multi-Pass Deobfuscation Pipeline
 
+<p align="center">
+  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/cmd_ast_pipeline_architecture.svg" alt="cmd-ast-deobfuscator Architecture" width="100%" /></a>
+</p>
+
 ```mermaid
 flowchart TD
     In["📄 Script Batch Ofuscado"] --> P1["1️⃣ Passe 1: Sanitização de Codificação e BOM"]

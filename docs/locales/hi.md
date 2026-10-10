@@ -57,6 +57,10 @@
 
 ### 🔄 Multi-Pass Deobfuscation Pipeline
 
+<p align="center">
+  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/cmd_ast_pipeline_architecture.svg" alt="cmd-ast-deobfuscator Architecture" width="100%" /></a>
+</p>
+
 ```mermaid
 flowchart TD
     In["📄 ऑबफस्केटेड रॉ बैच स्क्रिप्ट"] --> P1["1️⃣ पास 1: एन्कोडिंग और BOM शुद्धिकरण"]
