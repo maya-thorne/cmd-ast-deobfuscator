@@ -58,7 +58,7 @@
 ### 🔄 Multi-Pass Deobfuscation Pipeline
 
 <p align="center">
-  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/cmd_ast_pipeline_architecture.svg" alt="cmd-ast-deobfuscator Architecture" width="100%" /></a>
+  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/locales/id/architecture.svg" alt="cmd-ast-deobfuscator Architecture (id)" width="100%" /></a>
 </p>
 
 ```mermaid

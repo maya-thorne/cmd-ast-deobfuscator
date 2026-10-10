@@ -58,7 +58,7 @@ Unlike modern script interpreters (such as Python or PowerShell) that tokenize s
 ### 🔄 Multi-Pass Deobfuscation Pipeline
 
 <p align="center">
-  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="./docs/assets/cmd_ast_pipeline_architecture.svg" alt="cmd-ast-deobfuscator Architecture" width="100%" /></a>
+  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="./docs/assets/locales/en/architecture.svg" alt="cmd-ast-deobfuscator Architecture (en)" width="100%" /></a>
 </p>
 
 ```mermaid
