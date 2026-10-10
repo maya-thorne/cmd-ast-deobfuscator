@@ -196,15 +196,68 @@ flowchart TD
 
 The suite includes line-by-line dissections and structural references from 7 seminal open-source obfuscation and deobfuscation projects:
 
-| # | Project Name | Author / Origin | Core Mechanism | Deobfuscation Countermeasure |
-| :-: | :--- | :--- | :--- | :--- |
-| **01** | `Invoke-DOSfuscation` | Daniel Bohannon | Environment variable slicing, string concatenation, token randomization | Multi-pass static symbol evaluator & caret stripper |
-| **02** | `0xidiz3r` | 0xIdiot | Chaotic set arrays, unicode spacing, variable permutation | Deterministic symbol table propagation |
-| **03** | `SomalifuscatorV2` | KDot227 | Control-flow flattening, dead code spam, junk label loops | Dead code elimination & label graph prune |
-| **04** | `batch_deobfuscator` | DissectMalware | Lexical heuristic AST parser | Extended syntactic rule matcher |
-| **05** | `Exorcism` | Ares-X | Dynamic variable reconstruction | Variable scope resolution |
-| **06** | `Bat2Exe-dehoisted` | JohnDJohnD | PE resource unhoisting & batch extraction | Header extraction & payload recovery |
-| **07** | `Batch-Encryption-DeCoder` | Community | Multi-algorithm decryptor for BEDeCode/QuickBatch | Reverse cipher matching |
+<table width=100%>
+  <thead>
+    <tr>
+      <th width=5% align=center>#</th>
+      <th width=22% align=left>📦 Project Name</th>
+      <th width=18% align=left>👤 Author / Origin</th>
+      <th width=28% align=left>⚙️ Core Mechanism</th>
+      <th width=27% align=left>🛡️ Countermeasure</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align=center><strong>01</strong></td>
+      <td><strong><code>Invoke-DOSfuscation</code></strong></td>
+      <td>Daniel Bohannon</td>
+      <td>Environment variable slicing, string concatenation, token randomization</td>
+      <td>Multi-pass static symbol evaluator &amp; caret stripper</td>
+    </tr>
+    <tr>
+      <td align=center><strong>02</strong></td>
+      <td><strong><code>0xidiz3r</code></strong></td>
+      <td>0xIdiot</td>
+      <td>Chaotic set arrays, unicode spacing, variable permutation</td>
+      <td>Deterministic symbol table propagation</td>
+    </tr>
+    <tr>
+      <td align=center><strong>03</strong></td>
+      <td><strong><code>SomalifuscatorV2</code></strong></td>
+      <td>KDot227</td>
+      <td>Control-flow flattening, dead code spam, junk label loops</td>
+      <td>Dead code elimination &amp; label graph prune</td>
+    </tr>
+    <tr>
+      <td align=center><strong>04</strong></td>
+      <td><strong><code>batch_deobfuscator</code></strong></td>
+      <td>DissectMalware</td>
+      <td>Lexical heuristic AST parser</td>
+      <td>Extended syntactic rule matcher</td>
+    </tr>
+    <tr>
+      <td align=center><strong>05</strong></td>
+      <td><strong><code>Exorcism</code></strong></td>
+      <td>Ares-X</td>
+      <td>Dynamic variable reconstruction</td>
+      <td>Variable scope resolution</td>
+    </tr>
+    <tr>
+      <td align=center><strong>06</strong></td>
+      <td><strong><code>Bat2Exe-dehoisted</code></strong></td>
+      <td>JohnDJohnD</td>
+      <td>PE resource unhoisting &amp; batch extraction</td>
+      <td>Header extraction &amp; payload recovery</td>
+    </tr>
+    <tr>
+      <td align=center><strong>07</strong></td>
+      <td><strong><code>Batch-Encryption-DeCoder</code></strong></td>
+      <td>Community</td>
+      <td>Multi-algorithm decryptor for BEDeCode/QuickBatch</td>
+      <td>Reverse cipher matching</td>
+    </tr>
+  </tbody>
+</table>
 
 *Detailed architectural breakdowns and source extractions are available in [`references/source-dissections/`](references/source-dissections/) and [`docs/BATCH_OBFUSCATION_DEEP_REVERSE_ENGINEERING_ANALYSIS.md`](docs/BATCH_OBFUSCATION_DEEP_REVERSE_ENGINEERING_ANALYSIS.md).*
 
