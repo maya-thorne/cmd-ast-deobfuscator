@@ -1,0 +1,41 @@
+title: Highly Obfuscated Windows Batch Script Execution Detection
+id: 9a7b2e4f-5612-4f33-8c11-998877665544
+status: experimental
+description: Detects command lines executing cmd.exe with heavy obfuscation techniques such as caret evasion, environment variable slicing, and abnormal delimiter sequences.
+references:
+    - https://github.com/danielbohannon/Invoke-DOSfuscation
+    - https://unit42.paloaltonetworks.com/batcloak-malware-obfuscation/
+author: Cyber Security & Reverse Engineering Lab
+date: 2026-10-11
+tags:
+    - attack.execution
+    - attack.t1059.003
+    - attack.defense_evasion
+    - attack.t1027
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cmd:
+        Image|endswith:
+            - '\cmd.exe'
+            - '\cmd'
+    selection_caret:
+        CommandLine|re: '(\^[a-zA-Z0-9_\-\.\:\/]){3,}'
+    selection_slice:
+        CommandLine|re: '(%[a-zA-Z0-9_]+:~-?[0-9]+,-?[0-9]+%){3,}'
+    selection_concat:
+        CommandLine|re: '(%[a-zA-Z0-9_]{1,3}%){5,}'
+    selection_hex_octal:
+        CommandLine|contains:
+            - '0x'
+            - 'set /a'
+    selection_batcloak:
+        CommandLine|contains:
+            - '-----BEGIN '
+            - 'certutil -decode'
+            - 'findstr /v'
+    condition: selection_cmd and (selection_caret or selection_slice or selection_concat or selection_batcloak)
+falsepositives:
+    - Rare legacy installer scripts using heavy string concatenations
+level: high

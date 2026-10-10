@@ -1,0 +1,93 @@
+{
+  "_id": "68957f2ce0b3c0a2309034c2",
+  "id": "jwengr/DACON-Korean-Review-Obfuscation",
+  "author": "jwengr",
+  "sha": "65b5a1a867d5960990504f38a71c7ccf6c268c94",
+  "lastModified": "2026-01-21T14:52:11.000Z",
+  "private": false,
+  "gated": false,
+  "disabled": false,
+  "tags": [
+    "size_categories:10K<n<100K",
+    "format:parquet",
+    "modality:text",
+    "library:datasets",
+    "library:pandas",
+    "library:polars",
+    "library:mlcroissant",
+    "region:us"
+  ],
+  "downloads": 21,
+  "likes": 0,
+  "cardData": {
+    "dataset_info": {
+      "features": [
+        {
+          "name": "sentence_noisy",
+          "dtype": "string"
+        },
+        {
+          "name": "sentence",
+          "dtype": "string"
+        }
+      ],
+      "splits": [
+        {
+          "name": "train",
+          "num_bytes": 4041412,
+          "num_examples": 9008
+        },
+        {
+          "name": "dev",
+          "num_bytes": 529536,
+          "num_examples": 1126
+        },
+        {
+          "name": "test",
+          "num_bytes": 535044,
+          "num_examples": 1126
+        }
+      ],
+      "download_size": 3795502,
+      "dataset_size": 5105992
+    },
+    "configs": [
+      {
+        "config_name": "default",
+        "data_files": [
+          {
+            "split": "train",
+            "path": "data/train-*"
+          },
+          {
+            "split": "dev",
+            "path": "data/dev-*"
+          },
+          {
+            "split": "test",
+            "path": "data/test-*"
+          }
+        ]
+      }
+    ]
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes"
+    },
+    {
+      "rfilename": "README.md"
+    },
+    {
+      "rfilename": "data/dev-00000-of-00001.parquet"
+    },
+    {
+      "rfilename": "data/test-00000-of-00001.parquet"
+    },
+    {
+      "rfilename": "data/train-00000-of-00001.parquet"
+    }
+  ],
+  "createdAt": "2025-08-08T04:38:04.000Z",
+  "usedStorage": 15166095
+}

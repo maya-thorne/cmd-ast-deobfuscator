@@ -1,0 +1,1211 @@
+{
+  "0xidiz3r": {
+    "dir_name": "0xidiz3r",
+    "total_files": 38,
+    "file_extensions": {
+      ".toml": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".rs": 5
+    },
+    "sample_files": [
+      ".gitignore",
+      "Cargo.toml",
+      "LICENSE",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow"
+    ],
+    "readme_excerpt": "### An attempt at reversible batch & powershell obfuscation using techniques inspired by John Hammond.<br>\n\nBatch technique: https://www.youtube.com/watch?v=0RADvfJysuA<br>\n\nPowershell technique (todo!()): https://www.youtube.com/watch?v=WJlqQYyzGi8<br>\n\n## Background (Batch)\n\n**Obfuscation:**<br>\n\nThis is an implementation of an interesting Batch obfuscation technique which uses variables to obfuscate Batch commands.<br>\nThe basic idea is that you can obfuscate many keywords and characters in Batch using nonsensical variable names, and they will still work.<br>\nThis program builds an obfuscated alphabet using random variable names, and uses those random variables to build obfuscated commands.<br>\nIn my testing, this particular technique is trivial to unravel as a human analyst, but may still avoid static detection in some scenarios.<br>\n\n**This program makes no guarantees about preserving the functionality of the obfuscated scripts it produces.**<br><br>\n\n*Most things seem to work, ho"
+  },
+  "Abobus-obfuscator": {
+    "dir_name": "Abobus-obfuscator",
+    "total_files": 32,
+    "file_extensions": {
+      ".py": 1,
+      ".md": 2,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "AbobusObf.py",
+      "LICENSE.md",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample"
+    ],
+    "readme_excerpt": "# Abobus obfuscator by EscaLag\n\nBatch code obfuscator written on Python. The best tool to obfuscate your batch code!\n\nAbobus - is the most powerful obfuscator, written in Python. developed by Escalag.\n\n## Features\n\nThere is some fetures available in this obfuscator:\n\n- FUD obfuscation\n- 10 layers of obfuscation\n- Flexible obfuscation settings\n- support for complex batch scripts\n- cleans the detections from virus total\n- Very fast obfuscation process (under 0.02ms!)\n\n## Example\n\nWithout obfuscation:\n\n```bat\n@echo off\necho hello world\npause\n```\n\nw/ obfuscation, with disabled china symbol function:\n\n```bat\n;@;@@(@ch^c%法凡文無被^法%p%貼^是製是字護%.c%凡已人訊^這上%om 43^7)>n^ul&@e%魔法上保神^人%%保凡護上人被^%%人神文法^被上%^cho o%字的保製^保這%f^%凡行人行製^法%f&c%這凡護無^文法%%魔神^字製息護%^ls&&s%ت^◯تسﭲﻁ%e^%سﮢﭫ^◯ﺖﯔ%t ill%ﯤ^ﭲكتتﻁ%llii^%ﺹﭲ^ﮢﭫﮱﺼ%i%ﮢﺹﻁﺼﺖت^%iii=%0&s^e%ﮱتﮕﮚﭲﮱ^%%ﻁﯔ^كﭲﮚﮚ%t 𝧽= \u001bc\n@:ABOBUS-OBFUSCATOR\n\n;SE^T \"__author__=EscaLag\"\n;SE^T \"__github__=github.com/EscaLag/Abobus-obfuscator\"\n\n; ;@s^%魔這被此^訊上%e%無^訊無製人字%t /a ‎+=1 >n^uL &F^o%此製魔訊^上已"
+  },
+  "Bat2Exe-dehoisted": {
+    "dir_name": "Bat2Exe-dehoisted",
+    "total_files": 63,
+    "file_extensions": {
+      ".md": 2,
+      ".txt": 2,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".exe": 5,
+      ".dll": 3,
+      ".bat": 1,
+      ".csproj": 1,
+      ".user": 1,
+      ".sln": 1,
+      ".ico": 1,
+      ".cs": 9,
+      ".resx": 2,
+      ".config": 1,
+      ".jpg": 1,
+      ".png": 2,
+      ".settings": 1
+    },
+    "sample_files": [
+      "LICENSE",
+      "README.md",
+      "version.txt",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample"
+    ],
+    "readme_excerpt": "# Bat2Exe\nWindows user interface for converting your batch files into executables.                                                                                                                                                                                                                                                                   \n\nThe latest release has all the dependencies you need, including the Bat2Exe executable.                                                                          \nLatest release can be found and downloaded [here](https://github.com/dehoisted/Bat2Exe/releases/tag/v2.0).                                                                                                                                                   \n\nCurrent version: **2.1**\n\n## Features\n+ EXE Compression\n+ Different methods for conversion (2 methods)\n+ Batch obfuscation (2 methods)\n+ Hide console when EXE opened\n+ Select icon for EXE\n## Update Log\nNovember 17, 2021\n```\n+ Added batch sc"
+  },
+  "BatCloak": {
+    "dir_name": "BatCloak",
+    "total_files": 53,
+    "file_extensions": {
+      ".svg": 3,
+      ".js": 3,
+      ".html": 1,
+      ".json": 2,
+      ".md": 2,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".bat": 1,
+      ".txt": 1,
+      ".jpg": 1,
+      ".png": 3,
+      ".jsx": 4,
+      ".css": 1
+    },
+    "sample_files": [
+      ".gitignore",
+      "demo.svg",
+      "eslint.config.js",
+      "index.html",
+      "LICENSE",
+      "package-lock.json",
+      "package.json",
+      "README.md",
+      "vite.config.js",
+      ".git\\config"
+    ],
+    "readme_excerpt": "<div align=\"center\">\n\n<!-- ANIMATED DEMO BANNER -->\n<img src=\"./demo.svg\" alt=\"BatchGuard Pro Interactive Demo\" width=\"100%\"/>\n\n<br/>\n\n<!-- TITLE BLOCK -->\n```\n██████╗  █████╗ ████████╗ ██████╗██╗  ██╗ ██████╗ ██╗   ██╗ █████╗ ██████╗ ██████╗ ██████╗  ██████╗ \n██╔══██╗██╔══██╗╚══██╔══╝██╔════╝██║  ██║██╔════╝ ██║   ██║██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔═══██╗\n██████╔╝███████║   ██║   ██║     ███████║██║  ███╗██║   ██║███████║██████╔╝██║  ██║██████╔╝██║   ██║\n██╔══██╗██╔══██║   ██║   ██║     ██╔══██║██║   ██║██║   ██║██╔══██║██╔══██╗██║  ██║██╔═══╝ ██║   ██║\n██████╔╝██║  ██║   ██║   ╚██████╗██║  ██║╚██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝██║     ╚██████╔╝\n╚═════╝ ╚═╝  ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚═╝      ╚═════╝ \n                                               P R O\n```\n\n**Professional Batch Script Obfuscation & Security Utility for Windows**\n\n[![React](https://img.shields.io/badge/React-19.x-61dafb?style=flat-square&logo=react&logoColor=white)"
+  },
+  "Batch-Dump": {
+    "dir_name": "Batch-Dump",
+    "total_files": 33,
+    "file_extensions": {
+      ".py": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".png": 1
+    },
+    "sample_files": [
+      "LICENSE",
+      "main.py",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample"
+    ],
+    "readme_excerpt": "<h1 align=\"center\">⚙️ Batch Dump ⚙️</h1>\n\n<p align=\"center\">\n  <a href=\"https://www.python.org\" target=\"_blank\"><img src=\"https://img.shields.io/badge/Language-Python-blue?style=for-the-badge&logo=python\" /></a>\n  <a href=\"https://t.me/swezy\" target=\"_blank\"><img src=\"https://img.shields.io/badge/Telegram-@Swezy-blue?style=for-the-badge&logo=telegram\" /></a>\n  <br>\n  <code>Leave a ⭐ if you like this Repository</code>\n</p>\n\n---\n\n## 🚩 Project overview\n\n**Batch Dump** is a compact Python utility that **watches common system/user directories** for newly created compiled `.bat` files, **copies them to the tool directory** for inspection, and optionally **deobfuscates** certain compiled batch stubs by removing a known hex sequence.\n\nThe program uses a **clean CLI interface**, a **gradient ASCII logo**, and a lightweight **watchdog**-based file monitor to automate discovery and basic recovery of batch source code.\n\n> [!CAUTION]\n> This tool is intended for **legitimate reverse-engineering, deb"
+  },
+  "Batch-Encryption-DeCoder": {
+    "dir_name": "Batch-Encryption-DeCoder",
+    "total_files": 42,
+    "file_extensions": {
+      ".vbp": 1,
+      ".vbw": 1,
+      ".scc": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".exe": 1,
+      ".res": 1,
+      ".ico": 1,
+      ".htm": 1,
+      ".frm": 1,
+      ".frx": 1,
+      ".bas": 1
+    },
+    "sample_files": [
+      "BatchEncryptionDeCoder.vbp",
+      "BatchEncryptionDeCoder.vbw",
+      "LICENSE",
+      "MSSCCPRJ.SCC",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs"
+    ],
+    "readme_excerpt": "# Batch-Encryption-DeCoder\n# Batch Encryption DeCoder 是一个针对 BatchEncryption 的全平台通用的免安装的批处理解密程序\n\nBatch Encryption DeCoder 能在全平台\\*运行，所解密的文件也能在全平台运行\\*\\*\n\n\\*Windows XP/Vista/7/8/8.1/10/11 (x86/x64)\n\n\\*\\*使用 VB6 编写，没有使用任何需要注册的 ActiveX 控件\n\n软件已知问题：\n\n1.速度较慢\n\n2.内存开销较大\n\n3.输出部分使用 IE 内核(为了免安装)，所以未来可能无法使用\n\n4.Windows XP 下无法正常启动，需要设置兼容模式为 Windows 2000\n\n软件优点：\n\n1.兼容性好\n\n2.目前唯一的全自动 BatchEncryption 解密工具\n\n3.利用配置清单，使程序适配高 DPI\n\n**更新日志**\n\n1.0 版 初次发布\n\n1.1 版（未发布） 更改算法\n\n1.2 版 新增“快速解密功能”\n\n1.3 版 新增了处理不规范文件头的功能\n\n1.4 版 改进了处理不规范文件头的功能\n"
+  },
+  "Batch-Obfuscator-90th": {
+    "dir_name": "Batch-Obfuscator-90th",
+    "total_files": 70,
+    "file_extensions": {
+      ".sln": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".aps": 1,
+      ".rc": 1,
+      ".vcxproj": 1,
+      ".filters": 1,
+      ".user": 1,
+      ".cpp": 12,
+      ".h": 18,
+      ".ico": 1
+    },
+    "sample_files": [
+      ".gitattributes",
+      ".gitignore",
+      "Bat.sln",
+      "LICENSE",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs"
+    ],
+    "readme_excerpt": "\n<p align=\"center\">\n  <img src=\"https://img.shields.io/github/downloads/90th/Batch-Obfuscator/latest/total\" alt=\"GitHub Downloads (all assets, latest release)\" />\n  <img src=\"https://img.shields.io/github/last-commit/90th/Batch-Obfuscator\" alt=\"GitHub last commit\" />\n  <img src=\"https://img.shields.io/github/stars/90th/Batch-Obfuscator\" alt=\"GitHub Repo stars\" />\n</p>\n\n\n<div align=\"center\">\n<img src=\"https://i.imgur.com/3W5urcy.png\" alt=\"Menu\">\n  <br>\n  <img src=\"https://i.imgur.com/0iT6QLG.png\" alt=\"Help0\">\n  <br>\n  <img src=\"https://i.imgur.com/VxlWDRG.png\" alt=\"Help1\">\n    <br>\n    <img src=\"https://i.imgur.com/9FS4AzY.png\" alt=\"Version\">\n</div>\n\n"
+  },
+  "BatchDeobfuscator-CrowTheBest": {
+    "dir_name": "BatchDeobfuscator-CrowTheBest",
+    "total_files": 32,
+    "file_extensions": {
+      ".py": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "LICENSE",
+      "main.py",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample"
+    ],
+    "readme_excerpt": "## ABOUT\nI wrote this script just to deobfuscate a single bat file (**fake FoliaDupe**) which structure looks something like this:\n``` batch\n%QFcihijRZS%@%QFcihijRZS%@%QFcihijRZS%s%QFcihijRZS%e%QFcihijRZS%t%QFcihijRZS%% \"ykakdHlIvQkCTInBhwCMIRTdKlCZRfMaEyLbwjWxOqAqPAZYooSdOKrfPxYrFLoODIyVwKFxXFyPRbNKKajbMhLrEfMyKdpDBkmHCDbdjUFJMaNliOgbaMBUwERPyGlrOuOfoGHHzErpaCfbQYOvyMZniRKykLgbiMuRMgxaGXcVTKruWoyXppvBRYxVvJVlWOHOIMOjalmXiETXXQYwMHkqQqAljZgxCpzECcjKYNwECVRNFXycjYXOcPxPMbzBFpUqEPUufNVzKgnuYkgLaCLaRiYlfTywOvyLBYInCDxUDYEwZDoZvmXCcrYUoiNKPYiPhbrzbqJXEpWqdbKbcWBZVvgHAlzRolFconNyJpyDcAxmUgpLXkfrXHrmwkzoqpiRjrCpOLRmYxxUyrlRwmuDFMFgvYCXqHKlQdDadAwLRrRZKWnCyfrEwdMWmTvnJrwQkJESoKlwpgkMudVWkzZKNGolQdnKEGCYwBnARUMmuxNNuzbHxWDJRkCdSRBJVaqidLProVEOklQQqarQBfMfCqGKyJfATDQ=%QFcihijRZS%@%QFcihijRZS%e%QFcihijRZS%c%QFcihijRZS%h%QFcihijRZS%o%QFcihijRZS% %QFcihijRZS%o%QFcihijRZS%o%QFcihijRZS%f%QFcihijRZS%f%QFcihijRZS%\"\"\n%ykakdHlIvQkCTInBhwCMIRTdKlCZRfMaEyLbwjWxOqAqPAZYooSdOKrfPxYrFLoODIyVwKFxXFyPRbNKKajbM"
+  },
+  "BatchObfuscator-BiggerDABOSS": {
+    "dir_name": "BatchObfuscator-BiggerDABOSS",
+    "total_files": 33,
+    "file_extensions": {
+      ".cmd": 2,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "Deobfuscation.cmd",
+      "obfuscator.cmd",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample"
+    ],
+    "readme_excerpt": "# BatchObfuscator\nObfuscate your batch files to prevent people from stealing code!\nTo use simply drag and drop on to the desired action.\nThis tool basically confuses your text editor into think something else!\n"
+  },
+  "BatchObfuscator-EmenstaNougat": {
+    "dir_name": "BatchObfuscator-EmenstaNougat",
+    "total_files": 32,
+    "file_extensions": {
+      ".bat": 1,
+      ".md": 1,
+      ".txt": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "BatchObfuscator(drag&drop) -By Emensta.bat",
+      "README.md",
+      "Tutorial.txt",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample"
+    ],
+    "readme_excerpt": "# BatchObfuscator\nObfuscating a .bat will make it impossible to directly read out the containing prompts given in the file.\n"
+  },
+  "BatchObfuscator-guillaC": {
+    "dir_name": "BatchObfuscator-guillaC",
+    "total_files": 44,
+    "file_extensions": {
+      ".sln": 1,
+      ".png": 3,
+      ".md": 3,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".csproj": 1,
+      ".cs": 4,
+      ".resx": 1
+    },
+    "sample_files": [
+      ".gitignore",
+      "BatchProtect.sln",
+      "Encode substrings by custom variables.png",
+      "LICENSE",
+      "Obfuscate Flow.png",
+      "Randomize variable and subroutine names.png",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD"
+    ],
+    "readme_excerpt": "# BatchObfuscator\nBatchObfuscator is an old experimental project created years ago to explore how Windows batch scripts can be transformed, parsed, and rewritten.\n\nThe project is no longer maintained, no longer updated, and does not reflect modern scripting or security practices.\nIt remains online for historical and educational purposes only, and is not intended for operational use, security evasion, or any real‑world deployment.\n\nBatchObfuscator was originally designed to help developers understand how obfuscation techniques affect Windows batch scripts.\nIt provides several transformation methods that can be applied individually or combined to experiment with code rewriting and parser behavior.\n\n## Usage\n- Paste your batch code into the input box.\n- Select the part of the code (or all the code).\n- Right-click to access the obfuscation features.\n- You can obfuscate all or parts of the code, using different obfuscation methods if desired.\n\n## Features\n- Randomize variables and subroutin"
+  },
+  "BatchObfuscator-wirebits": {
+    "dir_name": "BatchObfuscator-wirebits",
+    "total_files": 33,
+    "file_extensions": {
+      ".py": 1,
+      ".md": 1,
+      ".txt": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "BatchObfuscator.py",
+      "LICENSE",
+      "README.md",
+      "requirements.txt",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow"
+    ],
+    "readme_excerpt": "# 🌀BatchObfuscator\n\n>[!CAUTION]\n>This project is for Windows only.\n\n# ℹ️About\nA tool that obfuscates bat/cmd files.\n\n# ⏳Working\nIt basically takes .bat or .cmd files as input and add after the decoded `base64` payload in a new file.\n\n# ✨Features\n- Minimal Setup.\n- It works on both `.bat` and `.cmd` files.\n- It takes auto completion path of files.\n\n# 📦Requirements\n- Make sure that the latest python is installed on your system (Windows).\n\n# ⚙️Setup\n\n>[!CAUTION]\n>The `requirements.txt` file is also for windows only.\n\n- Install the **pyreadline3** module on your system (Windows) by copy and run the following command :\n```\npip3 install -r requirements.txt\n```\n\n# 🏃🏻‍♂️Run `BatchObfuscator`\n1. Download or Clone the Repository.\n2. Open the folder.\n3. Open `CMD/Powershell` (Windows) in that folder.\n4. Type the command :\n   ```\n   python BatchObfuscator.py\n   ```\n5. Hit Enter.\n   - It open a GUI interface in terminal.\n6. Follow the instructions and use the tool!\n"
+  },
+  "BatchShield-Decryptor": {
+    "dir_name": "BatchShield-Decryptor",
+    "total_files": 39,
+    "file_extensions": {
+      ".py": 1,
+      ".md": 1,
+      ".txt": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".png": 3
+    },
+    "sample_files": [
+      ".DS_Store",
+      ".gitignore",
+      "deobfuscator.py",
+      "LICENSE",
+      "README.md",
+      "version.txt",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index"
+    ],
+    "readme_excerpt": "# BatchShield Decryptor Tool\n\n## Introduction\n\nIn recent years, malware developers have increasingly utilized obfuscation techniques to conceal their malicious scripts, particularly in the form of batch files. One such tool, [BatchShield](https://github.com/DevBubba/BatchShield), has been used to make these batch scripts unreadable, complicating the analysis and detection of malware.\n\nAs part of my research and analysis into malware, I recognized the need for a tool that could reverse this obfuscation and make these scripts readable again. This motivated me to develop the **BatchShield Decryptor Tool**, which is designed specifically for this purpose. By restoring the original content of obfuscated batch scripts, I aim to aid security professionals and researchers in their efforts to understand and combat malware more effectively.\n\nThe **BatchShield Decryptor Tool** allows you to make readable batch scripts that have been obfuscated using [BatchShield](https://github.com/DevBubba/Batch"
+  },
+  "BatchStealer-Takaovi": {
+    "dir_name": "BatchStealer-Takaovi",
+    "total_files": 33,
+    "file_extensions": {
+      ".bat": 1,
+      ".md": 1,
+      ".exe": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "file.bat",
+      "LICENSE",
+      "README.md",
+      "screenshot.exe",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow"
+    ],
+    "readme_excerpt": "# BatchStealer | [BatchStealer Example](https://github.com/Takaovi/BatchStealer-Example)\n\n### 📜 A batch script for taking things and sending them to a webhook \n\n## [Get The Automatic Builder](https://github.com/Takaovi/BSBuilder) ❤️\n\nMy attempt at making a stealer with batch, it sucks. The script will not be updated anymore. If something, a new one would be made, this time properly. Treat the current BatchStealer as POC, not as a finished product/malware.\n\n3.4.2021 < FUD [(Virustotal)](https://www.virustotal.com/gui/file/6dfc563da383268f927fd90834afe1f2b5757933ea7527029c94f5aa6ab08c0d/detection)\n\n![Made with love in Finland](https://madewithlove.now.sh/fi?heart=true&colorB=%23387fdc&template=plastic)\n\n# How to use\n\n### ⚠️ Windows 10 build 17063, or later (*cURL* is included)\n\n1. Change the webhook to yours.\n2. Remove the fail-safes. (\"goto xxx\")\n3. Run the batch file.\n\n### ❌ Get rid of the comments 📝\n* Do a regex search on notepad++, match `^::.*\\n` and replace with nothing.\n\n### ⛔ Avo"
+  },
+  "BatchToApp-DosX": {
+    "dir_name": "BatchToApp-DosX",
+    "total_files": 60,
+    "file_extensions": {
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".png": 3,
+      ".config": 1,
+      ".vb": 11,
+      ".sln": 1,
+      ".vbproj": 2,
+      ".ico": 1,
+      ".resx": 2,
+      ".cmd": 1,
+      ".cs": 1,
+      ".myapp": 1,
+      ".settings": 1,
+      ".rtf": 1
+    },
+    "sample_files": [
+      ".gitattributes",
+      ".gitignore",
+      "LICENSE",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow"
+    ],
+    "readme_excerpt": "# BatchToApp\n### Program that allows you to **pack** and **obfuscate** your Batch scripts (`.bat`/`.cmd`) into a Windows applications (`.exe`)\n\n### > **[Download for Windows](https://github.com/DosX-dev/BatchToApp/releases/tag/Builds)**\n\n---\n\n> Screenshots\n>\n> ![](./pics/1.png)\n> ![](./pics/2.png)\n\nThe script file after conversion can still:\n * Receive and process command line arguments\n * Return value of `%ERRORLEVEL%`\n\n## Functionality\n**BatchToApp** can create 32 or 64 bit applications, with or without hiding the console. There are also completely unique script trimming functions that include:\n * Comments removing (all lines starting with `::` or `rem` will be removed)\n * Unnecessary characters removing (this means reducing the number of line breaks, removing extra spaces)\n\nHow does BatchToApp obfuscate scripts?\nLabels obfuscation modes:\n* `Labels mutation` (only changes names)\n* `Labels mutation` (changes names and adds junks)\n\nTo visually obfuscate many commands, you can use the `"
+  },
+  "CMD-DeObfuscator": {
+    "dir_name": "CMD-DeObfuscator",
+    "total_files": 42,
+    "file_extensions": {
+      ".l": 1,
+      ".js": 8,
+      ".json": 1,
+      ".org": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      ".gitignore",
+      "comspec.l",
+      "index.js",
+      "LICENSE",
+      "package.json",
+      "README.org",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index"
+    ],
+    "readme_excerpt": "No README available"
+  },
+  "DBOBUS-tccontre": {
+    "dir_name": "DBOBUS-tccontre",
+    "total_files": 33,
+    "file_extensions": {
+      ".py": 1,
+      ".md": 2,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".png": 1
+    },
+    "sample_files": [
+      "dbobus.py",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample",
+      ".git\\hooks\\commit-msg.sample"
+    ],
+    "readme_excerpt": "# DBOBUS\nDescription: A simple python script to de-obfuscate ABOBUS batch script obfuscator.\n\n## Introduction:\nThe ABOBUS Obfuscator, developed by EscaLag, is a batch script obfuscation tool designed to obscure and protect code written in batch programming. It is recognized for its effectiveness in making batch files challenging to read and reverse-engineer by using obfuscation techniques. \n\nThis Python Script can roughly de-obfuscate the actual script being obfuscated by this ABOBUS obfuscator.\n\n## NOTE:\nDue to the layered and customizable obfuscation techniques employed by the ABOBUS obfuscator, the de-obfuscation process implement by this de-obfuscator, may require specific adjustments tailored to the features utilized in the obfuscated malware samples. These tweaks are essential to accurately reverse the obfuscation and analyze the underlying code. The complexity of the de-obfuscation effort can vary depending on the obfuscation options selected during the encoding process.\n\n\n## Si"
+  },
+  "DE-SomalifuscatorV2": {
+    "dir_name": "DE-SomalifuscatorV2",
+    "total_files": 93,
+    "file_extensions": {
+      ".py": 21,
+      ".md": 6,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".txt": 1,
+      ".bat": 24,
+      ".yml": 5,
+      ".gif": 1,
+      ".ico": 2,
+      ".png": 1,
+      ".ps1": 1
+    },
+    "sample_files": [
+      "deobfuscator.py",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample",
+      ".git\\hooks\\commit-msg.sample"
+    ],
+    "readme_excerpt": "# SomalifuscatorV2 Deobfuscator\n\n## Overview\n\nThis Python script is designed to deobfuscate Windows Batch files (`.bat`, `.cmd`) that have been processed by the **SomalifuscatorV2** obfuscator. It aims to reverse the primary obfuscation techniques employed by SomalifuscatorV2 (based on analysis of its source code) to restore the original script's logic and readability.\n\nThe deobfuscation process involves multiple steps, including character substitution reversal, code structure reconstruction (scrambling reversal), and removal of injected helper code.\n\n## Features\n\n*   **Character Deobfuscation:** Reverses multiple character encoding/substitution methods:\n    *   Caesar Cipher substitution (requires definition lines like `set a=b` to be present).\n    *   Environment Variable Slicing (e.g., `%PUBLIC:~3,1%`).\n    *   `%KDOT%` Variable Slicing (requires `set KDOT=...` line).\n    *   Simple Junk Variable Wrapping (e.g., `%random%C%random%`).\n*   **Scrambling Reversal:** Reconstructs the ori"
+  },
+  "Exorcism": {
+    "dir_name": "Exorcism",
+    "total_files": 49,
+    "file_extensions": {
+      ".bat": 3,
+      ".py": 5,
+      ".md": 1,
+      ".txt": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".lock": 1,
+      ".toml": 1,
+      ".rs": 6
+    },
+    "sample_files": [
+      ".gitignore",
+      "build_cmdtest.bat",
+      "LICENSE",
+      "main.py",
+      "README.md",
+      "requirements.txt",
+      "test.bat",
+      "test_batch.bat",
+      ".git\\config",
+      ".git\\description"
+    ],
+    "readme_excerpt": "# Exorcism - Runtime Windows Batch Deobfuscator\n\n\"When there are little demons running around with .bat crypters, you get an exorcism.\"\n\n![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)\n![Platform](https://img.shields.io/badge/platform-Windows-lightgreen.svg)\n![Language](https://img.shields.io/badge/language-Rust%2FPython-orange.svg)\n\n**Exorcism** is a runtime Windows batch deobfuscator/debugger that uses DLL injection and function hooking to pause, edit, skip, and log batch commands as they are processed by `cmd.exe`.\n\n> [!WARNING]\n> **🚨 DEBUGGING IS NOT A SANDBOX! 🚨**\n> \n> This tool can pause and skip commands at its current hook point, but the target `cmd.exe` and any analyzed batch file still run on your system. **DO NOT** use this tool on untrusted or malicious batch files unless you are in a completely isolated environment (sandboxed VM, air-gapped system, etc.).\n> \n> **Use at your own risk. This tool is intended for security research, malware analysis, and "
+  },
+  "Invoke-CradleCrafter": {
+    "dir_name": "Invoke-CradleCrafter",
+    "total_files": 34,
+    "file_extensions": {
+      ".ps1": 2,
+      ".psd1": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "Invoke-CradleCrafter.ps1",
+      "Invoke-CradleCrafter.psd1",
+      "LICENSE",
+      "Out-Cradle.ps1",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs"
+    ],
+    "readme_excerpt": "Invoke-CradleCrafter v1.1\n===============\n\n![Invoke-CradleCrafter Screenshot](https://github.com/danielbohannon/danielbohannon.github.io/blob/master/Invoke-CradleCrafter%20Screenshot.png)\n\nIntroduction\n------------\nInvoke-CradleCrafter is a PowerShell v2.0+ compatible PowerShell remote\ndownload cradle generator and obfuscator.\n\nBackground\n----------\nIn the Fall of 2016 after releasing Invoke-Obfuscation, I continued updating\nmy spreadsheet of PowerShell remote download cradles thinking that one day I\nmight add a \"cradle selector\" menu into Invoke-Obfuscation. This list \nconsisted of cradles that were obscure to me, and many of which were not \nprevelently (or at all) being observed in the wild.\n\nHowever, since Invoke-Obfuscation was designed to obfuscate any arbitrary \nPowerShell command or script, there are certain obfuscation techniques that \nI knew I needed to include with regards to building customized cradles that \nwere not feasible to include in Invoke-Obfuscation.\n\nThis was the p"
+  },
+  "Invoke-DOSfuscation": {
+    "dir_name": "Invoke-DOSfuscation",
+    "total_files": 48,
+    "file_extensions": {
+      ".psd1": 1,
+      ".psm1": 3,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".evtx": 8,
+      ".txt": 4,
+      ".ps1": 1
+    },
+    "sample_files": [
+      "Invoke-DOSfuscation.psd1",
+      "Invoke-DOSfuscation.psm1",
+      "Invoke-DOSfuscationMenu.psm1",
+      "Invoke-DOSfuscationTestHarness.psm1",
+      "LICENSE",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index"
+    ],
+    "readme_excerpt": "Invoke-DOSfuscation v1.0\n===============\n\n![Invoke-DOSfuscation Screenshot](https://github.com/danielbohannon/danielbohannon.github.io/blob/master/Invoke-DOSfuscation%20Screenshot.png)\n\nIntroduction\n------------\nInvoke-DOSfuscation is a PowerShell v2.0+ compatible cmd.exe command\nobfuscation framework. (White paper: [https://www.fireeye.com/blog/threat-research/2018/03/dosfuscation-exploring-obfuscation-and-detection-techniques.html](https://www.fireeye.com/blog/threat-research/2018/03/dosfuscation-exploring-obfuscation-and-detection-techniques.html))\n\nBackground\n----------\nOver the past several years as an Incident Response consultant I have\nwitnessed a myriad of obfuscation and evasion techniques employed by\nseveral threat actors. Some of these techniques are incredibly complex\nwhile others are tastefully simple, but both categories are employed to\nevade detection. In my experience, I have found APT32 and FIN7 to pull\nout the most alluring obfuscation techniques and their creativity "
+  },
+  "JSBatchDeobfuscator-yrotak": {
+    "dir_name": "JSBatchDeobfuscator-yrotak",
+    "total_files": 43,
+    "file_extensions": {
+      ".sln": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".config": 2,
+      ".csproj": 1,
+      ".cs": 1,
+      ".exe": 2,
+      ".pdb": 2,
+      ".cache": 3,
+      ".txt": 1
+    },
+    "sample_files": [
+      "Batch_Deobfuscator.sln",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample",
+      ".git\\hooks\\commit-msg.sample"
+    ],
+    "readme_excerpt": "# JSBatchDeobfuscator\nDeobfuscator for JSBatchobfuscator(https://github.com/guillaC/JSBatchobfuscator) in C#\n\nUsage:\nBatch_Deobfuscator.exe C:\\blablabla\\obfuscatedfile.bat\n"
+  },
+  "Out-FINcodedCommand": {
+    "dir_name": "Out-FINcodedCommand",
+    "total_files": 31,
+    "file_extensions": {
+      ".ps1": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "Out-FINcodedCommand.ps1",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample",
+      ".git\\hooks\\commit-msg.sample"
+    ],
+    "readme_excerpt": "Out-FINcodedCommand v1.0\n===============\n\n![Out-FINcodedCommand Screenshot 1](https://github.com/danielbohannon/danielbohannon.github.io/blob/master/Out-FINcodedCommand%20Screenshot%201.png)\n\nIntroduction\n------------\nOut-FINcodedCommand is a PowerShell v2.0+ compatible PowerShell POC script designed \nto highlight several obfuscation techniques used by FIN threat actors. The primary\nobfuscation techniques highlighted in this tool are:\n1) cmd.exe's variable char/string replacement functionality\n2) cmd.exe and powershell.exe's StdIn command invocation capabilities\n3) environment variable substring functionality to obfuscate \"cmd\" and \"powershell\"\n\nInstallation\n------------\nThe source code Out-FINcodedCommand is hosted at Github, and you may\ndownload, fork and review it from this repository\n(https://github.com/danielbohannon/Out-FINcodedCommand). Please report issues\nor feature requests through Github's bug tracker associated with this project.\n(Not really -- this is a simple POC, not a C"
+  },
+  "PandaCrypter-chainski": {
+    "dir_name": "PandaCrypter-chainski",
+    "total_files": 40,
+    "file_extensions": {
+      ".cs": 2,
+      ".csproj": 1,
+      ".res": 1,
+      ".sln": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".yml": 1,
+      ".png": 1
+    },
+    "sample_files": [
+      ".gitattributes",
+      "LICENSE",
+      "PandaCrypter.cs",
+      "PandaCrypter.csproj",
+      "PandaCrypter.res",
+      "PandaCrypter.sln",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD"
+    ],
+    "readme_excerpt": "<p align=\"center\">\n<img src=\"https://github.com/Chainski/PandaCrypter/blob/main/assets/PandaCrypter.png?raw=true\", width=\"400\", height=\"200\">\n</p>\n<p align= \"center\">\n   <img src=\"https://img.shields.io/github/stars/Chainski/PandaCrypter?style=flat&color=%23fd5c50\">\n   <img src=\"https://img.shields.io/github/forks/Chainski/PandaCrypter?style=flat&color=%23fd5c50\">\n   <img src=\"https://hits.sh/github.com/Chainski/PandaCrypter.svg?color=fd5c50\">\n   <br>\n   <img src=\"https://img.shields.io/github/last-commit/Chainski/PandaCrypter?style=flat&color=%23fd5c50\">\n   <img src=\"https://img.shields.io/github/license/Chainski/PandaCrypter?color=%23fd5c50\">\n   <br>\n</p>\n\n# PandaCrypter\nPandaCrypter is a C#-based tool designed to convert PowerShell scripts into obfuscated batch files (.bat) with encryption and additional features for execution control. \n\n\n# Features\n- [x] AES Encryption: Encrypts the PowerShell payload.\n- [x] Anti-VM: Optionally evades virtualized environments.\n- [x] Compression: Co"
+  },
+  "Remcos-Rat-Batch-Deobfuscator-fatihbeyexe": {
+    "dir_name": "Remcos-Rat-Batch-Deobfuscator-fatihbeyexe",
+    "total_files": 30,
+    "file_extensions": {
+      ".ps1": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "Decoder.ps1",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample",
+      ".git\\hooks\\commit-msg.sample",
+      ".git\\hooks\\fsmonitor-watchman.sample"
+    ],
+    "readme_excerpt": "No README available"
+  },
+  "Somalifuscator-KDot227": {
+    "dir_name": "Somalifuscator-KDot227",
+    "total_files": 93,
+    "file_extensions": {
+      ".md": 5,
+      ".txt": 1,
+      ".bat": 24,
+      ".py": 20,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".yml": 5,
+      ".json": 1,
+      ".gif": 1,
+      ".ico": 2,
+      ".png": 1,
+      ".ps1": 1
+    },
+    "sample_files": [
+      ".gitignore",
+      "LICENSE",
+      "README.md",
+      "requirements.txt",
+      "setup.bat",
+      "test_all.py",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index"
+    ],
+    "readme_excerpt": "<h1 align=\"center\">\n  SomalifuscatorV2 (Batch is cool)\n</h1>\n\n<div align=\"center\">\n  <img  src=\"https://github.com/KDot227/SomalifuscatorV2/blob/main/assets/Eric%20Cartman%20Somalia.gif?raw=true\">\n  <br>\n  <img  src=\"https://img.shields.io/github/languages/top/KDot227/SomalifuscatorV2?color=27c722\">\n  <img  src=\"https://img.shields.io/github/stars/KDot227/SomalifuscatorV2?color=27c722\">\n  <br>\n  <img  src=\"https://img.shields.io/github/commit-activity/w/KDot227/SomalifuscatorV2?color=27c722\">\n  <img  src=\"https://img.shields.io/github/last-commit/KDot227/SomalifuscatorV2?color=27c722\">\n  <br>\n  <img  src=\"https://img.shields.io/github/issues/KDot227/SomalifuscatorV2?color=27c722\">\n  <img  src=\"https://img.shields.io/github/issues-closed/KDot227/SomalifuscatorV2?color=27c722\">\n  <br>\n  <hr  style=\"border-radius: 2%; margin-top: 60px; margin-bottom: 60px;\"  noshade=\"\"  size=\"20\"  width=\"100%\">\n</div>\n\n<h1 align=\"center\">\n  READ\n</h1>\n\nIf you are AT&T or another major coporation please re"
+  },
+  "SomalifuscatorV2": {
+    "dir_name": "SomalifuscatorV2",
+    "total_files": 93,
+    "file_extensions": {
+      ".md": 5,
+      ".txt": 1,
+      ".bat": 24,
+      ".py": 20,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".yml": 5,
+      ".json": 1,
+      ".gif": 1,
+      ".ico": 2,
+      ".png": 1,
+      ".ps1": 1
+    },
+    "sample_files": [
+      ".gitignore",
+      "LICENSE",
+      "README.md",
+      "requirements.txt",
+      "setup.bat",
+      "test_all.py",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index"
+    ],
+    "readme_excerpt": "<h1 align=\"center\">\n  SomalifuscatorV2 (Batch is cool)\n</h1>\n\n<div align=\"center\">\n  <img  src=\"https://github.com/KDot227/SomalifuscatorV2/blob/main/assets/Eric%20Cartman%20Somalia.gif?raw=true\">\n  <br>\n  <img  src=\"https://img.shields.io/github/languages/top/KDot227/SomalifuscatorV2?color=27c722\">\n  <img  src=\"https://img.shields.io/github/stars/KDot227/SomalifuscatorV2?color=27c722\">\n  <br>\n  <img  src=\"https://img.shields.io/github/commit-activity/w/KDot227/SomalifuscatorV2?color=27c722\">\n  <img  src=\"https://img.shields.io/github/last-commit/KDot227/SomalifuscatorV2?color=27c722\">\n  <br>\n  <img  src=\"https://img.shields.io/github/issues/KDot227/SomalifuscatorV2?color=27c722\">\n  <img  src=\"https://img.shields.io/github/issues-closed/KDot227/SomalifuscatorV2?color=27c722\">\n  <br>\n  <hr  style=\"border-radius: 2%; margin-top: 60px; margin-bottom: 60px;\"  noshade=\"\"  size=\"20\"  width=\"100%\">\n</div>\n\n<h1 align=\"center\">\n  READ\n</h1>\n\nIf you are AT&T or another major coporation please re"
+  },
+  "assemblyline-batchdeobfuscator": {
+    "dir_name": "assemblyline-batchdeobfuscator",
+    "total_files": 59,
+    "file_extensions": {},
+    "sample_files": [
+      "tests\\results\\0843361f05255e3970ed955171c20003238756c57137fef9ac19d29fbd49f9f6\\extracted\\103fb95c630139b4a1021a142c43f13fe3b69997603229e57b1bf08d2b699ae7",
+      "tests\\results\\0843361f05255e3970ed955171c20003238756c57137fef9ac19d29fbd49f9f6\\extracted\\23bbda4f223ba511e412a4f83fc87789b935d8fbe97c6e14417d9d955f45b04a",
+      "tests\\results\\0843361f05255e3970ed955171c20003238756c57137fef9ac19d29fbd49f9f6\\extracted\\61039962b6527864d5851ac045ba0939c9901aff4878b8e26e9ec9c89443f8d9",
+      "tests\\results\\0843361f05255e3970ed955171c20003238756c57137fef9ac19d29fbd49f9f6\\extracted\\b5a2da3547e98b87baad3cda95f7e3c7cd1573d67aa167f768ba13fc3162366c",
+      "tests\\results\\087f1363d7e3926243ca8d94644639b7cb6137c51ee971ecaba05b22ad2ee716\\extracted\\13a2e58acea560dc975eefa35426b13dc91dec46c9b3cbe528fd603210d753ed",
+      "tests\\results\\087f1363d7e3926243ca8d94644639b7cb6137c51ee971ecaba05b22ad2ee716\\extracted\\253cfadc2a577f9eefbdf2079b6d790dff58a98e4c83c1e6e4d4653db521f427",
+      "tests\\results\\1ad40316943fb3ddb243f153203864cd839fdb31182f7ff6b8025bbcddfc409d\\extracted\\35f7c387cbeb502344ba11a4cbc29bcda94a505abaac9bbc220c905eefdf6eea",
+      "tests\\results\\1ad40316943fb3ddb243f153203864cd839fdb31182f7ff6b8025bbcddfc409d\\extracted\\56132485d3be1fa7c83224fe4b0404bb30204abe7efe1c8317f7c3e94ad638e0",
+      "tests\\results\\1bd43301c041cadbc9cbccf3c321d83e458bbf704843e7a066659ba8850fc995\\extracted\\1903f7d41f857c12b1977417c24134fef91dfa5d503a2c982f22cd99409465f1",
+      "tests\\results\\1de23d12493941e6415331f4041f50b064fe258463f419b01dc5b000b1ff1f06\\extracted\\03431f102f23d66fdddfb925df143a076e7d64e9a699feba1d905bda4feede7e"
+    ],
+    "readme_excerpt": "No README available"
+  },
+  "assemblyline-service-batchdeobfuscator": {
+    "dir_name": "assemblyline-service-batchdeobfuscator",
+    "total_files": 151,
+    "file_extensions": {
+      ".json": 35,
+      ".yaml": 3,
+      ".md": 2,
+      ".txt": 3,
+      ".toml": 1,
+      ".yml": 3,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".dev6": 1,
+      ".stable3": 1,
+      ".py": 4,
+      ".sh": 2,
+      ".cart": 1
+    },
+    "sample_files": [
+      ".cruft.json",
+      ".dockerignore",
+      ".gitignore",
+      ".pre-commit-config.yaml",
+      "CONTRIBUTING.md",
+      "Dockerfile",
+      "LICENSE",
+      "Makefile",
+      "pkglist.txt",
+      "pyproject.toml"
+    ],
+    "readme_excerpt": "[![Discord](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://discord.gg/GUAy9wErNu)\n[![](https://img.shields.io/discord/908084610158714900)](https://discord.gg/GUAy9wErNu)\n[![Static Badge](https://img.shields.io/badge/github-assemblyline-blue?logo=github)](https://github.com/CybercentreCanada/assemblyline)\n[![Static Badge](https://img.shields.io/badge/github-assemblyline\\_service\\_batchdeobfuscator-blue?logo=github)](https://github.com/CybercentreCanada/assemblyline-service-batchdeobfuscator)\n[![GitHub Issues or Pull Requests by label](https://img.shields.io/github/issues/CybercentreCanada/assemblyline/service-batchdeobfuscator)](https://github.com/CybercentreCanada/assemblyline/issues?q=is:issue+is:open+label:service-batchdeobfuscator)\n[![License](https://img.shields.io/github/license/CybercentreCanada/assemblyline-service-batchdeobfuscator)](./LICENSE)\n# Batchdeobfuscator Service\n\nThis service parses and interprets batch files.\n\n## Service Details\nThi"
+  },
+  "bat2exe-123Studios": {
+    "dir_name": "bat2exe-123Studios",
+    "total_files": 83,
+    "file_extensions": {
+      ".config": 4,
+      ".sln": 1,
+      ".png": 2,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".csproj": 1,
+      ".cs": 6,
+      ".resx": 2,
+      ".exe": 2,
+      ".pdb": 3,
+      ".dll": 24,
+      ".txt": 4,
+      ".lnk": 1,
+      ".rsp": 1,
+      ".targets": 1,
+      ".settings": 1
+    },
+    "sample_files": [
+      "App.config",
+      "BatchIDE.sln",
+      "main.png",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow"
+    ],
+    "readme_excerpt": "# Star repo to support me and more features\n# Bat2Exe\nProject continued by 123Studios. Based off Batch-Obfuscator by Batchfuscation. UI designer might broken on your end. Will fix give patience.\n\n# Image\n![alt text](https://github.com/123Studios/bat2exe/blob/main/main.png?raw=true)\n# Video\nhttps://www.youtube.com/watch?v=0DANy2I4aMA\n# Features\n<p>•Base 64 Encoding ✔️</p>\n<p>•Compile To CS File ✔️</p>\n<p>•Compile To Exe (Beta) ✔️</p>\n<p>•Junk Variables ✔️</p>\n<p>•Unreadable From Notepad(Broken) ⚒️</p>\n"
+  },
+  "bat2exe-Toon-arch": {
+    "dir_name": "bat2exe-Toon-arch",
+    "total_files": 32,
+    "file_extensions": {
+      ".bat": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".gif": 1
+    },
+    "sample_files": [
+      "bat2exe.bat",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample",
+      ".git\\hooks\\commit-msg.sample"
+    ],
+    "readme_excerpt": "<h1 align=\"center\">Batch 2 Executable</h2>\n<p align=\"center\">Convert Batch Files to Executable Files</p>\n<p align=\"center\">\n\t<a href=\"https://github.com/Toon-arch/bat2exe/issues\">\n\t\t<img alt=\"Issues\" src=\"https://img.shields.io/github/issues/Toon-arch/bat2exe?color=0088ff\"/>\n\t</a>\n\t<a href=\"https://github.com/Toon-arch/bat2exe/pulls\">\n\t\t<img alt=\"GitHub pull requests\" src=\"https://img.shields.io/github/issues-pr/Toon-arch/bat2exe?color=0088ff\"/>\n\t</a>\n</p>\n\n## Download\nhttps://github.com/Toon-arch/bat2exe/files/7376874/bat2exe.zip\n\n## Visual Convertion\n\nDrag a `.bat` onto the `bat2exe` file.\n\n<img width=\"900px\" src=\"https://raw.githubusercontent.com/Toon-arch/bat2exe/main/img/tutorial.gif\"/>\n"
+  },
+  "bat2exe-islamadel": {
+    "dir_name": "bat2exe-islamadel",
+    "total_files": 56,
+    "file_extensions": {
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".3": 1,
+      ".txt": 7,
+      ".xml": 1,
+      ".bat": 2,
+      ".exe": 4,
+      ".zip": 1,
+      ".ico": 1,
+      ".png": 2,
+      ".psd": 1,
+      ".cmd": 1,
+      ".dll": 1,
+      ".sfx": 2,
+      ".manifest": 1,
+      ".vbs": 1
+    },
+    "sample_files": [
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample",
+      ".git\\hooks\\commit-msg.sample",
+      ".git\\hooks\\fsmonitor-watchman.sample"
+    ],
+    "readme_excerpt": "# bat2exe\n\nhttps://bat2exe.net\n\nrun bat2exe.exe /h for help\n\n /h                     : shows this help\n \n /source:<folder_path>  : source folder containing batch file\n \n /target:<folder_path>  : target folder with .exe file\n \n /s                     : skip pause command\n \n /y                     : answer yes to all choices\n\n\n examples:\n\n bat2exe.exe /source:C:\\Users\\User\\Desktop\\source /target:C:\\Users\\User\\Desktop /s /y\n \n bat2exe.exe /s /y\n"
+  },
+  "batFile-To-exe-Converter": {
+    "dir_name": "batFile-To-exe-Converter",
+    "total_files": 33,
+    "file_extensions": {
+      ".bat": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".svg": 1
+    },
+    "sample_files": [
+      ".bat2exeConverter(drag&drop) -By Sunil.bat",
+      "LICENSE",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample"
+    ],
+    "readme_excerpt": "<div align=\"center\">\n\n<img src=\"https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=32&duration=3000&pause=1500&color=39D353&center=true&vCenter=true&multiline=false&repeat=true&width=620&height=60&lines=BAT2EXE+Converter;Drag+%26+Drop+Edition;.bat+%E2%86%92+.exe+Instantly\" alt=\"BAT2EXE Converter Animated Title\" />\n\n<br/>\n\n<img src=\"https://readme-typing-svg.demolab.com?font=Fira+Code&size=15&duration=4000&pause=2000&color=58A6FF&center=true&vCenter=true&repeat=true&width=560&height=30&lines=Convert+any+.bat+into+a+portable+.exe+%E2%80%94+instantly%2C+natively%2C+no+installs.\" alt=\"Subtitle\" />\n\n<br/><br/>\n\n*By [Sunil56224972](https://github.com/Sunil56224972)*\n\n---\n\n![Windows](https://img.shields.io/badge/Platform-Windows-0078D6?style=flat-square&logo=windows)\n![No Install](https://img.shields.io/badge/Dependencies-None-brightgreen?style=flat-square)\n![Native](https://img.shields.io/badge/Engine-IExpress%20%28Built--in%20Windows%29-blueviolet?style=flat-square)\n![Lice"
+  },
+  "batch-deobfuscator-hiroshil": {
+    "dir_name": "batch-deobfuscator-hiroshil",
+    "total_files": 34,
+    "file_extensions": {
+      ".py": 1,
+      ".md": 1,
+      ".txt": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      ".gitignore",
+      "deobfuscator.py",
+      "LICENSE",
+      "README.md",
+      "sample_dict.txt",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs"
+    ],
+    "readme_excerpt": "# batch-deobfuscator\nsimple batch deobfuscator (obfuscation method using var:~index,length is currently not supported)\n"
+  },
+  "batch-obfuscator-SkyEmie": {
+    "dir_name": "batch-obfuscator-SkyEmie",
+    "total_files": 36,
+    "file_extensions": {
+      ".png": 3,
+      ".ico": 1,
+      ".php": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "1.png",
+      "2.png",
+      "batch_ico.png",
+      "favicon.ico",
+      "index.php",
+      "LICENSE",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD"
+    ],
+    "readme_excerpt": "# Batch Obfuscator\nEasy way to obfuscate Windows batch files\n\nNote:\nThis is created for educational purposes.  \nSince batch files are interpreted by the command prompt (cmd.exe), it's of course possible for anyone (with sufficient knowledge) to understand what an obfuscated batch file does and make it humanly readable.  \nBut it's a basic functional demonstration of what can potentially be done to make the contents of a batch file humanly unreadable.\n\n## How it works?\n1) It changes the file encoding (UTF-8 to UTF-16 with BOM `\\xFF\\xFE`)\n2) Clear artefact in the terminal, and create variable that contains all symbols\n3) For each character, replace it with the appropriate chain chunk (except some things like labels)\nDone!\n\n## Demo\nDemo here: http://77.237.242.134/batch-obfuscator/\n\n## Example\n![1](https://raw.githubusercontent.com/SkyEmie/batch-obfuscator/master/1.png)\n![2](https://raw.githubusercontent.com/SkyEmie/batch-obfuscator/master/2.png)\n\n\n"
+  },
+  "batch_deobfuscator": {
+    "dir_name": "batch_deobfuscator",
+    "total_files": 37,
+    "file_extensions": {
+      ".md": 1,
+      ".py": 5,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      ".gitignore",
+      "LICENSE",
+      "README.md",
+      "setup.py",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow"
+    ],
+    "readme_excerpt": "# Introduction\nBy using this python script, you can deobfuscate a batch script that is obfuscated with string substitution and escape character techniques.\n\n\n# Running the script\nTo run the script \n\n```\npython  batch_interpreter.py --file c:\\test\\obfuscated_file.bat\n```\n\n&ast; The code was written in a hurry and needs a major refactoring. Please stay tuned.\n\n# Use as a lib\n```python\nfrom batch_deobfuscator.batch_interpreter import BatchDeobfuscator,handle_bat_file\ndeobfuscator = BatchDeobfuscator()\nitsthewine=handle_bat_file(deobfuscator,'/home/petersichel/comfortable_study/newyorktownhouse.bat')\n```\n"
+  },
+  "batchalchemy": {
+    "dir_name": "batchalchemy",
+    "total_files": 524,
+    "file_extensions": {
+      ".yaml": 1,
+      ".cfg": 1,
+      ".bat": 397,
+      ".md": 1,
+      ".txt": 8,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".py": 8,
+      ".rst": 7,
+      ".doctree": 7,
+      ".pickle": 1,
+      ".html": 17,
+      ".inv": 1,
+      ".js": 13,
+      ".css": 4,
+      ".png": 3,
+      ".eot": 1,
+      ".svg": 1,
+      ".ttf": 1,
+      ".woff": 7,
+      ".woff2": 7,
+      ".sh": 1,
+      ".json": 1
+    },
+    "sample_files": [
+      ".editorconfig",
+      ".gitignore",
+      ".pre-commit-config.yaml",
+      ".yapf.cfg",
+      "LICENSE",
+      "make.bat",
+      "Makefile",
+      "README.md",
+      "requirements.txt",
+      ".git\\config"
+    ],
+    "readme_excerpt": "# Welcome to the BatchAlchemy Research Project!\nBatchAlchemy is a cyber security related research project designed to address the need for a robust deobfuscation framework for the Windows Batch scripting language.\nTraditional deobfuscation tools operate on the principle of identifying a known obfuscation method and crafting a rigid deobfuscator for it.\nWith BatchAlchemy, we aim to provide a novel solution by offering malware analysts an easy-to-maintain and easy-to-extend tool capable of crafting tailored responses to both known and upcoming obfuscation samples.\nThe framework is based on a Batch parser (based on the Tree-sitter parser generator tool), enabling to work with the Abstract Syntax Tree (AST) of obfuscated files.\n\nConcerning future research, the most valuable insights have been gathered during our in-depth analysis of the Batch syntax. We collected the most interesting findings of nuances of how Batch internally gets parsed by the Windows Command Prompt (cmd.exe) in a summar"
+  },
+  "batchobfuscator-baum1810": {
+    "dir_name": "batchobfuscator-baum1810",
+    "total_files": 31,
+    "file_extensions": {
+      ".py": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "obfuscator.py",
+      "README.md",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow",
+      ".git\\hooks\\applypatch-msg.sample",
+      ".git\\hooks\\commit-msg.sample"
+    ],
+    "readme_excerpt": "# batchobfuscator\n\na little shitty batch obfuscator for .bat files\ni coded it because multible people requested it\n## how it works\nit works because variables in batch which doesnt have any value will be ignorred so the code will get executed as normal but for people who look at it, its difficult to understand\n"
+  },
+  "batobfuscate-deobfuscator-936erpl": {
+    "dir_name": "batobfuscate-deobfuscator-936erpl",
+    "total_files": 37,
+    "file_extensions": {
+      ".py": 2,
+      ".md": 1,
+      ".txt": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".0": 1,
+      ".bat": 3
+    },
+    "sample_files": [
+      "bat.py",
+      "deobfuscator.py",
+      "README.md",
+      "requirements.txt",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow"
+    ],
+    "readme_excerpt": "# batobfuscator-deobfuscate\n\nA deobfuscator for `.bat` files produced by `bat.py` (Machine1337's \"Batch Obfuscator\"). Strips the fake header and recovers the original, untouched batch script.\n\n## Why this works\n\n`bat.py` doesn't actually transform the file content at all. It just prepends a fixed 12-byte header before the original bytes, unmodified:\n\n```\nFF FE 26 63 6C 73 0D 0A FF FE 0A 0D\n```\n\nThat's a UTF-16 byte-order mark (`FF FE`), the text `&cls`, a CRLF, and a second BOM. Editors like Notepad or HxD see the leading BOM and try to render the whole file as UTF-16, which turns the perfectly readable ASCII batch script that follows into garbled junk on screen. Windows' `cmd.exe`, on the other hand, only looks at the very first bytes to decide how to interpret the file, and effectively skips past the junk header when running it — so the script still executes fine despite looking \"encrypted\" in a hex/text editor.\n\nNo actual encryption or encoding is applied to the script body. Removin"
+  },
+  "batobfuscate-machine1337": {
+    "dir_name": "batobfuscate-machine1337",
+    "total_files": 33,
+    "file_extensions": {
+      ".py": 1,
+      ".md": 1,
+      ".txt": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1
+    },
+    "sample_files": [
+      "bat.py",
+      "LICENSE",
+      "README.md",
+      "requirements.txt",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD",
+      ".git\\index",
+      ".git\\packed-refs",
+      ".git\\shallow"
+    ],
+    "readme_excerpt": "# batobfuscate\n\nA Simple And efficent Script to make your batch payload undectectable.\n\n![batc](https://user-images.githubusercontent.com/111642482/198823587-403ee6f6-9082-471d-86bb-0af826fefba6.png)\n\n# Contact:\n    Telegram:- https://t.me/machine1337\n# Requirements:\n      1. python3 must be installed On Windows & Linux\n      2. pip install termcolor\n         pip install pystyle\n         pip install tqdm\n         pip install colorama\n         pip install requests\n         \n# Installation:-\n     1. Clone the repo\n     2. pip install -r requirements.txt\n     3. python3 bat.py\n\n# Usage:\n    Linux Based OS:-\n    python3 bat.py\n    \n    Windows Based OS:-\n    python bat.py\n    \n# After Obfuscation:-\n   挦獬਍﻿ഊ敀档⁯䙏െഊ㨊䔺䥘呓挠浯慭摮椠⁳獵摥琠⁯档捥⁫潦⁲硥獩整据൥䤊⁆塅卉⁔㩄慜换琮瑸䔠䡃⁏扡⹣硴⁴潦湵൤䤊⁆塅卉⁔㩄硜穹琮瑸⠠䍅佈砠穹琮瑸映畯摮\n䱅䕓⠠䍅佈砠穹琮瑸渠瑯映畯摮ഩഊ倊啁䕓\n    \n# Warning:-\n   Don't Upload batch payload to virustotal as they are sharing signatures with AV Companies.\n      \n     \n"
+  },
+  "huggingface-ai-models": {
+    "dir_name": "huggingface-ai-models",
+    "total_files": 5,
+    "file_extensions": {
+      ".json": 3,
+      ".md": 2
+    },
+    "sample_files": [
+      "dessertlab_PSStrikes-commands.json",
+      "dessertlab_PSStrikes_README.md",
+      "leachl_obfuscated-exebench.json",
+      "nsgood_mitre-attack-command-generation.json",
+      "nsgood_mitre_attack_README.md"
+    ],
+    "readme_excerpt": "No README available"
+  },
+  "simple-batch-obfuscator-DavidNiessen": {
+    "dir_name": "simple-batch-obfuscator-DavidNiessen",
+    "total_files": 46,
+    "file_extensions": {
+      ".kts": 2,
+      ".properties": 2,
+      ".bat": 1,
+      ".md": 1,
+      ".sample": 14,
+      ".idx": 1,
+      ".pack": 1,
+      ".rev": 1,
+      ".jar": 1,
+      ".kt": 8
+    },
+    "sample_files": [
+      ".gitignore",
+      "build.gradle.kts",
+      "gradle.properties",
+      "gradlew",
+      "gradlew.bat",
+      "README.md",
+      "settings.gradle.kts",
+      ".git\\config",
+      ".git\\description",
+      ".git\\HEAD"
+    ],
+    "readme_excerpt": "# Simple Batch Obfuscator\n\n**Disclaimer: This project is for educational purposes only!!!**\n\nThis program creates an obfuscated batch script that can execute a powershell command.\n\n### TODO\n\n- encrypt and decrypt payload at runtime using base64 or AES\n- create CLI\n- write tests\n- add more configuration options\n\ninput:\n\n```shell\n$Ca=\".,-~:;=!*#$@\";$sin=@(for($i=0;$i-lt 1000;$i+=1){[Math]::Sin($i*0.006283185307179)});$cos=@(for($i=0;$i-lt 1000;$i+=1){[Math]::Cos($i*0.006283185307179)});$isUnix=([System.Environment]::OSVersion).Platform-like'Unix';$hasResize=@(get-command resize).Count-gt0;if($isUnix-and$hasResize){[void](resize -s 44 80)}else{[void][System.Console]::SetWindowSize(80,44)};Clear-Host;while($true){$oA=(' '*3520).ToCharArray();$dA=[double[]]::new(3520);$tsA=$sin[($aA%6.28*159.15)];$tcA=$cos[($aA%6.28*159.15)];$tcB=$sin[($aA%6.28*159.15)];$tsB=$cos[($aA%6.28*159.15)];$aY=0;while($aY-lt6.28){$tcY=$cos[($aY%6.28*159.15)];$tsY=$sin[($aY%6.28*159.15)];$tscYA=$tsY*$tcA;$Dp=$tcY+2;"
+  }
+}

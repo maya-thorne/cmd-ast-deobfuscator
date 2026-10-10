@@ -1,0 +1,104 @@
+{
+  "_id": "67dc0e6db8e3aae9c733f775",
+  "id": "Deobfuscation/LLM4Decompile-SFT-Deobfuscate-v0.1.1-test-20epochs",
+  "private": false,
+  "library_name": "transformers",
+  "tags": [
+    "transformers",
+    "pytorch",
+    "safetensors",
+    "gguf",
+    "llama",
+    "text-generation-inference",
+    "unsloth",
+    "trl",
+    "en",
+    "base_model:LLM4Binary/llm4decompile-1.3b-v2",
+    "base_model:quantized:LLM4Binary/llm4decompile-1.3b-v2",
+    "license:apache-2.0",
+    "endpoints_compatible",
+    "region:us"
+  ],
+  "downloads": 27,
+  "likes": 0,
+  "modelId": "Deobfuscation/LLM4Decompile-SFT-Deobfuscate-v0.1.1-test-20epochs",
+  "author": "Deobfuscation",
+  "sha": "73490774d78e524e3860fb3f455a9df30c1c14ce",
+  "lastModified": "2025-03-20T12:57:48.000Z",
+  "gated": false,
+  "disabled": false,
+  "model-index": null,
+  "config": {
+    "model_type": "llama",
+    "tokenizer_config": {
+      "bos_token": "<｜begin▁of▁sentence｜>",
+      "eos_token": "<｜end▁of▁sentence｜>",
+      "pad_token": "<pad>",
+      "unk_token": null,
+      "use_default_system_prompt": true
+    }
+  },
+  "cardData": {
+    "base_model": "LLM4Binary/llm4decompile-1.3b-v2",
+    "tags": [
+      "text-generation-inference",
+      "transformers",
+      "unsloth",
+      "llama",
+      "trl"
+    ],
+    "license": "apache-2.0",
+    "language": [
+      "en"
+    ]
+  },
+  "transformersInfo": {
+    "auto_model": "AutoModel"
+  },
+  "gguf": {
+    "total": 1346471936,
+    "architecture": "llama",
+    "context_length": 16384,
+    "bos_token": "<｜begin▁of▁sentence｜>",
+    "eos_token": "<｜end▁of▁sentence｜>",
+    "totalFileSize": 1432090720
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes"
+    },
+    {
+      "rfilename": "README.md"
+    },
+    {
+      "rfilename": "adapter_config.json"
+    },
+    {
+      "rfilename": "adapter_model.safetensors"
+    },
+    {
+      "rfilename": "config.json"
+    },
+    {
+      "rfilename": "generation_config.json"
+    },
+    {
+      "rfilename": "pytorch_model.bin"
+    },
+    {
+      "rfilename": "special_tokens_map.json"
+    },
+    {
+      "rfilename": "tokenizer.json"
+    },
+    {
+      "rfilename": "tokenizer_config.json"
+    },
+    {
+      "rfilename": "unsloth.Q8_0.gguf"
+    }
+  ],
+  "spaces": [],
+  "createdAt": "2025-03-20T12:47:41.000Z",
+  "usedStorage": 4365015478
+}

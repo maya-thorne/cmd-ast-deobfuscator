@@ -1,0 +1,290 @@
+﻿[
+    {
+        "Name":  "0xidiz3r",
+        "Files":  4,
+        "Subdirs":  1,
+        "Snippet":  "Batch technique: https://www.youtube.com/watch?v=0RADvfJysuA\u003cbr\u003e"
+    },
+    {
+        "Name":  "Abobus-obfuscator",
+        "Files":  3,
+        "Subdirs":  0,
+        "Snippet":  "Batch code obfuscator written on Python. The best tool to obfuscate your batch code!"
+    },
+    {
+        "Name":  "Abobus-obfuscator-EscaLag",
+        "Files":  3,
+        "Subdirs":  0,
+        "Snippet":  "Batch code obfuscator written on Python. The best tool to obfuscate your batch code!"
+    },
+    {
+        "Name":  "assemblyline-batchdeobfuscator",
+        "Files":  13,
+        "Subdirs":  6,
+        "Snippet":  "[![Discord](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://discord.gg/GUAy9wErNu)"
+    },
+    {
+        "Name":  "assemblyline-service-batchdeobfuscator",
+        "Files":  13,
+        "Subdirs":  6,
+        "Snippet":  "[![Discord](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://discord.gg/GUAy9wErNu)"
+    },
+    {
+        "Name":  "bat2exe-123Studios",
+        "Files":  4,
+        "Subdirs":  1,
+        "Snippet":  "Project continued by 123Studios. Based off Batch-Obfuscator by Batchfuscation. UI designer might broken on your end. Will fix give patience."
+    },
+    {
+        "Name":  "Bat2Exe-dehoisted",
+        "Files":  3,
+        "Subdirs":  3,
+        "Snippet":  "Windows user interface for converting your batch files into executables."
+    },
+    {
+        "Name":  "bat2exe-islamadel",
+        "Files":  1,
+        "Subdirs":  1,
+        "Snippet":  "https://bat2exe.net"
+    },
+    {
+        "Name":  "bat2exe-Toon-arch",
+        "Files":  2,
+        "Subdirs":  1,
+        "Snippet":  "\u003ch1 align=\"center\"\u003eBatch 2 Executable\u003c/h2\u003e"
+    },
+    {
+        "Name":  "batch-deobfuscator",
+        "Files":  5,
+        "Subdirs":  0,
+        "Snippet":  ""
+    },
+    {
+        "Name":  "batch-deobfuscator-hiroshil",
+        "Files":  5,
+        "Subdirs":  0,
+        "Snippet":  ""
+    },
+    {
+        "Name":  "Batch-Dump",
+        "Files":  3,
+        "Subdirs":  1,
+        "Snippet":  "\u003ch1 align=\"center\"\u003e⚙️ Batch Dump ⚙️\u003c/h1\u003e"
+    },
+    {
+        "Name":  "Batch-Encryption-DeCoder",
+        "Files":  5,
+        "Subdirs":  3,
+        "Snippet":  "Batch Encryption DeCoder 能在全平台\\*运行，所解密的文件也能在全平台运行\\*\\*"
+    },
+    {
+        "Name":  "Batch-Obfuscator-90th",
+        "Files":  5,
+        "Subdirs":  1,
+        "Snippet":  "\u003cp align=\"center\"\u003e"
+    },
+    {
+        "Name":  "batch-obfuscator-SkyEmie",
+        "Files":  7,
+        "Subdirs":  0,
+        "Snippet":  "Easy way to obfuscate Windows batch files"
+    },
+    {
+        "Name":  "batchalchemy",
+        "Files":  9,
+        "Subdirs":  5,
+        "Snippet":  "BatchAlchemy is a cyber security related research project designed to address the need for a robust deobfuscation framework for the Windows Batch scripting language."
+    },
+    {
+        "Name":  "BatchDeobfuscator-CrowTheBest",
+        "Files":  3,
+        "Subdirs":  0,
+        "Snippet":  "I wrote this script just to deobfuscate a single bat file (**fake FoliaDupe**) which structure looks something like this:"
+    },
+    {
+        "Name":  "batchobfuscator",
+        "Files":  2,
+        "Subdirs":  0,
+        "Snippet":  "a little shitty batch obfuscator for .bat files"
+    },
+    {
+        "Name":  "batchobfuscator-baum1810",
+        "Files":  2,
+        "Subdirs":  0,
+        "Snippet":  "a little shitty batch obfuscator for .bat files"
+    },
+    {
+        "Name":  "BatchObfuscator-BiggerDABOSS",
+        "Files":  3,
+        "Subdirs":  0,
+        "Snippet":  "Obfuscate your batch files to prevent people from stealing code!"
+    },
+    {
+        "Name":  "BatchObfuscator-EmenstaNougat",
+        "Files":  3,
+        "Subdirs":  0,
+        "Snippet":  ""
+    },
+    {
+        "Name":  "BatchObfuscator-guillaC",
+        "Files":  7,
+        "Subdirs":  2,
+        "Snippet":  "BatchObfuscator is an old experimental project created years ago to explore how Windows batch scripts can be transformed, parsed, and rewritten."
+    },
+    {
+        "Name":  "BatchObfuscator-wirebits",
+        "Files":  4,
+        "Subdirs":  0,
+        "Snippet":  "\u003e[!CAUTION]"
+    },
+    {
+        "Name":  "BatchShield-Decryptor",
+        "Files":  6,
+        "Subdirs":  1,
+        "Snippet":  "In recent years, malware developers have increasingly utilized obfuscation techniques to conceal their malicious scripts, particularly in the form of batch files. One such tool, [BatchShield](https://..."
+    },
+    {
+        "Name":  "BatchStealer-Takaovi",
+        "Files":  4,
+        "Subdirs":  0,
+        "Snippet":  "My attempt at making a stealer with batch, it sucks. The script will not be updated anymore. If something, a new one would be made, this time properly. Treat the current BatchStealer as POC, not as a ..."
+    },
+    {
+        "Name":  "BatchToApp-DosX",
+        "Files":  4,
+        "Subdirs":  2,
+        "Snippet":  "---"
+    },
+    {
+        "Name":  "BatchToApp-DosX-dev",
+        "Files":  4,
+        "Subdirs":  2,
+        "Snippet":  "---"
+    },
+    {
+        "Name":  "batch_deobfuscator",
+        "Files":  4,
+        "Subdirs":  2,
+        "Snippet":  "By using this python script, you can deobfuscate a batch script that is obfuscated with string substitution and escape character techniques."
+    },
+    {
+        "Name":  "BatCloak",
+        "Files":  9,
+        "Subdirs":  4,
+        "Snippet":  "\u003cdiv align=\"center\"\u003e"
+    },
+    {
+        "Name":  "batFile-To-exe-Converter",
+        "Files":  3,
+        "Subdirs":  1,
+        "Snippet":  "\u003cdiv align=\"center\"\u003e"
+    },
+    {
+        "Name":  "batobfuscate-deobfuscator-936erpl",
+        "Files":  4,
+        "Subdirs":  1,
+        "Snippet":  "A deobfuscator for `.bat` files produced by `bat.py` (Machine1337\u0027s \"Batch Obfuscator\"). Strips the fake header and recovers the original, untouched batch script."
+    },
+    {
+        "Name":  "batobfuscate-machine1337",
+        "Files":  4,
+        "Subdirs":  0,
+        "Snippet":  "A Simple And efficent Script to make your batch payload undectectable."
+    },
+    {
+        "Name":  "CMD-DeObfuscator",
+        "Files":  6,
+        "Subdirs":  1,
+        "Snippet":  "* CMD De-Obfuscator"
+    },
+    {
+        "Name":  "CMD-DeObfuscator-bobbystacksmash",
+        "Files":  6,
+        "Subdirs":  1,
+        "Snippet":  "* CMD De-Obfuscator"
+    },
+    {
+        "Name":  "DBOBUS-tccontre",
+        "Files":  2,
+        "Subdirs":  1,
+        "Snippet":  "Description: A simple python script to de-obfuscate ABOBUS batch script obfuscator."
+    },
+    {
+        "Name":  "DE-SomalifuscatorV2",
+        "Files":  2,
+        "Subdirs":  1,
+        "Snippet":  "This Python script is designed to deobfuscate Windows Batch files (`.bat`, `.cmd`) that have been processed by the **SomalifuscatorV2** obfuscator. It aims to reverse the primary obfuscation technique..."
+    },
+    {
+        "Name":  "Exorcism",
+        "Files":  8,
+        "Subdirs":  2,
+        "Snippet":  "\"When there are little demons running around with .bat crypters, you get an exorcism.\""
+    },
+    {
+        "Name":  "huggingface-ai-models",
+        "Files":  5,
+        "Subdirs":  0,
+        "Snippet":  "---"
+    },
+    {
+        "Name":  "Invoke-CradleCrafter",
+        "Files":  5,
+        "Subdirs":  0,
+        "Snippet":  "Invoke-CradleCrafter v1.1"
+    },
+    {
+        "Name":  "Invoke-DOSfuscation",
+        "Files":  6,
+        "Subdirs":  2,
+        "Snippet":  "Invoke-DOSfuscation v1.0"
+    },
+    {
+        "Name":  "JSBatchDeobfuscator-yrotak",
+        "Files":  2,
+        "Subdirs":  1,
+        "Snippet":  "Deobfuscator for JSBatchobfuscator(https://github.com/guillaC/JSBatchobfuscator) in C#"
+    },
+    {
+        "Name":  "Out-FINcodedCommand",
+        "Files":  2,
+        "Subdirs":  0,
+        "Snippet":  "Out-FINcodedCommand v1.0"
+    },
+    {
+        "Name":  "PandaCrypter-chainski",
+        "Files":  7,
+        "Subdirs":  3,
+        "Snippet":  "\u003cp align=\"center\"\u003e"
+    },
+    {
+        "Name":  "Remcos-Rat-Batch-Deobfuscator-fatihbeyexe",
+        "Files":  1,
+        "Subdirs":  0,
+        "Snippet":  ""
+    },
+    {
+        "Name":  "simple-batch-obfuscator",
+        "Files":  7,
+        "Subdirs":  2,
+        "Snippet":  "**Disclaimer: This project is for educational purposes only!!!**"
+    },
+    {
+        "Name":  "simple-batch-obfuscator-DavidNiessen",
+        "Files":  7,
+        "Subdirs":  2,
+        "Snippet":  "**Disclaimer: This project is for educational purposes only!!!**"
+    },
+    {
+        "Name":  "Somalifuscator-KDot227",
+        "Files":  6,
+        "Subdirs":  5,
+        "Snippet":  "\u003ch1 align=\"center\"\u003e"
+    },
+    {
+        "Name":  "SomalifuscatorV2",
+        "Files":  6,
+        "Subdirs":  5,
+        "Snippet":  "\u003ch1 align=\"center\"\u003e"
+    }
+]

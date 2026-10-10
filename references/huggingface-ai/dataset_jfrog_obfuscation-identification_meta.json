@@ -1,0 +1,61 @@
+{
+  "_id": "69020a3413af3da0e6f47e78",
+  "id": "jfrog/obfuscation-identification",
+  "author": "jfrog",
+  "sha": "9916689de90c5ec7a646bf33663b2030218cd29e",
+  "lastModified": "2025-12-02T12:38:04.000Z",
+  "private": false,
+  "gated": false,
+  "disabled": false,
+  "tags": [
+    "task_categories:text-classification",
+    "task_categories:token-classification",
+    "task_categories:feature-extraction",
+    "language:en",
+    "license:cc-by-nc-sa-4.0",
+    "size_categories:100K<n<1M",
+    "format:csv",
+    "modality:text",
+    "library:datasets",
+    "library:pandas",
+    "library:mlcroissant",
+    "library:polars",
+    "arxiv:2510.26847",
+    "region:us",
+    "jailbreak",
+    "security",
+    "guardrails"
+  ],
+  "description": "\n\t\n\t\t\n\t\n\t\n\t\tObfuscation Identification Dataset\n\t\n\nThis repository contains the data used in our paper Broken-Token: Filtering Obfuscated Prompts by Counting Characters-Per-Token.\nWhile we release this dataset under the CC-by-NC-SA-4.0 license, the dataset was constructed and built on other datasets, each with its own license, as mentioned below:\n\nSoftAge-AI/prompt-eng_dataset, MIT License\nAiden07/dota2_instruct_prompt, MIT License\nhassanjbara/ghostbuster-prompts, MIT License… See the full description on the dataset page: https://huggingface.co/datasets/jfrog/obfuscation-identification.",
+  "downloads": 98,
+  "likes": 0,
+  "cardData": {
+    "license": "cc-by-nc-sa-4.0",
+    "task_categories": [
+      "text-classification",
+      "token-classification",
+      "feature-extraction"
+    ],
+    "language": [
+      "en"
+    ],
+    "tags": [
+      "jailbreak",
+      "security",
+      "guardrails"
+    ]
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes"
+    },
+    {
+      "rfilename": "README.md"
+    },
+    {
+      "rfilename": "dataset.csv"
+    }
+  ],
+  "createdAt": "2025-10-29T12:36:04.000Z",
+  "usedStorage": 58966735
+}

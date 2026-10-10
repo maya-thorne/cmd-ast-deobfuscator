@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 240" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050811"/>
+      <stop offset="50%" stop-color="#0a1224"/>
+      <stop offset="100%" stop-color="#060914"/>
+    </linearGradient>
+
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="45%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#1e293b" stroke-width="0.7" stroke-opacity="0.35"/>
+    </pattern>
+
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Chassis Background -->
+  <rect width="900" height="240" rx="14" fill="url(#bgGrad)"/>
+  <rect width="900" height="240" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="898" height="238" rx="13" fill="none" stroke="#1e293b" stroke-width="1.2"/>
+
+  <!-- Glowing Ambiance Orbs -->
+  <circle cx="110" cy="120" r="75" fill="#38bdf8" opacity="0.14" filter="blur(35px)"/>
+  <circle cx="800" cy="125" r="80" fill="#34d399" opacity="0.12" filter="blur(40px)"/>
+
+  <!-- Left AST / Shield Vector Schematic -->
+  <g transform="translate(50, 48)">
+    <!-- Terminal Outer Frame -->
+    <rect x="0" y="0" width="130" height="144" rx="10" fill="#080e1c" stroke="#1e3a5f" stroke-width="1.8"/>
+    
+    <!-- Titlebar -->
+    <rect x="0" y="0" width="130" height="26" rx="10" fill="#0f1f38"/>
+    <rect x="0" y="16" width="130" height="10" fill="#0f1f38"/>
+    <circle cx="15" cy="13" r="3.5" fill="#ef4444"/>
+    <circle cx="27" cy="13" r="3.5" fill="#f59e0b"/>
+    <circle cx="39" cy="13" r="3.5" fill="#10b981"/>
+    
+    <!-- Terminal Command Line & Prompt -->
+    <text x="14" y="46" fill="#38bdf8" font-family="'Consolas', 'Fira Code', monospace" font-size="11" font-weight="700">&gt;_ cmd.exe</text>
+    <line x1="14" y1="55" x2="116" y2="55" stroke="#1e293b" stroke-width="1"/>
+    
+    <!-- AST Tree Nodes & Links -->
+    <!-- Root Node -->
+    <circle cx="65" cy="74" r="8" fill="#1e3a5f" stroke="#38bdf8" stroke-width="1.8" filter="url(#neon-glow)"/>
+    <text x="65" y="78" fill="#7dd3fc" font-family="'Consolas', monospace" font-size="8.5" font-weight="bold" text-anchor="middle">AST</text>
+    
+    <!-- Tree Branches -->
+    <line x1="59" y1="81" x2="35" y2="102" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="3 2"/>
+    <line x1="71" y1="81" x2="95" y2="102" stroke="#34d399" stroke-width="1.4" stroke-dasharray="3 2"/>
+    
+    <!-- Left Child: Lexer Pass -->
+    <circle cx="35" cy="106" r="7" fill="#0c2538" stroke="#38bdf8" stroke-width="1.5"/>
+    <circle cx="35" cy="106" r="3" fill="#38bdf8"/>
+    
+    <!-- Right Child: Evaluator Pass -->
+    <circle cx="95" cy="106" r="7" fill="#0a2a22" stroke="#34d399" stroke-width="1.5" filter="url(#neon-glow)"/>
+    <circle cx="95" cy="106" r="3" fill="#34d399"/>
+    
+    <!-- Sub-branches -->
+    <line x1="30" y1="112" x2="22" y2="128" stroke="#1e3a5f" stroke-width="1.2"/>
+    <line x1="40" y1="112" x2="48" y2="128" stroke="#1e3a5f" stroke-width="1.2"/>
+    <line x1="95" y1="113" x2="95" y2="128" stroke="#065f46" stroke-width="1.2"/>
+    
+    <circle cx="22" cy="130" r="3" fill="#64748b"/>
+    <circle cx="48" cy="130" r="3" fill="#64748b"/>
+    <circle cx="95" cy="130" r="3.5" fill="#34d399" filter="url(#neon-glow)"/>
+  </g>
+
+  <!-- Content Group -->
+  <g transform="translate(215, 40)">
+    <!-- Top Chips -->
+    <g>
+      <!-- Chip 1 -->
+      <rect x="0" y="0" width="165" height="24" rx="6" fill="#0f1f33" stroke="#1e3a5f" stroke-width="1"/>
+      <circle cx="12" cy="12" r="3.5" fill="#38bdf8" filter="url(#neon-glow)"/>
+      <text x="24" y="15.5" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700">CMD.EXE AST इंजन</text>
+
+      <!-- Chip 2 -->
+      <rect x="175" y="0" width="175" height="24" rx="6" fill="#0c2621" stroke="#065f46" stroke-width="1"/>
+      <circle cx="187" cy="12" r="3.5" fill="#34d399" filter="url(#neon-glow)"/>
+      <text x="199" y="15.5" fill="#6ee7b7" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700">6-पास डीओबफस्केशन</text>
+
+      <!-- Chip 3 -->
+      <rect x="360" y="0" width="200" height="24" rx="6" fill="#241029" stroke="#701a75" stroke-width="1"/>
+      <circle cx="372" cy="12" r="3.5" fill="#e879f9" filter="url(#neon-glow)"/>
+      <text x="384" y="15.5" fill="#f5d0fe" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700">GHIDRA बाइनरी रिवर्स इंजीनियरिंग</text>
+    </g>
+
+    <!-- Main Title -->
+    <text x="0" y="70" fill="url(#titleGrad)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="33" font-weight="900" letter-spacing="-0.5">
+      cmd-ast-deobfuscator
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="105" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="500">
+      विंडोज बैच स्क्रिप्ट्स के लिए मल्टी-पास एब्सट्रैक्ट सिंटेक्स ट्री और लेक्सिकल डीओबफस्केशन इंजन
+    </text>
+
+    <!-- Footer Specs -->
+    <text x="0" y="138" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="500">
+      cmd.exe पार्सर इम्यूलेशन · YARA और Sigma नियम · Ghidra बाइनरी फोरेंसिक · MIT लाइसेंस
+    </text>
+  </g>
+</svg>

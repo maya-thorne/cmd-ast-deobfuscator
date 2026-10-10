@@ -1,0 +1,116 @@
+{
+  "_id": "6655335cb47c060e53524d31",
+  "id": "Gabbana/Deobfuscation_SBERT",
+  "private": false,
+  "pipeline_tag": "sentence-similarity",
+  "library_name": "sentence-transformers",
+  "tags": [
+    "sentence-transformers",
+    "safetensors",
+    "bert",
+    "feature-extraction",
+    "sentence-similarity",
+    "transformers",
+    "arxiv:1908.10084",
+    "license:apache-2.0",
+    "text-embeddings-inference",
+    "endpoints_compatible",
+    "region:us"
+  ],
+  "downloads": 105,
+  "likes": 0,
+  "modelId": "Gabbana/Deobfuscation_SBERT",
+  "author": "Gabbana",
+  "sha": "153ce83a7c01e6f598ea9ffa819fe37193e827bd",
+  "lastModified": "2024-05-28T01:31:19.000Z",
+  "gated": false,
+  "disabled": false,
+  "mask_token": "[MASK]",
+  "widgetData": [
+    {
+      "source_sentence": "That is a happy person",
+      "sentences": [
+        "That is a happy dog",
+        "That is a very happy person",
+        "Today is a sunny day"
+      ]
+    }
+  ],
+  "model-index": null,
+  "config": {
+    "architectures": [
+      "BertModel"
+    ],
+    "model_type": "bert",
+    "tokenizer_config": {
+      "cls_token": "[CLS]",
+      "mask_token": "[MASK]",
+      "pad_token": "[PAD]",
+      "sep_token": "[SEP]",
+      "unk_token": "[UNK]"
+    }
+  },
+  "cardData": {
+    "license": "apache-2.0",
+    "library_name": "sentence-transformers",
+    "tags": [
+      "sentence-transformers",
+      "feature-extraction",
+      "sentence-similarity",
+      "transformers"
+    ],
+    "pipeline_tag": "sentence-similarity"
+  },
+  "transformersInfo": {
+    "auto_model": "AutoModel",
+    "pipeline_tag": "feature-extraction",
+    "processor": "AutoTokenizer"
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes"
+    },
+    {
+      "rfilename": "1_Pooling/config.json"
+    },
+    {
+      "rfilename": "README.md"
+    },
+    {
+      "rfilename": "config.json"
+    },
+    {
+      "rfilename": "config_sentence_transformers.json"
+    },
+    {
+      "rfilename": "model.safetensors"
+    },
+    {
+      "rfilename": "modules.json"
+    },
+    {
+      "rfilename": "sentence_bert_config.json"
+    },
+    {
+      "rfilename": "special_tokens_map.json"
+    },
+    {
+      "rfilename": "tokenizer.json"
+    },
+    {
+      "rfilename": "tokenizer_config.json"
+    },
+    {
+      "rfilename": "vocab.txt"
+    }
+  ],
+  "spaces": [],
+  "createdAt": "2024-05-28T01:29:00.000Z",
+  "safetensors": {
+    "parameters": {
+      "F32": 22713216
+    },
+    "total": 22713216
+  },
+  "usedStorage": 90864192
+}

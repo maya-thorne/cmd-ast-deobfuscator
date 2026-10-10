@@ -1,0 +1,111 @@
+{
+  "_id": "678f2dbd5d51c495ab68f7b4",
+  "id": "UICHEOL-HWANG/Dacon-contest-obfuscation-gemma2-2b",
+  "private": false,
+  "pipeline_tag": "text-generation",
+  "library_name": "transformers",
+  "tags": [
+    "transformers",
+    "safetensors",
+    "gemma2",
+    "text-generation",
+    "ko",
+    "base_model:google/gemma-2-2b-it",
+    "base_model:finetune:google/gemma-2-2b-it",
+    "text-generation-inference",
+    "endpoints_compatible",
+    "region:us"
+  ],
+  "downloads": 15,
+  "likes": 0,
+  "modelId": "UICHEOL-HWANG/Dacon-contest-obfuscation-gemma2-2b",
+  "author": "UICHEOL-HWANG",
+  "sha": "430a1c72e1d25e3e489eba27617deb600b2f6836",
+  "lastModified": "2025-01-23T01:33:29.000Z",
+  "gated": false,
+  "disabled": false,
+  "model-index": null,
+  "config": {
+    "architectures": [
+      "Gemma2ForCausalLM"
+    ],
+    "model_type": "gemma2",
+    "tokenizer_config": {
+      "bos_token": "<bos>",
+      "eos_token": "<eos>",
+      "pad_token": "<pad>",
+      "unk_token": "<unk>",
+      "use_default_system_prompt": false
+    }
+  },
+  "cardData": {
+    "library_name": "transformers",
+    "language": [
+      "ko"
+    ],
+    "metrics": [
+      "f1"
+    ],
+    "base_model": [
+      "google/gemma-2-2b-it"
+    ]
+  },
+  "transformersInfo": {
+    "auto_model": "AutoModelForCausalLM",
+    "pipeline_tag": "text-generation",
+    "processor": "AutoTokenizer"
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes"
+    },
+    {
+      "rfilename": "README.md"
+    },
+    {
+      "rfilename": "adapter_config.json"
+    },
+    {
+      "rfilename": "adapter_model.safetensors"
+    },
+    {
+      "rfilename": "config.json"
+    },
+    {
+      "rfilename": "generation_config.json"
+    },
+    {
+      "rfilename": "model-00001-of-00003.safetensors"
+    },
+    {
+      "rfilename": "model-00002-of-00003.safetensors"
+    },
+    {
+      "rfilename": "model-00003-of-00003.safetensors"
+    },
+    {
+      "rfilename": "model.safetensors.index.json"
+    },
+    {
+      "rfilename": "special_tokens_map.json"
+    },
+    {
+      "rfilename": "tokenizer.json"
+    },
+    {
+      "rfilename": "tokenizer.model"
+    },
+    {
+      "rfilename": "tokenizer_config.json"
+    }
+  ],
+  "spaces": [],
+  "createdAt": "2025-01-21T05:16:45.000Z",
+  "safetensors": {
+    "parameters": {
+      "F32": 2614341888
+    },
+    "total": 2614341888
+  },
+  "usedStorage": 10657486236
+}
