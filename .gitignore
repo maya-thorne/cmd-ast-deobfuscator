@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / DLL files
+﻿# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -62,3 +62,6 @@ ENV/
 *~
 .DS_Store
 Thumbs.db
+
+# Local Agent Internal Memory (Zero-Remote Upload)
+memory/
