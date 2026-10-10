@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050811"/>
+      <stop offset="50%" stop-color="#0b1329"/>
+      <stop offset="100%" stop-color="#070a16"/>
+    </linearGradient>
+
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.35"/>
+    </pattern>
+
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Chassis -->
+  <rect width="1200" height="640" rx="16" fill="url(#bgGrad)"/>
+  <rect width="1200" height="640" rx="16" fill="url(#grid)"/>
+  <rect x="1" y="1" width="1198" height="638" rx="15" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Glowing Ambiance Orbs -->
+  <circle cx="150" cy="120" r="120" fill="#38bdf8" opacity="0.08" filter="blur(60px)"/>
+  <circle cx="600" cy="320" r="140" fill="#818cf8" opacity="0.07" filter="blur(70px)"/>
+  <circle cx="1050" cy="500" r="130" fill="#34d399" opacity="0.08" filter="blur(60px)"/>
+
+  <!-- Title Header Bar -->
+  <g transform="translate(50, 40)">
+    <rect x="0" y="0" width="220" height="26" rx="6" fill="#0f1f38" stroke="#1e3a5f" stroke-width="1"/>
+    <circle cx="14" cy="13" r="4" fill="#38bdf8" filter="url(#neon-glow)"/>
+    <text x="26" y="17" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700">पाइपलाइन आर्किटेक्चर</text>
+
+    <text x="0" y="62" fill="url(#cyanGrad)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="900" letter-spacing="-0.5">
+      cmd-ast-deobfuscator : 6-पास AST मूल्यांकन इंजन
+    </text>
+    <text x="0" y="88" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13">
+      cmd.exe लेक्सिकल एनालिसिस स्टेट मशीन · सिंबल टेबल प्रसारण · कंपाइलर AST पाइपलाइन
+    </text>
+  </g>
+
+  <!-- Left: Obfuscated Input Card -->
+  <g transform="translate(50, 150)">
+    <rect width="210" height="430" rx="12" fill="#090e1c" stroke="#dc2626" stroke-width="1.5" stroke-opacity="0.6"/>
+    <rect width="210" height="38" rx="12" fill="#1f1118"/>
+    <rect y="26" width="210" height="12" fill="#1f1118"/>
+    <circle cx="18" cy="19" r="4" fill="#ef4444" filter="url(#neon-glow)"/>
+    <text x="30" y="23" fill="#fca5a5" font-family="'Consolas', monospace" font-size="12" font-weight="700">00. मूल अस्पष्टीकृत इनपुट</text>
+
+    <g transform="translate(15, 55)">
+      <text y="0" fill="#ef4444" font-family="'Consolas', monospace" font-size="11" font-weight="bold">// अस्पष्टीकरण तकनीकें</text>
+      
+      <rect y="12" width="180" height="50" rx="6" fill="#150e18" stroke="#371a25" stroke-width="1"/>
+      <text x="8" y="32" fill="#f87171" font-family="'Consolas', monospace" font-size="10">c^a^l^c^.^e^x^e</text>
+      <text x="8" y="48" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="9">कैरट (^) एस्केप हेरफेर</text>
+
+      <rect y="72" width="180" height="50" rx="6" fill="#150e18" stroke="#371a25" stroke-width="1"/>
+      <text x="8" y="92" fill="#f87171" font-family="'Consolas', monospace" font-size="10">p""o""w""e""r""s""h</text>
+      <text x="8" y="108" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="9">खाली दोहरे उद्धरण चिन्ह</text>
+
+      <rect y="132" width="180" height="50" rx="6" fill="#150e18" stroke="#371a25" stroke-width="1"/>
+      <text x="8" y="152" fill="#f87171" font-family="'Consolas', monospace" font-size="10">%COMSPEC:~19,1%</text>
+      <text x="8" y="168" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="9">पर्यावरण चर स्लाइसिंग</text>
+
+      <rect y="192" width="180" height="50" rx="6" fill="#150e18" stroke="#371a25" stroke-width="1"/>
+      <text x="8" y="212" fill="#f87171" font-family="'Consolas', monospace" font-size="10">set a8f=c &amp; %a8f%</text>
+      <text x="8" y="228" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="9">अव्यवस्थित चर सरणी प्रतिस्थापन</text>
+
+      <rect y="252" width="180" height="50" rx="6" fill="#150e18" stroke="#371a25" stroke-width="1"/>
+      <text x="8" y="272" fill="#f87171" font-family="'Consolas', monospace" font-size="10">\xFF\xFE BOM &amp; Hex</text>
+      <text x="8" y="288" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="9">BOM और हेडर बाइट्स छिपाना</text>
+
+      <rect y="312" width="180" height="50" rx="6" fill="#150e18" stroke="#371a25" stroke-width="1"/>
+      <text x="8" y="332" fill="#f87171" font-family="'Consolas', monospace" font-size="10">ping 127.0.0.1 -n 30</text>
+      <text x="8" y="348" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="9">एंटी-VM स्लीप लूप</text>
+    </g>
+  </g>
+
+  <!-- Arrow 1 -->
+  <path d="M 270 365 L 305 365" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="4 3"/>
+
+  <!-- Center Pipeline: 6 Passes Stacked Grid -->
+  <g transform="translate(310, 150)">
+    <!-- Pass 1: Encoding & BOM -->
+    <rect x="0" y="0" width="260" height="60" rx="8" fill="#0d192e" stroke="#1e3a5f" stroke-width="1.4"/>
+    <circle cx="20" cy="22" r="9" fill="#1e3a5f"/>
+    <text x="20" y="26" fill="#38bdf8" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">1</text>
+    <text x="38" y="24" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">एन्कोडिंग और BOM निष्कासन</text>
+    <text x="38" y="44" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="10">UTF-16LE/UTF-8 पहचान और बाइट ट्रिम</text>
+
+    <!-- Pass 2: Caret & Quote -->
+    <rect x="0" y="74" width="260" height="60" rx="8" fill="#0d192e" stroke="#1e3a5f" stroke-width="1.4"/>
+    <circle cx="20" cy="96" r="9" fill="#1e3a5f"/>
+    <text x="20" y="100" fill="#38bdf8" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">2</text>
+    <text x="38" y="98" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">कैरट निष्कासन और संपीड़न</text>
+    <text x="38" y="118" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="10">बिना उद्धरण वाले ^ को हटाना और "" समेटना</text>
+
+    <!-- Pass 3: Symbol Table Tracking -->
+    <rect x="0" y="148" width="260" height="60" rx="8" fill="#161233" stroke="#4f46e5" stroke-width="1.4"/>
+    <circle cx="20" cy="170" r="9" fill="#312e81"/>
+    <text x="20" y="174" fill="#a5b4fc" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">3</text>
+    <text x="38" y="172" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">सिंबल टेबल गतिशील ट्रैकिंग</text>
+    <text x="38" y="192" fill="#a5b4fc" font-family="-apple-system, sans-serif" font-size="10">'set VAR=VAL' बाइंडिंग का गतिशील समाधान</text>
+
+    <!-- Pass 4: Substring & Substitution -->
+    <rect x="0" y="222" width="260" height="60" rx="8" fill="#161233" stroke="#4f46e5" stroke-width="1.4"/>
+    <circle cx="20" cy="244" r="9" fill="#312e81"/>
+    <text x="20" y="248" fill="#a5b4fc" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">4</text>
+    <text x="38" y="246" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">स्लाइसिंग और स्ट्रिंग प्रतिस्थापन</text>
+    <text x="38" y="266" fill="#a5b4fc" font-family="-apple-system, sans-serif" font-size="10">%V:~start,len% और %V:s=r% का समाधान</text>
+
+    <!-- Pass 5: AST Tree Rebuilder -->
+    <rect x="0" y="296" width="260" height="60" rx="8" fill="#1e132e" stroke="#7e22ce" stroke-width="1.4"/>
+    <circle cx="20" cy="318" r="9" fill="#581c87"/>
+    <text x="20" y="322" fill="#e879f9" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">5</text>
+    <text x="38" y="320" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">वाक्यविन्यास AST पुनर्निर्माण</text>
+    <text x="38" y="340" fill="#e879f9" font-family="-apple-system, sans-serif" font-size="10">&, |, () प्रवाह के लिए पुशडाउन पार्सिंग</text>
+
+    <!-- Pass 6: Dead Code Elimination -->
+    <rect x="0" y="370" width="260" height="60" rx="8" fill="#0b241b" stroke="#059669" stroke-width="1.4"/>
+    <circle cx="20" cy="392" r="9" fill="#065f46"/>
+    <text x="20" y="396" fill="#6ee7b7" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">6</text>
+    <text x="38" y="394" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">डेड कोड और एंटी-VM निष्कासन</text>
+    <text x="38" y="414" fill="#6ee7b7" font-family="-apple-system, sans-serif" font-size="10">अप्रयुक्त चरों और VM जाल को हटाना</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <path d="M 580 365 L 615 365" stroke="#818cf8" stroke-width="2.5" stroke-dasharray="4 3"/>
+
+  <!-- Right-Center: Ghidra Binary Forensics Bridge & Detection -->
+  <g transform="translate(625, 150)">
+    <rect width="250" height="430" rx="12" fill="#081021" stroke="#2563eb" stroke-width="1.5"/>
+    <rect width="250" height="38" rx="12" fill="#111c38"/>
+    <rect y="26" width="250" height="12" fill="#111c38"/>
+    <circle cx="18" cy="19" r="4" fill="#38bdf8" filter="url(#neon-glow)"/>
+    <text x="30" y="23" fill="#93c5fd" font-family="'Consolas', monospace" font-size="12" font-weight="700">Ghidra फोरेंसिक और नियम</text>
+
+    <g transform="translate(15, 55)">
+      <!-- Box A: Ghidra PE Analysis -->
+      <rect y="0" width="220" height="100" rx="8" fill="#0d1b33" stroke="#1d4ed8" stroke-width="1"/>
+      <text x="12" y="22" fill="#60a5fa" font-family="'Consolas', monospace" font-size="11" font-weight="bold">🔬 Ghidra बाइनरी फोरेंसिक</text>
+      <text x="12" y="42" fill="#cbd5e1" font-family="'Consolas', monospace" font-size="10">• BEDeCode.exe (Delphi 0x00401000)</text>
+      <text x="12" y="60" fill="#cbd5e1" font-family="'Consolas', monospace" font-size="10">• Bat2Exe Stub (.rsrc 0x00412000)</text>
+      <text x="12" y="78" fill="#cbd5e1" font-family="'Consolas', monospace" font-size="10">• xorStub.exe (0x5A Payload Decrypt)</text>
+      <text x="12" y="94" fill="#cbd5e1" font-family="'Consolas', monospace" font-size="10">• choice.exe (Sleep Anti-VM Trap)</text>
+
+      <!-- Box B: Sigma Rule -->
+      <rect y="115" width="220" height="110" rx="8" fill="#140f2b" stroke="#6d28d9" stroke-width="1"/>
+      <text x="12" y="137" fill="#c084fc" font-family="'Consolas', monospace" font-size="11" font-weight="bold">🚨 Sigma डिटेक्शन नियम</text>
+      <text x="12" y="157" fill="#e9d5ff" font-family="'Consolas', monospace" font-size="10">• Caret Density: count('^') &gt; 10</text>
+      <text x="12" y="175" fill="#e9d5ff" font-family="'Consolas', monospace" font-size="10">• Slicing: %COMSPEC:~* or %PATH:~*</text>
+      <text x="12" y="193" fill="#e9d5ff" font-family="'Consolas', monospace" font-size="10">• Status: Production Enterprise Ready</text>
+      <text x="12" y="211" fill="#a855f7" font-family="'Consolas', monospace" font-size="9">Path: references/detection_rules/</text>
+
+      <!-- Box C: YARA Signature -->
+      <rect y="240" width="220" height="120" rx="8" fill="#0b241b" stroke="#059669" stroke-width="1"/>
+      <text x="12" y="262" fill="#34d399" font-family="'Consolas', monospace" font-size="11" font-weight="bold">🛡️ YARA मैलवेयर सिग्नेचर</text>
+      <text x="12" y="282" fill="#a7f3d0" font-family="'Consolas', monospace" font-size="10">• rule Batch_Somalifuscator_V2</text>
+      <text x="12" y="300" fill="#a7f3d0" font-family="'Consolas', monospace" font-size="10">• rule Batch_0xidiz3r_Array</text>
+      <text x="12" y="318" fill="#a7f3d0" font-family="'Consolas', monospace" font-size="10">• rule Bat2Exe_PE_Dropper_Stub</text>
+      <text x="12" y="336" fill="#10b981" font-family="'Consolas', monospace" font-size="9">Path: references/detection_rules/</text>
+    </g>
+  </g>
+
+  <!-- Arrow 3 -->
+  <path d="M 885 365 L 920 365" stroke="#34d399" stroke-width="2.5" stroke-dasharray="4 3"/>
+
+  <!-- Right: Deterministic Clean Output Card -->
+  <g transform="translate(930, 150)">
+    <rect width="220" height="430" rx="12" fill="#051c14" stroke="#059669" stroke-width="1.8"/>
+    <rect width="220" height="38" rx="12" fill="#0b3827"/>
+    <rect y="26" width="220" height="12" fill="#0b3827"/>
+    <circle cx="18" cy="19" r="4" fill="#34d399" filter="url(#neon-glow)"/>
+    <text x="30" y="23" fill="#6ee7b7" font-family="'Consolas', monospace" font-size="12" font-weight="700">स्वच्छ AST आउटपुट</text>
+
+    <g transform="translate(15, 55)">
+      <text y="0" fill="#34d399" font-family="'Consolas', monospace" font-size="11" font-weight="bold">// सामान्यीकृत स्रोत कोड</text>
+
+      <rect y="15" width="190" height="140" rx="6" fill="#09291d" stroke="#047857" stroke-width="1"/>
+      <text x="10" y="36" fill="#a7f3d0" font-family="'Consolas', monospace" font-size="11">@echo off</text>
+      <text x="10" y="58" fill="#a7f3d0" font-family="'Consolas', monospace" font-size="11">calc.exe</text>
+      <text x="10" y="80" fill="#a7f3d0" font-family="'Consolas', monospace" font-size="11">powershell.exe -NoP</text>
+      <text x="10" y="102" fill="#a7f3d0" font-family="'Consolas', monospace" font-size="11">cmd /c echo Clean</text>
+      <text x="10" y="124" fill="#a7f3d0" font-family="'Consolas', monospace" font-size="11">exit /b 0</text>
+
+      <!-- Metric Badges -->
+      <rect y="170" width="190" height="50" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="12" y="190" fill="#6ee7b7" font-family="'Consolas', monospace" font-size="11" font-weight="bold">100% इनवेरिएंट्स उत्तीर्ण</text>
+      <text x="12" y="208" fill="#d1fae5" font-family="-apple-system, sans-serif" font-size="10">16/16 यूनिट टेस्ट पूर्ण (0.003s)</text>
+
+      <rect y="230" width="190" height="50" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="12" y="250" fill="#6ee7b7" font-family="'Consolas', monospace" font-size="11" font-weight="bold">शून्य मतिभ्रम गारंटी</text>
+      <text x="12" y="268" fill="#d1fae5" font-family="-apple-system, sans-serif" font-size="10">निश्चयात्मक AST फोल्डिंग एल्गोरिदम</text>
+
+      <rect y="290" width="190" height="50" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="12" y="310" fill="#6ee7b7" font-family="'Consolas', monospace" font-size="11" font-weight="bold">उत्पादन के लिए तैयार</text>
+      <text x="12" y="328" fill="#d1fae5" font-family="-apple-system, sans-serif" font-size="10">Git टैग v1.0.0 आधिकारिक रिलीज़</text>
+    </g>
+  </g>
+</svg>
