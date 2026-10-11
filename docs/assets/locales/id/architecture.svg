@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="100%" height="100%">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -105,18 +106,18 @@
 
   <!-- Center Pipeline: 6 Passes Stacked Grid -->
   <g transform="translate(310, 150)">
-    <!-- Pass 1: Encoding & BOM -->
+    <!-- Pass 1: Encoding &amp; BOM -->
     <rect x="0" y="0" width="260" height="60" rx="8" fill="#0d192e" stroke="#1e3a5f" stroke-width="1.4"/>
     <circle cx="20" cy="22" r="9" fill="#1e3a5f"/>
     <text x="20" y="26" fill="#38bdf8" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">1</text>
-    <text x="38" y="24" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">Dekode & Pembersihan BOM</text>
+    <text x="38" y="24" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">Dekode &amp; Pembersihan BOM</text>
     <text x="38" y="44" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="10">Deteksi UTF-16LE/UTF-8 dan pemotongan byte</text>
 
-    <!-- Pass 2: Caret & Quote -->
+    <!-- Pass 2: Caret &amp; Quote -->
     <rect x="0" y="74" width="260" height="60" rx="8" fill="#0d192e" stroke="#1e3a5f" stroke-width="1.4"/>
     <circle cx="20" cy="96" r="9" fill="#1e3a5f"/>
     <text x="20" y="100" fill="#38bdf8" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">2</text>
-    <text x="38" y="98" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">Penciutan Caret & Kutip Kosong</text>
+    <text x="38" y="98" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">Penciutan Caret &amp; Kutip Kosong</text>
     <text x="38" y="118" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="10">Penghapusan ^ tanpa kutip dan penggabungan ""</text>
 
     <!-- Pass 3: Symbol Table Tracking -->
@@ -126,11 +127,11 @@
     <text x="38" y="172" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">Resolusi Tabel Simbol</text>
     <text x="38" y="192" fill="#a5b4fc" font-family="-apple-system, sans-serif" font-size="10">Pelacakan dinamis 'set VAR=VAL'</text>
 
-    <!-- Pass 4: Substring & Substitution -->
+    <!-- Pass 4: Substring &amp; Substitution -->
     <rect x="0" y="222" width="260" height="60" rx="8" fill="#161233" stroke="#4f46e5" stroke-width="1.4"/>
     <circle cx="20" cy="244" r="9" fill="#312e81"/>
     <text x="20" y="248" fill="#a5b4fc" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">4</text>
-    <text x="38" y="246" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">Pemotongan & Substitusi String</text>
+    <text x="38" y="246" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">Pemotongan &amp; Substitusi String</text>
     <text x="38" y="266" fill="#a5b4fc" font-family="-apple-system, sans-serif" font-size="10">Penyelesaian %V:~start,len% dan %V:s=r%</text>
 
     <!-- Pass 5: AST Tree Rebuilder -->
@@ -138,26 +139,26 @@
     <circle cx="20" cy="318" r="9" fill="#581c87"/>
     <text x="20" y="322" fill="#e879f9" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">5</text>
     <text x="38" y="320" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">Rekonstruksi AST Sintaksis</text>
-    <text x="38" y="340" fill="#e879f9" font-family="-apple-system, sans-serif" font-size="10">Parsing Pushdown untuk aliran &, |, ()</text>
+    <text x="38" y="340" fill="#e879f9" font-family="-apple-system, sans-serif" font-size="10">Parsing Pushdown untuk aliran &amp;, |, ()</text>
 
     <!-- Pass 6: Dead Code Elimination -->
     <rect x="0" y="370" width="260" height="60" rx="8" fill="#0b241b" stroke="#059669" stroke-width="1.4"/>
     <circle cx="20" cy="392" r="9" fill="#065f46"/>
     <text x="20" y="396" fill="#6ee7b7" font-family="'Consolas', monospace" font-size="10" font-weight="bold" text-anchor="middle">6</text>
-    <text x="38" y="394" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">Eliminasi Dead Code & Anti-VM</text>
-    <text x="38" y="414" fill="#6ee7b7" font-family="-apple-system, sans-serif" font-size="10">Penghapusan variabel dummy & jebakan VM</text>
+    <text x="38" y="394" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="12" font-weight="700">Eliminasi Dead Code &amp; Anti-VM</text>
+    <text x="38" y="414" fill="#6ee7b7" font-family="-apple-system, sans-serif" font-size="10">Penghapusan variabel dummy &amp; jebakan VM</text>
   </g>
 
   <!-- Arrow 2 -->
   <path d="M 580 365 L 615 365" stroke="#818cf8" stroke-width="2.5" stroke-dasharray="4 3"/>
 
-  <!-- Right-Center: Ghidra Binary Forensics Bridge & Detection -->
+  <!-- Right-Center: Ghidra Binary Forensics Bridge &amp; Detection -->
   <g transform="translate(625, 150)">
     <rect width="250" height="430" rx="12" fill="#081021" stroke="#2563eb" stroke-width="1.5"/>
     <rect width="250" height="38" rx="12" fill="#111c38"/>
     <rect y="26" width="250" height="12" fill="#111c38"/>
     <circle cx="18" cy="19" r="4" fill="#38bdf8" filter="url(#neon-glow)"/>
-    <text x="30" y="23" fill="#93c5fd" font-family="'Consolas', monospace" font-size="12" font-weight="700">FORENSIK GHIDRA & ATURAN</text>
+    <text x="30" y="23" fill="#93c5fd" font-family="'Consolas', monospace" font-size="12" font-weight="700">FORENSIK GHIDRA &amp; ATURAN</text>
 
     <g transform="translate(15, 55)">
       <!-- Box A: Ghidra PE Analysis -->
