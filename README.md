@@ -57,6 +57,10 @@ Unlike modern script interpreters (such as Python or PowerShell) that tokenize s
 
 ### 🔄 Multi-Pass Deobfuscation Pipeline
 
+<details open>
+<summary><b>📐 Architectural Pipeline Diagram & Visual Specification (Click to collapse/expand)</b></summary>
+<br>
+
 <p align="center">
   <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="./docs/assets/locales/en/architecture.svg" alt="cmd-ast-deobfuscator Architecture (en)" width="100%" /></a>
 </p>
@@ -78,6 +82,8 @@ flowchart TD
     class P1,P2,P3,P4,P5,P6 pass;
     class Out clean;
 ```
+
+</details>
 
 ---
 
@@ -196,6 +202,10 @@ flowchart TD
 
 The suite includes line-by-line dissections and structural references from 7 seminal open-source obfuscation and deobfuscation projects:
 
+<details open>
+<summary><b>📊 Comparative Analysis of 7 Seminal Obfuscation Engines (Click to collapse/expand)</b></summary>
+<br>
+
 <table width="100%">
   <thead>
     <tr>
@@ -259,6 +269,8 @@ The suite includes line-by-line dissections and structural references from 7 sem
   </tbody>
 </table>
 
+</details>
+
 *Detailed architectural breakdowns and source extractions are available in [`references/source-dissections/`](references/source-dissections/) and [`docs/BATCH_OBFUSCATION_DEEP_REVERSE_ENGINEERING_ANALYSIS.md`](docs/BATCH_OBFUSCATION_DEEP_REVERSE_ENGINEERING_ANALYSIS.md).*
 
 ---
@@ -276,6 +288,10 @@ Target Executables Triaged:
 ```
 
 ### Sample Disassembly: In-Memory Payload Decryptor (`xorStub.exe`)
+
+<details open>
+<summary><b>🔬 Ghidra Disassembly Routine: In-Memory Decryptor (Click to collapse/expand)</b></summary>
+<br>
 
 ```nasm
 ; RVA: 0x00401240 - DecryptPayload Routine
@@ -295,6 +311,8 @@ Target Executables Triaged:
 0040125e 5d              POP        EBP
 0040125f c3              RET
 ```
+
+</details>
 
 ---
 
@@ -347,6 +365,10 @@ python -m unittest discover -s tests -v
 ```
 
 ### Invariant Test Results:
+<details open>
+<summary><b>📊 Invariant Verification Test Results (Click to collapse/expand)</b></summary>
+<br>
+
 ```text
 test_automaton_state_transitions (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_lexer_caret_and_quote_tokenization (test_ast_suite.TestCmdASTCompilerSuite) ... ok
@@ -371,9 +393,15 @@ Ran 16 tests in 0.003s
 OK
 ```
 
+</details>
+
 ---
 
 ## 📁 Repository Architecture
+
+<details open>
+<summary><b>📁 Complete Repository Directory Tree (Click to collapse/expand)</b></summary>
+<br>
 
 ```text
 cmd-ast-deobfuscator/
@@ -409,6 +437,8 @@ cmd-ast-deobfuscator/
 ├── LICENSE                            # Maya Thorne Research License (MT-SRL)
 └── README.md                          # Primary English documentation
 ```
+
+</details>
 
 ---
 

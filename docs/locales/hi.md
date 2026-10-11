@@ -57,6 +57,10 @@
 
 ### 🔄 Multi-Pass Deobfuscation Pipeline
 
+<details open>
+<summary><b>📐 आर्किटेक्चरल पाइपलाइन आरेख और विज़ुअल विनिर्देश (संक्षिप्त/विस्तृत करने के लिए क्लिक करें)</b></summary>
+<br>
+
 <p align="center">
   <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/locales/hi/architecture.svg" alt="cmd-ast-deobfuscator Architecture (hi)" width="100%" /></a>
 </p>
@@ -78,6 +82,8 @@ flowchart TD
     class P1,P2,P3,P4,P5,P6 pass;
     class Out clean;
 ```
+
+</details>
 
 ---
 
@@ -277,6 +283,10 @@ Target Executables Triaged:
 
 ### Sample Disassembly: In-Memory Payload Decryptor (`xorStub.exe`)
 
+<details open>
+<summary><b>🔬 Ghidra बाइनरी डिसअसेम्बली रूटीन (संक्षिप्त/विस्तृत करने के लिए क्लिक करें)</b></summary>
+<br>
+
 ```nasm
 ; RVA: 0x00401240 - DecryptPayload Routine
 00401240 55              PUSH       EBP
@@ -295,6 +305,8 @@ Target Executables Triaged:
 0040125e 5d              POP        EBP
 0040125f c3              RET
 ```
+
+</details>
 
 ---
 
@@ -347,6 +359,10 @@ python -m unittest discover -s tests -v
 ```
 
 ### Invariant Test Results:
+<details open>
+<summary><b>📊 इनवेरिएंट यूनिट टेस्ट परिणाम (संक्षिप्त/विस्तृत करने के लिए क्लिक करें)</b></summary>
+<br>
+
 ```text
 test_automaton_state_transitions (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_lexer_caret_and_quote_tokenization (test_ast_suite.TestCmdASTCompilerSuite) ... ok
@@ -371,9 +387,15 @@ Ran 16 tests in 0.003s
 OK
 ```
 
+</details>
+
 ---
 
 ## 📁 Repository Architecture
+
+<details open>
+<summary><b>📁 रिपॉजिटरी की पूर्ण निर्देशिका संरचना (संक्षिप्त/विस्तृत करने के लिए क्लिक करें)</b></summary>
+<br>
 
 ```text
 cmd-ast-deobfuscator/
@@ -410,6 +432,8 @@ cmd-ast-deobfuscator/
 ├── LICENSE                            # Maya Thorne Research License (MT-SRL)
 └── README.md                          # Primary English Documentation
 ```
+
+</details>
 
 ---
 

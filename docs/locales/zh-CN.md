@@ -57,6 +57,10 @@
 
 ### 🔄 Multi-Pass Deobfuscation Pipeline
 
+<details open>
+<summary><b>📐 架构流水线图与可视化规范（点击折叠/展开）</b></summary>
+<br>
+
 <p align="center">
   <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/locales/zh-CN/architecture.svg" alt="cmd-ast-deobfuscator Architecture (zh-CN)" width="100%" /></a>
 </p>
@@ -78,6 +82,8 @@ flowchart TD
     class P1,P2,P3,P4,P5,P6 pass;
     class Out clean;
 ```
+
+</details>
 
 ---
 
@@ -277,6 +283,10 @@ Target Executables Triaged:
 
 ### Sample Disassembly: In-Memory Payload Decryptor (`xorStub.exe`)
 
+<details open>
+<summary><b>🔬 Ghidra 二进制反汇编分析例程（点击折叠/展开）</b></summary>
+<br>
+
 ```nasm
 ; RVA: 0x00401240 - DecryptPayload Routine
 00401240 55              PUSH       EBP
@@ -295,6 +305,8 @@ Target Executables Triaged:
 0040125e 5d              POP        EBP
 0040125f c3              RET
 ```
+
+</details>
 
 ---
 
@@ -347,6 +359,10 @@ python -m unittest discover -s tests -v
 ```
 
 ### Invariant Test Results:
+<details open>
+<summary><b>📊 16项不变量单元测试验证结果（点击折叠/展开）</b></summary>
+<br>
+
 ```text
 test_automaton_state_transitions (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_lexer_caret_and_quote_tokenization (test_ast_suite.TestCmdASTCompilerSuite) ... ok
@@ -371,9 +387,15 @@ Ran 16 tests in 0.003s
 OK
 ```
 
+</details>
+
 ---
 
 ## 📁 Repository Architecture
+
+<details open>
+<summary><b>📁 仓库完整目录结构树（点击折叠/展开）</b></summary>
+<br>
 
 ```text
 cmd-ast-deobfuscator/
@@ -410,6 +432,8 @@ cmd-ast-deobfuscator/
 ├── LICENSE                            # Maya Thorne Research License (MT-SRL)
 └── README.md                          # Primary English Documentation
 ```
+
+</details>
 
 ---
 
