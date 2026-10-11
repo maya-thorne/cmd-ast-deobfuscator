@@ -62,7 +62,7 @@ A diferencia de los intérpretes modernos, `cmd.exe` utiliza un escáner iterati
 <br>
 
 <p align="center">
-  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/locales/es/architecture.svg" alt="cmd-ast-deobfuscator Architecture (es)" width="100%" /></a>
+  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/locales/es/pipeline_architecture.svg" alt="cmd-ast-deobfuscator Architecture (es)" width="100%" /></a>
 </p>
 
 ```mermaid

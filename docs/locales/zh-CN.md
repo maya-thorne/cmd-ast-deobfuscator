@@ -62,7 +62,7 @@
 <br>
 
 <p align="center">
-  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/locales/zh-CN/architecture.svg" alt="cmd-ast-deobfuscator Architecture (zh-CN)" width="100%" /></a>
+  <a href="https://github.com/maya-thorne/cmd-ast-deobfuscator"><img src="../assets/locales/zh-CN/pipeline_architecture.svg" alt="cmd-ast-deobfuscator Architecture (zh-CN)" width="100%" /></a>
 </p>
 
 ```mermaid
