@@ -1,4 +1,4 @@
-﻿# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -66,3 +66,13 @@ Thumbs.db
 # Local Agent Internal Memory (Zero-Remote Upload)
 memory/
 .gemini/
+
+# Autonomous Dev Logs
+dev_logs/
+.agents/
+
+# Local Autonomous Memory & Maps (Excluded from public GitHub)
+TASK_BACKLOG.md
+ARCHITECTURE_MAP.md
+AUTONOMOUS_SPEC.md
+scripts/

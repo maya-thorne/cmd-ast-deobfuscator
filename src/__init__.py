@@ -11,6 +11,13 @@ from .automaton import PushdownAutomaton, AutomatonState
 from .parser import CmdASTParser
 from .normalizer import ASTNormalizer
 from .visualizer import ASTVisualizer
+from .transforms import (
+    TransformPass,
+    PassManager,
+    SlicingFolderPass,
+    ConstantFolderPass,
+    run_transforms
+)
 
 __all__ = [
     'ASTNode',
@@ -31,5 +38,10 @@ __all__ = [
     'AutomatonState',
     'CmdASTParser',
     'ASTNormalizer',
-    'ASTVisualizer'
+    'ASTVisualizer',
+    'TransformPass',
+    'PassManager',
+    'SlicingFolderPass',
+    'ConstantFolderPass',
+    'run_transforms'
 ]

@@ -65,6 +65,8 @@ class ASTVisualizer:
             return f"AssignmentNode(var={node.var_name!r}, val={node.raw_value!r})"
         if isinstance(node, VarExpandNode):
             attrs = [f"name={node.name!r}"]
+            if node.is_delayed:
+                attrs.append("delayed=True")
             if node.slice_start is not None:
                 attrs.append(f"slice=[{node.slice_start}:{node.slice_len}]")
             if node.sub_search is not None:
@@ -96,7 +98,8 @@ class ASTVisualizer:
         if isinstance(node, PipeNode):
             return [node.left, node.right]
         if isinstance(node, CommandNode):
-            return node.arguments
+            dyn_targets = [t for t in node.target_nodes if isinstance(t, VarExpandNode)]
+            return dyn_targets + node.arguments
         if isinstance(node, AssignmentNode):
             return node.value_nodes
         return []

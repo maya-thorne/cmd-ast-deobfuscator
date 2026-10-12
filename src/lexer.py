@@ -3,6 +3,7 @@ Lexical Analyzer (Lexer) for cmd.exe Batch Scripts.
 Emulates Phase 1 and Phase 2 character scanning with quote and escape tracking.
 """
 
+import re
 from enum import Enum, auto
 from dataclasses import dataclass
 from typing import List, Optional
@@ -100,11 +101,12 @@ class CmdLexer:
                 continue
 
             # Caret Escape (Phase 1)
-            if ch == '^' and not self.in_quote:
-                self.advance()
-                escaped_char = self.advance() if self.pos < self.length else ''
-                tokens.append(CmdToken(CmdTokenType.CARET, f"^{escaped_char}", (start_pos, self.pos), False))
-                continue
+            if ch == '^':
+                if not self.in_quote or self.peek(1) == '!':
+                    self.advance()
+                    escaped_char = self.advance() if self.pos < self.length else ''
+                    tokens.append(CmdToken(CmdTokenType.CARET, f"^{escaped_char}", (start_pos, self.pos), self.in_quote))
+                    continue
 
             # Percent Environment Variable (Phase 2)
             if ch == '%':
@@ -114,7 +116,7 @@ class CmdLexer:
                     continue
 
             # Delayed Expansion Variable (Phase 4)
-            if ch == '!' and not self.in_quote:
+            if ch == '!':
                 var_token = self._lex_exclam_var()
                 if var_token:
                     tokens.append(var_token)
@@ -186,12 +188,31 @@ class CmdLexer:
             return CmdToken(CmdTokenType.LITERAL, '%%', (start, self.pos), self.in_quote)
 
         var_content = []
+        in_nested_var = False
+
         while self.pos < self.length:
             c = self.advance()
             if c == '%':
+                content_str = ''.join(var_content)
+                if in_nested_var:
+                    # Closing a nested %VAR%
+                    in_nested_var = False
+                    var_content.append(c)
+                    continue
+                elif ':~' in content_str:
+                    # Check if this % begins a nested variable parameter e.g. %OFF%
+                    remainder = self.source[self.pos:]
+                    m = re.match(r'^[a-zA-Z0-9_\-\.\:\$]+%(?:[,\s%&|<>!]|$)', remainder)
+                    if m and '%' in remainder:
+                        in_nested_var = True
+                        var_content.append(c)
+                        continue
+
                 val = f"%{''.join(var_content)}%"
                 return CmdToken(CmdTokenType.PERCENT_VAR, val, (start, self.pos), self.in_quote)
-            if c in ('\n', ' ', '\t') and not self.in_quote:
+            if c == '\n' or c == '"':
+                break
+            if c in (' ', '\t') and not self.in_quote and ':' not in var_content:
                 # Malformed percent, backtrack or treat as literal
                 break
             var_content.append(c)
@@ -206,13 +227,26 @@ class CmdLexer:
 
         var_content = []
         while self.pos < self.length:
-            c = self.advance()
+            c = self.peek()
+            if c == '\n' or c == '"':
+                break
+            if c == '^':
+                self.advance()
+                if self.pos < self.length:
+                    next_c = self.advance()
+                    if next_c == '\n':
+                        break
+                    var_content.append(f"^{next_c}")
+                else:
+                    var_content.append('^')
+                continue
             if c == '!':
+                self.advance()
                 val = f"!{''.join(var_content)}!"
                 return CmdToken(CmdTokenType.EXCLAM_VAR, val, (start, self.pos), self.in_quote)
-            if c in ('\n', ' '):
+            if not self.in_quote and c in ('&', '|', '<', '>', '(', ')'):
                 break
-            var_content.append(c)
+            var_content.append(self.advance())
 
         self.pos = start + 1
         return CmdToken(CmdTokenType.LITERAL, '!', (start, start + 1), self.in_quote)
@@ -225,8 +259,11 @@ class CmdLexer:
             ch = self.peek()
             if not self.in_quote and ch in special_chars:
                 break
-            if self.in_quote and ch in ('\n', '"'):
-                break
+            if self.in_quote:
+                if ch in ('\n', '"', '%', '!'):
+                    break
+                if ch == '^' and self.peek(1) == '!':
+                    break
             chars.append(self.advance())
 
         return ''.join(chars)

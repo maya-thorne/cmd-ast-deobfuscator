@@ -3,7 +3,8 @@ Abstract Syntax Tree (AST) Parser for Windows cmd.exe scripts.
 Translates token stream into structured hierarchy of AST nodes.
 """
 
-from typing import List, Optional
+import re
+from typing import List, Optional, Tuple
 from .lexer import CmdToken, CmdTokenType, CmdLexer
 from .ast_nodes import (
     ASTNode, ScriptNode, CommandNode, PipeNode, ChainNode,
@@ -188,54 +189,149 @@ class CmdASTParser:
         raw_tail = "".join(t.value for t in tokens[1:]).strip()
         
         # Strip outer quotes if format is set "VAR=VAL"
+        is_enclosed_quotes = False
         if raw_tail.startswith('"') and raw_tail.endswith('"'):
             raw_tail = raw_tail[1:-1]
+            is_enclosed_quotes = True
 
         if '=' in raw_tail:
             var_name, var_val = raw_tail.split('=', 1)
         else:
             var_name, var_val = raw_tail, ""
 
+        # Extract tokens occurring after '='
+        val_tokens: List[CmdToken] = []
+        found_eq = False
+        for t in tokens[1:]:
+            if found_eq:
+                val_tokens.append(t)
+            elif t.type == CmdTokenType.EQUALS:
+                found_eq = True
+            elif '=' in t.value:
+                found_eq = True
+                _, after_eq = t.value.split('=', 1)
+                if after_eq:
+                    val_tokens.append(CmdToken(CmdTokenType.LITERAL, after_eq, t.span, t.in_quote))
+
+        if is_enclosed_quotes:
+            while val_tokens and (val_tokens[-1].type == CmdTokenType.QUOTE or val_tokens[-1].value == '"'):
+                val_tokens.pop()
+
+        value_nodes: List[ASTNode] = []
+        for t in val_tokens:
+            if t.type == CmdTokenType.EOF:
+                continue
+            if t.type == CmdTokenType.WHITESPACE and not t.in_quote:
+                continue
+            value_nodes.append(self._token_to_ast_node(t))
+
+        if not value_nodes and var_val:
+            value_nodes = [LiteralNode(value=var_val)]
+
         return AssignmentNode(
             var_name=var_name.strip(),
             raw_value=var_val,
-            value_nodes=[LiteralNode(value=var_val)]
+            value_nodes=value_nodes
         )
 
     def _token_to_ast_node(self, tok: CmdToken) -> ASTNode:
         """Converts lexical tokens into AST nodes."""
         if tok.type == CmdTokenType.PERCENT_VAR:
-            content = tok.value[1:-1]  # Strip enclosing '%'
-            
-            # Substring Slicing: %VAR:~start,len%
-            if ':~' in content:
-                vname, slice_expr = content.split(':~', 1)
-                slice_parts = slice_expr.split(',')
-                try:
-                    start = int(slice_parts[0]) if slice_parts[0] else 0
-                    length = int(slice_parts[1]) if len(slice_parts) > 1 and slice_parts[1] else None
-                    return VarExpandNode(name=vname, slice_start=start, slice_len=length)
-                except ValueError:
-                    pass
-
-            # String Substitution: %VAR:search=replace%
-            if ':' in content and '=' in content:
-                vname, rest = content.split(':', 1)
-                s_search, s_replace = rest.split('=', 1)
-                return VarExpandNode(name=vname, sub_search=s_search, sub_replace=s_replace)
-
-            return VarExpandNode(name=content)
-
-        if tok.type == CmdTokenType.EXCLAM_VAR:
-            return VarExpandNode(name=tok.value[1:-1], is_delayed=True)
-
-        if tok.type == CmdTokenType.CARET:
+            node = self._parse_var_content(tok.value[1:-1], is_delayed=False)
+        elif tok.type == CmdTokenType.EXCLAM_VAR:
+            node = self._parse_var_content(tok.value[1:-1], is_delayed=True)
+        elif tok.type == CmdTokenType.CARET:
             # ^x -> x
             unmasked = tok.value[1:] if len(tok.value) > 1 else ''
-            return LiteralNode(value=unmasked, is_quoted=False)
-
-        if tok.type == CmdTokenType.QUOTE and tok.value == '""':
+            node = LiteralNode(value=unmasked, is_quoted=tok.in_quote)
+        elif tok.type == CmdTokenType.QUOTE and tok.value == '""':
             # Empty quote collapse
-            return LiteralNode(value='', is_quoted=False)
+            node = LiteralNode(value='', is_quoted=False)
+        else:
+            node = LiteralNode(value=tok.value, is_quoted=tok.in_quote)
 
-        return LiteralNode(value=tok.value, is_quoted=tok.in_quote)
+        node.span = tok.span
+        return node
+
+    @staticmethod
+    def _split_slice_expr(expr: str) -> List[str]:
+        """Splits a slice expression on commas outside nested % or ! variables."""
+        parts: List[str] = []
+        current: List[str] = []
+        in_pct = False
+        in_exc = False
+        for ch in expr:
+            if ch == '%':
+                in_pct = not in_pct
+                current.append(ch)
+            elif ch == '!':
+                in_exc = not in_exc
+                current.append(ch)
+            elif ch == ',' and not in_pct and not in_exc:
+                parts.append(''.join(current))
+                current = []
+            else:
+                current.append(ch)
+        parts.append(''.join(current))
+        return parts
+
+    @staticmethod
+    def _parse_slice_param(s_raw: Optional[str], is_start: bool) -> Tuple[Optional[int], Optional[str]]:
+        """
+        Parses a single slice parameter (start or length).
+        Returns (integer_value, raw_expr_if_unresolved).
+        """
+        if s_raw is None:
+            return None, None
+        s = s_raw.strip()
+        if s == '':
+            # Omitted start -> 0, omitted len -> 0
+            return (0, None)
+        if '%' in s or '!' in s:
+            return None, s
+        s_clean = re.sub(r'\s+', '', s)
+        if s_clean.startswith('+'):
+            s_clean = s_clean[1:]
+        try:
+            return int(s_clean), None
+        except ValueError:
+            return None, s
+
+    @staticmethod
+    def parse_var_content(content: str, is_delayed: bool = False) -> VarExpandNode:
+        """Parses variable content into VarExpandNode supporting slicing and substitution."""
+        # Substring Slicing: %VAR:~start,len% or !VAR:~start,len!
+        if ':~' in content:
+            vname, slice_expr = content.split(':~', 1)
+            slice_parts = CmdASTParser._split_slice_expr(slice_expr)
+            if len(slice_parts) <= 2:
+                s_raw = slice_parts[0] if len(slice_parts) > 0 else ""
+                has_comma = len(slice_parts) > 1
+                l_raw = slice_parts[1] if has_comma else None
+
+                start_val, start_expr = CmdASTParser._parse_slice_param(s_raw, is_start=True)
+                if has_comma:
+                    len_val, len_expr = CmdASTParser._parse_slice_param(l_raw, is_start=False)
+                else:
+                    len_val, len_expr = None, None
+
+                return VarExpandNode(
+                    name=vname,
+                    is_delayed=is_delayed,
+                    slice_start=start_val,
+                    slice_len=len_val,
+                    slice_start_expr=start_expr,
+                    slice_len_expr=len_expr
+                )
+
+        # String Substitution: %VAR:search=replace% or !VAR:search=replace!
+        if ':' in content and '=' in content:
+            vname, rest = content.split(':', 1)
+            s_search, s_replace = rest.split('=', 1)
+            if s_search and s_search != '*':
+                return VarExpandNode(name=vname, is_delayed=is_delayed, sub_search=s_search, sub_replace=s_replace)
+
+        return VarExpandNode(name=content, is_delayed=is_delayed)
+
+    def _parse_var_content(self, content: str, is_delayed: bool = False) -> VarExpandNode:
+        return self.parse_var_content(content, is_delayed=is_delayed)

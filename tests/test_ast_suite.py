@@ -124,6 +124,18 @@ class TestCmdASTCompilerSuite(unittest.TestCase):
         json_dump = ASTVisualizer.render_json(ast)
         self.assertIn('"node_type": "ScriptNode"', json_dump)
 
+    def test_delayed_expansion_full_pipeline(self):
+        source = 'set MSG=HelloWorld & echo !MSG:~0,5! & echo !MSG:~5!'
+        parser = CmdASTParser.from_source(source)
+        ast = parser.parse()
+
+        normalizer = ASTNormalizer()
+        norm_ast = normalizer.normalize(ast)
+        output = normalizer.to_source(norm_ast)
+
+        self.assertIn('echo Hello', output)
+        self.assertIn('echo World', output)
+
 
 if __name__ == '__main__':
     unittest.main()

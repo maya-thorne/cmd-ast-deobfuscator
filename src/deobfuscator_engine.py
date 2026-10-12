@@ -8,6 +8,7 @@ Synthesizes state-machine techniques from DissectMalware (CCCS), Invoke-DOSfusca
 import re
 import sys
 import os
+from typing import Optional
 
 
 class BatchDeobfuscator:
@@ -75,27 +76,47 @@ class BatchDeobfuscator:
             var_val = self.resolve_variables(m.group(2))
             self.env_vars[var_name] = var_val
 
+    @staticmethod
+    def calculate_slice(val: str, start: int, length: Optional[int]) -> str:
+        """Computes cmd.exe substring slicing with positive and negative indices."""
+        n = len(val)
+        if start < 0:
+            offset = max(0, n + start)
+        else:
+            offset = start
+
+        if offset >= n:
+            return ""
+
+        if length is None:
+            return val[offset:]
+
+        if length < 0:
+            end_offset = n + length
+        else:
+            end_offset = offset + length
+
+        if end_offset <= offset:
+            return ""
+
+        return val[offset:end_offset]
+
     def resolve_slicing(self, text: str) -> str:
         """Resolve %VAR:~start,length% and !VAR:~start,length! substring operations."""
         def slice_repl(match):
             var_name = match.group(2).lower()
-            start = int(match.group(3))
-            length = match.group(4)
+            start_str = match.group(3)
+            start = int(start_str) if start_str else 0
+            has_comma = match.group(4) is not None
+            len_str = match.group(5)
 
             if var_name in self.env_vars:
                 val = self.env_vars[var_name]
-                if length is not None:
-                    length = int(length)
-                    if length < 0:
-                        return val[start:length]
-                    if start < 0:
-                        end_idx = len(val) + start + length
-                        return val[start : end_idx if end_idx <= len(val) else None]
-                    return val[start : start + length]
-                return val[start:]
+                length = (int(len_str) if len_str else 0) if has_comma else None
+                return self.calculate_slice(val, start, length)
             return match.group(0)
 
-        pattern = r'([%!])([a-zA-Z0-9_\-\.\:\$]+):~(-?\d+)(?:,(-?\d+))?\1'
+        pattern = r'([%!])([a-zA-Z0-9_\-\.\$]+):~(-?\d*)(?:(,)(-?\d*))?\1'
         return re.sub(pattern, slice_repl, text)
 
     def resolve_substitution(self, text: str) -> str:
@@ -106,25 +127,43 @@ class BatchDeobfuscator:
             new_str = match.group(4)
             if var_name in self.env_vars:
                 val = self.env_vars[var_name]
-                return re.sub(re.escape(old_str), new_str, val, flags=re.IGNORECASE)
+                if not old_str or old_str == '*':
+                    return match.group(0)
+                if old_str.startswith('*'):
+                    target_str = old_str[1:]
+                    if not target_str:
+                        return match.group(0)
+                    idx = val.lower().find(target_str.lower())
+                    if idx != -1:
+                        return new_str + val[idx + len(target_str):]
+                    return val
+                pattern = re.compile(re.escape(old_str), re.IGNORECASE)
+                return pattern.sub(lambda _: new_str, val)
             return match.group(0)
 
-        pattern = r'([%!])([a-zA-Z0-9_\-\.\:\$]+):([^%=!\r\n]+)=([^%=!\r\n]*)\1'
+        pattern = r'([%!])([a-zA-Z0-9_\-\.\$]+):([^%=!\r\n]+)=([^%=!\r\n]*)\1'
         return re.sub(pattern, sub_repl, text)
 
     def resolve_variables(self, text: str) -> str:
         """Resolve slicing, substitution, and direct %VAR% / !VAR! expansions."""
-        text = self.resolve_slicing(text)
-        text = self.resolve_substitution(text)
+        prev = None
+        iters = 0
+        while prev != text and iters < 10:
+            prev = text
+            iters += 1
+            text = self.resolve_slicing(text)
+            text = self.resolve_substitution(text)
 
-        def var_repl(match):
-            vname = match.group(2).lower()
-            if vname in self.env_vars:
-                return self.env_vars[vname]
-            return match.group(0)
+            def var_repl(match):
+                vname = match.group(2).lower()
+                if vname in self.env_vars:
+                    return self.env_vars[vname]
+                return match.group(0)
 
-        pattern = r'([%!])([a-zA-Z0-9_\-\.\:\$]+)\1'
-        return re.sub(pattern, var_repl, text)
+            pattern = r'([%!])([a-zA-Z0-9_\-\.\$]+)\1'
+            text = re.sub(pattern, var_repl, text)
+
+        return text
 
     def deobfuscate(self, script_content: str) -> str:
         """Execute multi-pass deobfuscation until fixed-point convergence."""

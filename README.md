@@ -126,13 +126,15 @@ flowchart TD
 <details>
 <summary><b>3. Environment Variable Substring Slicing (환경변수 인덱스 슬라이싱)</b></summary>
 
-- **Mechanism**: Slicing system environment variables like `%COMSPEC:~start,length%` or negative offsets `%PATH:~-10,1%` to dynamically assemble keywords.
+- **Mechanism**: Slicing system environment variables like `%COMSPEC:~start,length%`, delayed expansion `!VAR:~start,length!`, or negative offsets `%PATH:~-10,1%` / `!VAR:~-7,3!` to dynamically assemble keywords.
 - **Obfuscated**:
   ```cmd
   %COMSPEC:~19,1%%COMSPEC:~24,1%%COMSPEC:~27,1%
+  !COMSPEC:~-7,3!
   ```
 - **Normalized Output**:
   ```cmd
+  cmd
   cmd
   ```
 </details>
@@ -140,14 +142,16 @@ flowchart TD
 <details>
 <summary><b>4. Dynamic String Substitution (문자열 인라인 치환 패턴)</b></summary>
 
-- **Mechanism**: Exploits batch syntax `%VAR:search=replace%` to embed randomized decoy characters.
+- **Mechanism**: Exploits batch syntax `%VAR:search=replace%` and delayed expansion `!VAR:search=replace!` to embed randomized decoy characters.
 - **Obfuscated**:
   ```cmd
   set "X=c_a_l_c"
   %X:_=%
+  !X:_=!
   ```
 - **Normalized Output**:
   ```cmd
+  calc
   calc
   ```
 </details>
@@ -357,8 +361,8 @@ python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat --tree
 # Output Mermaid flowchart diagram of AST structure
 python src/cli.py -c "set X=calc & %X%.exe" --mermaid
 
-# Output JSON AST dump
-python src/cli.py -c "set X=calc & %X%.exe" --json
+# Output JSON AST dump with delayed expansion
+python src/cli.py -c "set X=calc & !X:~0,4!.exe" --json
 
 # Deobfuscate batch script using compiler AST normalizer
 python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat -o deobfuscated_output.bat
@@ -369,7 +373,7 @@ python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat -o deo
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 16 fundamental compiler, lexer, automaton, and AST normalization invariants:
+The test suite validates 54 fundamental compiler, lexer, automaton, AST normalization, and delayed expansion (`!VAR!`) invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -382,6 +386,7 @@ python -m unittest discover -s tests -v
 
 ```text
 test_automaton_state_transitions (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_delayed_expansion_full_pipeline (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_lexer_caret_and_quote_tokenization (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_lexer_percent_variable_detection (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_normalizer_caret_stripping (test_ast_suite.TestCmdASTCompilerSuite) ... ok
@@ -391,6 +396,43 @@ test_parser_command_chaining (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_parser_parenthesized_block (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_visualizer_ascii_tree (test_ast_suite.TestCmdASTCompilerSuite) ... ok
 test_visualizer_mermaid_and_json (test_ast_suite.TestCmdASTCompilerSuite) ... ok
+test_deobfuscator_engine_colon_in_substitution_pattern (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_deobfuscator_engine_negative_offset_clamp_consistent (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_deobfuscator_engine_wildcard_and_backslash_substitution (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_lexer_caret_inside_delayed_expansion (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_lexer_delayed_expansion_basic (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_lexer_delayed_expansion_inside_quotes (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_lexer_delayed_expansion_slicing (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_lexer_delayed_expansion_substitution (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_lexer_escaped_caret_exclamation (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_lexer_unclosed_exclamation (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_lexer_unclosed_exclamation_inside_quotes_does_not_swallow (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_chained_assignment_delayed (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_chained_assignment_delayed_slicing (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_chained_assignment_delayed_substitution (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_chained_assignment_dynamic_variable (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_chained_assignment_nested_percent_slicing (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_chained_assignment_nested_percent_substitution (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_delayed_expansion_dynamic_variable_name (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_delayed_expansion_nested_percent_slicing (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_delayed_expansion_resolution (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_delayed_expansion_slicing_both_negative (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_delayed_expansion_slicing_negative_length (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_delayed_expansion_slicing_negative_offset (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_delayed_expansion_slicing_positive (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_delayed_expansion_substitution (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_delayed_expansion_wildcard_substitution (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_invalid_substitution_patterns_untouched (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_unresolved_delayed_expansion_serialization (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_normalizer_unresolved_variable_with_resolved_nested_substitution_patterns (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_parser_and_normalizer_slicing_trailing_comma_zero_length (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_parser_caret_escaped_exclamation_literal (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_parser_delayed_expansion_command_target (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_parser_delayed_expansion_node (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_parser_delayed_expansion_slicing (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_parser_delayed_expansion_substitution (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_visualizer_command_target_delayed_expansion (test_delayed_expansion.TestDelayedExpansionAST) ... ok
+test_visualizer_delayed_expansion_representation (test_delayed_expansion.TestDelayedExpansionAST) ... ok
 test_bootstrap_set_chain (test_deobfuscator.TestBatchDeobfuscator) ... ok
 test_builtin_env_negative_slicing (test_deobfuscator.TestBatchDeobfuscator) ... ok
 test_caret_escaping_outside_quotes (test_deobfuscator.TestBatchDeobfuscator) ... ok
@@ -399,7 +441,7 @@ test_environment_variable_slicing (test_deobfuscator.TestBatchDeobfuscator) ... 
 test_string_substitution (test_deobfuscator.TestBatchDeobfuscator) ... ok
 
 ----------------------------------------------------------------------
-Ran 16 tests in 0.003s
+Ran 54 tests in 0.007s
 
 OK
 ```

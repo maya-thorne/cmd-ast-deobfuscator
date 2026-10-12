@@ -43,6 +43,7 @@ class LiteralNode(ASTNode):
     """Raw text literal token."""
     value: str = ""
     is_quoted: bool = False
+    is_folded_slice: bool = False
 
 
 @dataclass
@@ -63,6 +64,8 @@ class VarExpandNode(ASTNode):
     slice_len: Optional[int] = None
     sub_search: Optional[str] = None
     sub_replace: Optional[str] = None
+    slice_start_expr: Optional[str] = None
+    slice_len_expr: Optional[str] = None
 
 
 @dataclass
