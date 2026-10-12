@@ -5,6 +5,27 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-10-13
+
+### Added
+- **Caret Normalization AST Transform (M04)**:
+  - Implemented `CaretNormalizerPass` and `normalize_carets` in `src/transforms/caret_normalizer.py` for comprehensive resolution of cmd.exe caret (`^`) escape sequences.
+  - Multi-level and nested caret reduction collapsing exponential escape multipliers (e.g., `c^^^a^^^l^^^c` -> `calc`, `s^^^^e^^^^t` -> `set`, `^^^^^^^c` -> `c`).
+  - Quoting boundary tracking preserving literal carets inside double quotes (`"c^a^l^c"` preserved) while unmasking outside quotes.
+  - Escaped double quote (`^"`) support emitting literal quotation marks without toggling quoting state.
+  - Escaped caret pair normalization (`^^` -> `^`) with options for preserving literal carets or collapsing redundant runs.
+  - AST visitor hierarchy support across `LiteralNode`, `CommandNode`, `AssignmentNode`, `VarExpandNode`, `RedirectNode`, `IfNode`, `ForNode`, `BlockNode`, `ChainNode`, and `PipeNode`.
+  - Automatic conversion and promotion of obfuscated `set` commands (e.g. `s^e^t VAR=VAL`, `s^^^^e^^^^t ^"A=c^a^l^c^"`) into `AssignmentNode` and symbol table registration.
+  - Coalescing of adjacent unquoted literal fragments into consolidated AST tokens.
+- **Pipeline & Transforms Integration**:
+  - Exported `CaretNormalizerPass` and `normalize_carets` from `src/transforms/__init__.py`.
+  - Wired `CaretNormalizerPass` into `PassManager.default_pipeline` (ordered first in pass pipeline) and `run_transforms`.
+  - Wired `CaretNormalizerPass` into `ConstantFolderPass` delegating artifact stripping and quote-aware unmasking.
+  - Unified symbol table synchronization across passes in `PassManager.run`.
+- **Packaging & Test Suite**:
+  - Added dedicated unit test suite `tests/test_caret_normalizer.py` containing 28 comprehensive tests (total test suite expanded to 116 passing tests).
+  - Updated `pyproject.toml` to version 0.4.0.
+
 ## [0.3.0] - 2026-10-13
 
 ### Added

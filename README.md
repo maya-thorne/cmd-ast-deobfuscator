@@ -441,7 +441,7 @@ test_environment_variable_slicing (test_deobfuscator.TestBatchDeobfuscator) ... 
 test_string_substitution (test_deobfuscator.TestBatchDeobfuscator) ... ok
 
 ----------------------------------------------------------------------
-Ran 54 tests in 0.007s
+Ran 116 tests in 0.033s
 
 OK
 ```
@@ -536,7 +536,7 @@ OK
     <tr>
       <td><strong><code>src/transforms/</code></strong></td>
       <td>Transforms Pipeline</td>
-      <td>Modular AST optimization passes (<code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
+      <td>Modular AST optimization passes (<code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
     </tr>
     <tr>
       <td><strong><code>src/visualizer.py</code></strong></td>
@@ -561,6 +561,11 @@ OK
       <td><strong><code>tests/test_slicing_folder.py</code></strong></td>
       <td>Slicing Transform Tests</td>
       <td>Optimization tests for <code>%VAR:~s,l%</code> constant folding, boundary clamping, and slice coalescing</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_caret_normalizer.py</code></strong></td>
+      <td>Caret Transform Tests</td>
+      <td>Optimization tests for multi-level caret escape sequences, quote tracking, and pipeline passes</td>
     </tr>
     <tr>
       <td><strong><code>tests/test_deobfuscator.py</code></strong></td>

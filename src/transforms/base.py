@@ -219,15 +219,36 @@ class PassManager:
 
     def run(self, ast: ASTNode, env: Optional[Dict[str, str]] = None) -> ASTNode:
         current_ast = ast
+        shared_env = {k.lower(): v for k, v in DEFAULT_ENV.items()}
+        if env:
+            for k, v in env.items():
+                shared_env[k.lower()] = v
+        for p in self.passes:
+            for k, v in p.env.items():
+                shared_env[k] = v
+            p.env = shared_env
+
         for _ in range(self.max_iterations):
             any_modified = False
             for p in self.passes:
-                current_ast = p.transform(current_ast, env=env)
+                current_ast = p.transform(current_ast)
                 if p.modified:
                     any_modified = True
             if not any_modified:
                 break
         return current_ast
+
+    @classmethod
+    def default_pipeline(cls, env: Optional[Dict[str, str]] = None, max_iterations: int = 20) -> 'PassManager':
+        from .caret_normalizer import CaretNormalizerPass
+        from .slicing_folder import SlicingFolderPass
+        from .constant_folder import ConstantFolderPass
+        passes = [
+            CaretNormalizerPass(env=env),
+            SlicingFolderPass(env=env),
+            ConstantFolderPass(env=env),
+        ]
+        return cls(passes=passes, max_iterations=max_iterations)
 
 
 def run_transforms(
@@ -238,8 +259,8 @@ def run_transforms(
 ) -> ASTNode:
     """Convenience entry point to execute transforms with fixed-point iteration."""
     if passes is None:
-        from .slicing_folder import SlicingFolderPass
-        from .constant_folder import ConstantFolderPass
-        passes = [SlicingFolderPass(env=env), ConstantFolderPass(env=env)]
+        pm = PassManager.default_pipeline(env=env, max_iterations=max_iterations)
+        return pm.run(ast, env=env)
     pm = PassManager(passes=passes, max_iterations=max_iterations)
     return pm.run(ast, env=env)
+

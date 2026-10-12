@@ -13,6 +13,7 @@ from ..ast_nodes import (
 )
 from .base import TransformPass
 from .slicing_folder import SlicingFolderPass
+from .caret_normalizer import CaretNormalizerPass
 
 
 class ConstantFolderPass(TransformPass):
@@ -28,6 +29,7 @@ class ConstantFolderPass(TransformPass):
     def __init__(self, env: Optional[Dict[str, str]] = None):
         super().__init__(name="ConstantFolderPass", env=env)
         self.slicing_folder = SlicingFolderPass(env=self.env, fold_all_vars=True)
+        self.caret_normalizer = CaretNormalizerPass(env=self.env)
 
     def _strip_lexical_artifacts(self, text: str) -> str:
         """Removes carets and collapses empty double quotes outside quotes."""
@@ -37,21 +39,9 @@ class ConstantFolderPass(TransformPass):
         # Collapse empty quotes ""
         text = text.replace('""', '')
 
-        # Strip unescaped carets
-        res = []
-        i = 0
-        n = len(text)
-        while i < n:
-            if text[i] == '^':
-                if i + 1 < n:
-                    res.append(text[i + 1])
-                    i += 2
-                else:
-                    i += 1
-            else:
-                res.append(text[i])
-                i += 1
-        return "".join(res)
+        self.caret_normalizer.env = self.env
+        return self.caret_normalizer.normalize_text(text)
+
 
     def visit_LiteralNode(self, node: LiteralNode) -> ASTNode:
         if not node.is_quoted:
