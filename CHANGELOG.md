@@ -5,6 +5,29 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-10-13
+
+### Added
+- **Substring Slicing Constant Folding Optimization Pass**:
+  - Implemented `SlicingFolderPass` in `src/transforms/slicing_folder.py` for AST-level constant reduction of `%VAR:~s,l%` and `!VAR:~s,l!` expressions.
+  - Comprehensive slicing arithmetic matching cmd.exe semantics: 0-based positive offsets, negative offsets clamped from string tail, negative lengths leaving off characters from tail, and out-of-bounds boundary safety.
+  - Full support for omitted slice parameters: `%VAR:~,len%` (start defaults to 0), `%VAR:~start,%` (length defaults to 0 returning empty string), `%VAR:~,%` (empty string), and `%VAR:~start%` (slice to end).
+  - Explicit sign parsing (`+2`, `+0`) and whitespace tolerance (`%VAR:~ 2 , 3 %`) in slicing definitions.
+  - Nested variable expression evaluation in slicing parameters (`%VAR:~%OFF%,%LEN%%`, `!VAR:~%OFF%,%LEN%!`).
+  - Contiguous slice coalescing: fusions of adjacent slice nodes into consolidated `LiteralNode` values (e.g. `%COMSPEC:~20,1%%COMSPEC:~21,1%%COMSPEC:~22,1%` folded into `LiteralNode('cmd')`).
+  - Constant folding and AST rewriting across `CommandNode` targets, arguments, `AssignmentNode` value nodes, `BlockNode`, `ChainNode`, `PipeNode`, and `RedirectNode`.
+- **Modular Transforms Architecture (`src/transforms/`)**:
+  - `src/transforms/base.py`: AST visitor-based `TransformPass` base class and `PassManager` with fixed-point iteration until convergence.
+  - `src/transforms/constant_folder.py`: Unified constant folding pass combining slicing, caret stripping, empty quote elimination, string substitution, and symbol table propagation.
+  - `src/transforms/__init__.py`: Clean package exports for `TransformPass`, `PassManager`, `SlicingFolderPass`, `ConstantFolderPass`, and `run_transforms`.
+- **Parser & Lexer Improvements**:
+  - Updated `src/lexer.py` to tokenize slicing variables containing nested percent parameters.
+  - Updated `src/parser.py` to parse omitted slice parameters, strip whitespace, and construct AST node trees for assignments.
+  - Normalized `_calculate_slice` across `src/normalizer.py` and `src/deobfuscator_engine.py` as static `calculate_slice`.
+- **Packaging & Test Suite**:
+  - Added `pyproject.toml` standard packaging manifest at version 0.3.0.
+  - Added dedicated test suite `tests/test_slicing_folder.py` containing 34 unit tests (total test suite expanded to 88 passing tests).
+
 ## [0.2.0] - 2026-10-13
 
 ### Added

@@ -534,6 +534,11 @@ OK
       <td>Recursive descent pushdown AST parser constructing strict syntax trees from tokens</td>
     </tr>
     <tr>
+      <td><strong><code>src/transforms/</code></strong></td>
+      <td>Transforms Pipeline</td>
+      <td>Modular AST optimization passes (<code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
+    </tr>
+    <tr>
       <td><strong><code>src/visualizer.py</code></strong></td>
       <td>Visualizer Engine</td>
       <td>Multi-target visualizer emitting ASCII syntax trees, Mermaid flowcharts, and JSON</td>
@@ -546,6 +551,16 @@ OK
       <td><strong><code>tests/test_ast_suite.py</code></strong></td>
       <td>Unit Tests</td>
       <td>Compiler verification suite testing lexer tokens, automaton transitions, and AST nodes</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_delayed_expansion.py</code></strong></td>
+      <td>Delayed Expansion Tests</td>
+      <td>Unit tests for <code>!VAR!</code> delayed variables, quoting boundaries, and caret escapes</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_slicing_folder.py</code></strong></td>
+      <td>Slicing Transform Tests</td>
+      <td>Optimization tests for <code>%VAR:~s,l%</code> constant folding, boundary clamping, and slice coalescing</td>
     </tr>
     <tr>
       <td><strong><code>tests/test_deobfuscator.py</code></strong></td>
@@ -585,6 +600,7 @@ OK
 ```text
 cmd-ast-deobfuscator/
 ├── .github/
+│   ├── dependabot.yml                 # Automated dependency update configuration
 │   └── workflows/
 │       └── ci.yml                     # Automated GitHub Actions CI workflow
 ├── docs/
@@ -601,7 +617,7 @@ cmd-ast-deobfuscator/
 │   ├── huggingface-ai/                # 13 Hugging Face deobfuscation datasets & models
 │   └── source-dissections/            # Forensic line-by-line dissections of 7 tools
 ├── src/
-│   ├── __init__.py                    # Clean export of 19 AST compiler symbols
+│   ├── __init__.py                    # Clean export of AST compiler & transform symbols
 │   ├── ast_nodes.py                   # Node hierarchy (ScriptNode, CommandNode, etc.)
 │   ├── automaton.py                   # Pushdown automaton state transition engine
 │   ├── cli.py                         # UTF-8 CLI runner with --tree, --mermaid, --json
@@ -609,12 +625,23 @@ cmd-ast-deobfuscator/
 │   ├── lexer.py                       # cmd.exe 5-phase lexical analyzer
 │   ├── normalizer.py                  # Environment variable expansion & AST normalizer
 │   ├── parser.py                      # Recursive descent pushdown AST parser
+│   ├── transforms/                    # Modular AST compiler optimization passes
+│   │   ├── __init__.py                # Transform passes export & helpers
+│   │   ├── base.py                    # TransformPass base & PassManager pipeline
+│   │   ├── constant_folder.py         # General multi-strategy constant folder
+│   │   └── slicing_folder.py          # Substring slicing constant folding pass
 │   └── visualizer.py                  # ASCII tree, Mermaid diagrams, and JSON visualizer
 ├── tests/
 │   ├── test_ast_suite.py              # Compiler, lexer, automaton, AST invariant tests
-│   └── test_deobfuscator.py           # Evaluation engine invariant test suite
+│   ├── test_delayed_expansion.py      # Delayed expansion (!VAR!) test suite
+│   ├── test_deobfuscator.py           # Evaluation engine invariant test suite
+│   └── test_slicing_folder.py         # Substring slicing constant folding tests
+├── CHANGELOG.md                       # Release notes and version history
 ├── LICENSE                            # Maya Thorne Research License (MT-SRL)
-└── README.md                          # Primary English documentation
+├── pyproject.toml                     # Python packaging configuration
+├── README.md                          # Primary English documentation
+├── ROADMAP.md                         # Capability roadmap and planned milestones
+└── SECURITY.md                        # Security policy and invariants
 ```
 
 </details>
