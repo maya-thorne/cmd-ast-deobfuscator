@@ -28,16 +28,16 @@
 ## 📑 Tabla de Contenidos
 
 - [📌 Arquitectura y Fundamentos Teóricos](#-architecture--theoretical-foundations)
-  - [⚙️ Máquina de Estados de 5 Fases del Parser de `cmd.exe`](#%EF%B8%8F-cmdexe-5-phase-parser-state-machine)
+  - [⚙️ Máquina de Estados de 5 Fases del Parser de `cmd.exe`](#-cmdexe-5-phase-parser-state-machine)
   - [🔄 Canal de Desofuscación Multi-Pase](#-multi-pass-deobfuscation-pipeline)
-- [🛡️ 12 Vectores de Ofuscación Neutralizados](#%EF%B8%8F-12-major-obfuscation-vectors-countered)
+- [🛡️ 12 Vectores de Ofuscación Neutralizados](#-12-major-obfuscation-vectors-countered)
 - [🔬 Anatomía de Código Fuente: 7 Herramientas Clave](#-deep-dive-source-code-anatomy-of-7-open-source-tools)
 - [🧬 Forense de Ingeniería Inversa con Ghidra](#-ghidra-binary-reverse-engineering-forensics)
 - [🚨 Ingeniería de Detección (Reglas YARA y Sigma)](#-detection-engineering-yara--sigma-rules)
 - [🚀 Guía de Inicio Rápido y CLI](#-quickstart--cli-usage)
 - [📊 Verificación Automatizada y Rendimiento](#-automated-invariant-verification--benchmarks)
 - [📁 Estructura del Repositorio](#-repository-architecture)
-- [⚖️ Licencia y Divulgación Responsable](#%EF%B8%8F-license--responsible-disclosure)
+- [⚖️ Licencia y Divulgación Responsable](#-license--responsible-disclosure)
 
 ---
 
@@ -202,14 +202,14 @@ flowchart TD
 
 The suite includes line-by-line dissections and structural references from 7 seminal open-source obfuscation and deobfuscation projects:
 
-<table width=100%>
+<table width="100%">
   <thead>
     <tr>
-      <th width=5% align=center>#</th>
-      <th width=22% align=left>📦 Project Name</th>
-      <th width=18% align=left>👤 Author / Origin</th>
-      <th width=28% align=left>⚙️ Core Mechanism</th>
-      <th width=27% align=left>🛡️ Countermeasure</th>
+      <th width="5%" align="center"><nobr>#</nobr></th>
+      <th width="22%" align="left"><nobr>📦 Project Name</nobr></th>
+      <th width="18%" align="left"><nobr>👤 Author / Origin</nobr></th>
+      <th width="28%" align="left"><nobr>⚙️ Core Mechanism</nobr></th>
+      <th width="27%" align="left"><nobr>🛡️ Countermeasure</nobr></th>
     </tr>
   </thead>
   <tbody>

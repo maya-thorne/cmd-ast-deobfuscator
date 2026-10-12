@@ -28,16 +28,16 @@
 ## 📑 목차
 
 - [📌 아키텍처 및 이론적 기초](#-architecture--theoretical-foundations)
-  - [⚙️ `cmd.exe` 5단계 파서 상태 머신 분석](#%EF%B8%8F-cmdexe-5-phase-parser-state-machine)
+  - [⚙️ `cmd.exe` 5단계 파서 상태 머신 분석](#-cmdexe-5-phase-parser-state-machine)
   - [🔄 다중 패스 역난독화 파이프라인 구조도](#-multi-pass-deobfuscation-pipeline)
-- [🛡️ 12대 핵심 난독화 기법 정밀 대응](#%EF%B8%8F-12-major-obfuscation-vectors-countered)
+- [🛡️ 12대 핵심 난독화 기법 정밀 대응](#-12-major-obfuscation-vectors-countered)
 - [🔬 7대 오픈소스 난독화/해제 도구 원본 소스 심층 해부](#-deep-dive-source-code-anatomy-of-7-open-source-tools)
 - [🧬 기드라(Ghidra) 바이너리 포렌식 및 PE 역공학](#-ghidra-binary-reverse-engineering-forensics)
 - [🚨 탐지 엔지니어링 (YARA 및 Sigma 규칙)](#-detection-engineering-yara--sigma-rules)
 - [🚀 빠른 시작 및 CLI 사용법](#-quickstart--cli-usage)
 - [📊 자동 검증 및 성능 벤치마크](#-automated-invariant-verification--benchmarks)
 - [📁 저장소 디렉터리 구조](#-repository-architecture)
-- [⚖️ 라이선스 및 윤리적 사용 고지](#%EF%B8%8F-license--responsible-disclosure)
+- [⚖️ 라이선스 및 윤리적 사용 고지](#-license--responsible-disclosure)
 
 ---
 
@@ -202,14 +202,14 @@ flowchart TD
 
 The suite includes line-by-line dissections and structural references from 7 seminal open-source obfuscation and deobfuscation projects:
 
-<table width=100%>
+<table width="100%">
   <thead>
     <tr>
-      <th width=5% align=center>#</th>
-      <th width=22% align=left>📦 Project Name</th>
-      <th width=18% align=left>👤 Author / Origin</th>
-      <th width=28% align=left>⚙️ Core Mechanism</th>
-      <th width=27% align=left>🛡️ Countermeasure</th>
+      <th width="5%" align="center"><nobr>#</nobr></th>
+      <th width="22%" align="left"><nobr>📦 Project Name</nobr></th>
+      <th width="18%" align="left"><nobr>👤 Author / Origin</nobr></th>
+      <th width="28%" align="left"><nobr>⚙️ Core Mechanism</nobr></th>
+      <th width="27%" align="left"><nobr>🛡️ Countermeasure</nobr></th>
     </tr>
   </thead>
   <tbody>

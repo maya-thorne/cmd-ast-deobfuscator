@@ -28,16 +28,16 @@
 ## 📑 विषय सूची
 
 - [📌 आर्किटेक्चर और सैद्धांतिक आधार](#-architecture--theoretical-foundations)
-  - [⚙️ `cmd.exe` पार्सर की 5-चरणीय स्टेट मशीन](#%EF%B8%8F-cmdexe-5-phase-parser-state-machine)
+  - [⚙️ `cmd.exe` पार्सर की 5-चरणीय स्टेट मशीन](#-cmdexe-5-phase-parser-state-machine)
   - [🔄 मल्टी-पास डीओबफस्केशन पाइपलाइन संरचना](#-multi-pass-deobfuscation-pipeline)
-- [🛡️ 12 प्रमुख ऑबफस्केशन तकनीकों का समाधान](#%EF%B8%8F-12-major-obfuscation-vectors-countered)
+- [🛡️ 12 प्रमुख ऑबफस्केशन तकनीकों का समाधान](#-12-major-obfuscation-vectors-countered)
 - [🔬 7 ओपन-सोर्स टूल्स का गहन स्रोत कोड विश्लेषण](#-deep-dive-source-code-anatomy-of-7-open-source-tools)
 - [🧬 Ghidra बाइनरी रिवर्स इंजीनियरिंग और PE फोरेंसिक](#-ghidra-binary-reverse-engineering-forensics)
 - [🚨 डिटेक्शन इंजीनियरिंग (YARA और Sigma नियम)](#-detection-engineering-yara--sigma-rules)
 - [🚀 त्वरित शुरुआत और CLI उपयोग](#-quickstart--cli-usage)
 - [📊 स्वचालित सत्यापन और बेंचमार्क](#-automated-invariant-verification--benchmarks)
 - [📁 रिपॉजिटरी आर्किटेक्चर ट्री](#-repository-architecture)
-- [⚖️ लाइसेंस और नैतिक उपयोग नीति](#%EF%B8%8F-license--responsible-disclosure)
+- [⚖️ लाइसेंस और नैतिक उपयोग नीति](#-license--responsible-disclosure)
 
 ---
 
@@ -202,14 +202,14 @@ flowchart TD
 
 The suite includes line-by-line dissections and structural references from 7 seminal open-source obfuscation and deobfuscation projects:
 
-<table width=100%>
+<table width="100%">
   <thead>
     <tr>
-      <th width=5% align=center>#</th>
-      <th width=22% align=left>📦 Project Name</th>
-      <th width=18% align=left>👤 Author / Origin</th>
-      <th width=28% align=left>⚙️ Core Mechanism</th>
-      <th width=27% align=left>🛡️ Countermeasure</th>
+      <th width="5%" align="center"><nobr>#</nobr></th>
+      <th width="22%" align="left"><nobr>📦 Project Name</nobr></th>
+      <th width="18%" align="left"><nobr>👤 Author / Origin</nobr></th>
+      <th width="28%" align="left"><nobr>⚙️ Core Mechanism</nobr></th>
+      <th width="27%" align="left"><nobr>🛡️ Countermeasure</nobr></th>
     </tr>
   </thead>
   <tbody>

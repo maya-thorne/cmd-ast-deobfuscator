@@ -28,16 +28,16 @@
 ## 📑 Table des Matières
 
 - [📌 Architecture & Fondements Théoriques](#-architecture--theoretical-foundations)
-  - [⚙️ Machine d'États du Parseur `cmd.exe` en 5 Phases](#%EF%B8%8F-cmdexe-5-phase-parser-state-machine)
+  - [⚙️ Machine d'États du Parseur `cmd.exe` en 5 Phases](#-cmdexe-5-phase-parser-state-machine)
   - [🔄 Pipeline de Désobfuscation Multi-Passe](#-multi-pass-deobfuscation-pipeline)
-- [🛡️ 12 Vecteurs Majeurs d'Obfuscation Neutralisés](#%EF%B8%8F-12-major-obfuscation-vectors-countered)
+- [🛡️ 12 Vecteurs Majeurs d'Obfuscation Neutralisés](#-12-major-obfuscation-vectors-countered)
 - [🔬 Anatomie du Code Source de 7 Outils Majeurs](#-deep-dive-source-code-anatomy-of-7-open-source-tools)
 - [🧬 Analyse Binaire Forensique avec Ghidra](#-ghidra-binary-reverse-engineering-forensics)
 - [🚨 Règles de Détection YARA & Sigma](#-detection-engineering-yara--sigma-rules)
 - [🚀 Démarrage Rapide et Utilisation CLI](#-quickstart--cli-usage)
 - [📊 Vérification Automatique et Benchmarks](#-automated-invariant-verification--benchmarks)
 - [📁 Structure de l'Arborescence](#-repository-architecture)
-- [⚖️ Licence et Décharge Éthique](#%EF%B8%8F-license--responsible-disclosure)
+- [⚖️ Licence et Décharge Éthique](#-license--responsible-disclosure)
 
 ---
 
@@ -202,14 +202,14 @@ flowchart TD
 
 The suite includes line-by-line dissections and structural references from 7 seminal open-source obfuscation and deobfuscation projects:
 
-<table width=100%>
+<table width="100%">
   <thead>
     <tr>
-      <th width=5% align=center>#</th>
-      <th width=22% align=left>📦 Project Name</th>
-      <th width=18% align=left>👤 Author / Origin</th>
-      <th width=28% align=left>⚙️ Core Mechanism</th>
-      <th width=27% align=left>🛡️ Countermeasure</th>
+      <th width="5%" align="center"><nobr>#</nobr></th>
+      <th width="22%" align="left"><nobr>📦 Project Name</nobr></th>
+      <th width="18%" align="left"><nobr>👤 Author / Origin</nobr></th>
+      <th width="28%" align="left"><nobr>⚙️ Core Mechanism</nobr></th>
+      <th width="27%" align="left"><nobr>🛡️ Countermeasure</nobr></th>
     </tr>
   </thead>
   <tbody>

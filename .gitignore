@@ -65,3 +65,4 @@ Thumbs.db
 
 # Local Agent Internal Memory (Zero-Remote Upload)
 memory/
+.gemini/

@@ -25,26 +25,30 @@
 
 ---
 
+<span id="table-of-contents"></span>
 ## 📑 Table of Contents
 
-- [📌 Architecture & Theoretical Foundations](#-architecture--theoretical-foundations)
-  - [⚙️ `cmd.exe` 5-Phase Parser State Machine](#%EF%B8%8F-cmdexe-5-phase-parser-state-machine)
-  - [🔄 Multi-Pass Deobfuscation Pipeline](#-multi-pass-deobfuscation-pipeline)
-- [🛡️ 12 Major Obfuscation Vectors Countered](#%EF%B8%8F-12-major-obfuscation-vectors-countered)
-- [🔬 Deep Dive: Source Code Anatomy of 7 Open-Source Tools](#-deep-dive-source-code-anatomy-of-7-open-source-tools)
-- [🧬 Ghidra Binary Reverse Engineering Forensics](#-ghidra-binary-reverse-engineering-forensics)
-- [🚨 Detection Engineering (YARA & Sigma Rules)](#-detection-engineering-yara--sigma-rules)
-- [🚀 Quickstart & CLI Usage](#-quickstart--cli-usage)
-- [📊 Automated Invariant Verification & Benchmarks](#-automated-invariant-verification--benchmarks)
-- [📁 Repository Architecture](#-repository-architecture)
-- [⚖️ License & Responsible Disclosure](#%EF%B8%8F-license--responsible-disclosure)
+- [📌 Architecture & Theoretical Foundations](#architecture-theoretical-foundations)
+  - [⚙️ `cmd.exe` 5-Phase Parser State Machine](#cmdexe-5-phase-parser-state-machine)
+  - [🔄 Multi-Pass Deobfuscation Pipeline](#multi-pass-deobfuscation-pipeline)
+- [🛡️ 12 Major Obfuscation Vectors Countered](#12-major-obfuscation-vectors-countered)
+- [🔬 Deep Dive: Source Code Anatomy of 7 Open-Source Tools](#deep-dive-source-code-anatomy)
+- [🧬 Ghidra Binary Reverse Engineering Forensics](#ghidra-binary-reverse-engineering)
+- [🚨 Detection Engineering (YARA & Sigma Rules)](#detection-engineering-rules)
+- [🚀 Quickstart & CLI Usage](#quickstart-cli-usage)
+- [📊 Automated Invariant Verification & Benchmarks](#automated-invariant-verification)
+- [📁 Repository Architecture](#repository-architecture)
+  - [📁 Repository Architecture & Directory Map](#repository-architecture-directory-map)
+- [⚖️ License & Responsible Disclosure](#license-responsible-disclosure)
 
 ---
 
+<span id="architecture-theoretical-foundations"></span>
 ## 📌 Architecture & Theoretical Foundations
 
 `cmd-ast-deobfuscator` is an industrial-grade static analysis and deobfuscation framework designed for incident responders, malware analysts, and reverse engineers. It emulates the lexical evaluation phases of Microsoft Windows Command Processor (`cmd.exe`), unraveling multi-layer evasive scripts back into human-readable, deterministic abstract syntax structures.
 
+<span id="cmdexe-5-phase-parser-state-machine"></span>
 ### ⚙️ `cmd.exe` 5-Phase Parser State Machine
 
 Unlike modern script interpreters (such as Python or PowerShell) that tokenize scripts using strict LL/LR grammars, `cmd.exe` relies on a legacy 5-phase iterative scanning state machine. Adversaries abuse the discrepancies between parsing phases to evade endpoint detection and signature matching:
@@ -55,6 +59,7 @@ Unlike modern script interpreters (such as Python or PowerShell) that tokenize s
 4. **Phase 4: Delayed Expansion Evaluation (`!VAR!`)** — If `setlocal EnableDelayedExpansion` is activated, variables delimited with exclamation marks are evaluated after line segmentation, allowing iterative loops and runtime string construction.
 5. **Phase 5: Subshell Dispatch & Parameter Splitting** — Extracts the binary executable name and command-line arguments, applying quotation stripping and token dispatch.
 
+<span id="multi-pass-deobfuscation-pipeline"></span>
 ### 🔄 Multi-Pass Deobfuscation Pipeline
 
 <details open>
@@ -87,6 +92,7 @@ flowchart TD
 
 ---
 
+<span id="12-major-obfuscation-vectors-countered"></span>
 ## 🛡️ 12 Major Obfuscation Vectors Countered
 
 <details open>
@@ -198,6 +204,7 @@ flowchart TD
 
 ---
 
+<span id="deep-dive-source-code-anatomy"></span>
 ## 🔬 Deep Dive: Source Code Anatomy of 7 Open-Source Tools
 
 The suite includes line-by-line dissections and structural references from 7 seminal open-source obfuscation and deobfuscation projects:
@@ -209,11 +216,11 @@ The suite includes line-by-line dissections and structural references from 7 sem
 <table width="100%">
   <thead>
     <tr>
-      <th width="5%" align="center">#</th>
-      <th width="22%" align="left">📦 Project Name</th>
-      <th width="18%" align="left">👤 Author / Origin</th>
-      <th width="28%" align="left">⚙️ Core Mechanism</th>
-      <th width="27%" align="left">🛡️ Countermeasure</th>
+      <th width="5%" align="center"><nobr>#</nobr></th>
+      <th width="22%" align="left"><nobr>📦 Project Name</nobr></th>
+      <th width="18%" align="left"><nobr>👤 Author / Origin</nobr></th>
+      <th width="28%" align="left"><nobr>⚙️ Core Mechanism</nobr></th>
+      <th width="27%" align="left"><nobr>🛡️ Countermeasure</nobr></th>
     </tr>
   </thead>
   <tbody>
@@ -275,6 +282,7 @@ The suite includes line-by-line dissections and structural references from 7 sem
 
 ---
 
+<span id="ghidra-binary-reverse-engineering"></span>
 ## 🧬 Ghidra Binary Reverse Engineering Forensics
 
 We conducted comprehensive Ghidra binary decompilation and memory forensic analysis on 4 key executables associated with batch compilation and runtime evasion:
@@ -316,6 +324,7 @@ Target Executables Triaged:
 
 ---
 
+<span id="detection-engineering-rules"></span>
 ## 🚨 Detection Engineering (YARA & Sigma Rules)
 
 Production-ready detection rules targeting evasive batch artifacts are located in [`references/detection_rules/`](references/detection_rules/):
@@ -325,6 +334,7 @@ Production-ready detection rules targeting evasive batch artifacts are located i
 
 ---
 
+<span id="quickstart-cli-usage"></span>
 ## 🚀 Quickstart & CLI Usage
 
 ### Prerequisites
@@ -356,6 +366,7 @@ python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat -o deo
 
 ---
 
+<span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
 The test suite validates 16 fundamental compiler, lexer, automaton, and AST normalization invariants:
@@ -397,7 +408,133 @@ OK
 
 ---
 
+<span id="repository-architecture"></span>
 ## 📁 Repository Architecture
+
+<span id="repository-architecture-directory-map"></span>
+<span id="repository-architecture--directory-map"></span>
+### 📁 Repository Architecture & Directory Map
+
+<details open>
+<summary><b>📋 Repository Architecture &amp; Component Directory Map (Click to collapse/expand)</b></summary>
+<br>
+
+<table width="100%">
+  <thead>
+    <tr>
+      <th width="30%" align="left"><nobr>📁 Component / File</nobr></th>
+      <th width="20%" align="left"><nobr>⚙️ Architectural Layer</nobr></th>
+      <th width="50%" align="left"><nobr>📝 Engineering Description</nobr></th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Root -->
+    <tr>
+      <td colspan="3" bgcolor="#0f172a"><strong>📦 Root Workspace Manifests &amp; Documentation</strong></td>
+    </tr>
+    <tr>
+      <td><strong><code>README.md</code></strong></td>
+      <td>Technical Documentation</td>
+      <td>Primary architectural blueprint, AST benchmarks, 7-tool forensic study, and CLI reference</td>
+    </tr>
+    <tr>
+      <td><strong><code>LICENSE</code></strong></td>
+      <td>Research License</td>
+      <td>Maya Thorne Systems &amp; Security Research License (MT-SRL) for defensive analysis</td>
+    </tr>
+    <tr>
+      <td><strong><code>.gitignore</code></strong></td>
+      <td>Version Control</td>
+      <td>Production Git exclusions covering bytecode, cache, memory journals, and IDE files</td>
+    </tr>
+    <!-- src/ -->
+    <tr>
+      <td colspan="3" bgcolor="#0f172a"><strong>⚙️ <code>src/</code> — Core AST Engine &amp; Compiler Pipeline</strong></td>
+    </tr>
+    <tr>
+      <td><strong><code>src/__init__.py</code></strong></td>
+      <td>Package API</td>
+      <td>Clean library interface exporting 19 AST nodes, parser automata, and engine symbols</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/ast_nodes.py</code></strong></td>
+      <td>AST Hierarchy</td>
+      <td>Visitor-pattern syntax tree node definitions (ScriptNode, CommandNode, BinaryOpNode)</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/automaton.py</code></strong></td>
+      <td>PDA Automaton</td>
+      <td>Deterministic pushdown automaton state machine for nested subshells and loops</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/cli.py</code></strong></td>
+      <td>CLI Driver</td>
+      <td>Terminal runner with UTF-8 normalization, color output, and tree/mermaid/json export</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/deobfuscator_engine.py</code></strong></td>
+      <td>Engine Pipeline</td>
+      <td>Multi-pass static evaluation engine orchestrating 6 AST normalization passes</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/lexer.py</code></strong></td>
+      <td>Lexical Analyzer</td>
+      <td>Faithful <code>cmd.exe</code> 5-phase lexical scanner tokenizing carets, percents, and pipes</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/normalizer.py</code></strong></td>
+      <td>AST Normalizer</td>
+      <td>AST rewriting engine resolving variable slicing, pattern substitution, and caret folding</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/parser.py</code></strong></td>
+      <td>Syntax Parser</td>
+      <td>Recursive descent pushdown AST parser constructing strict syntax trees from tokens</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/visualizer.py</code></strong></td>
+      <td>Visualizer Engine</td>
+      <td>Multi-target visualizer emitting ASCII syntax trees, Mermaid flowcharts, and JSON</td>
+    </tr>
+    <!-- tests/ -->
+    <tr>
+      <td colspan="3" bgcolor="#0f172a"><strong>🧪 <code>tests/</code> — Automated Verification Suite</strong></td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_ast_suite.py</code></strong></td>
+      <td>Unit Tests</td>
+      <td>Compiler verification suite testing lexer tokens, automaton transitions, and AST nodes</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_deobfuscator.py</code></strong></td>
+      <td>Integration Tests</td>
+      <td>End-to-end invariant validation verifying deobfuscation of 12 adversarial vectors</td>
+    </tr>
+    <!-- Auxiliary Directories -->
+    <tr>
+      <td colspan="3" bgcolor="#0f172a"><strong>📚 Supporting Directories &amp; Research Assets</strong></td>
+    </tr>
+    <tr>
+      <td><strong><code>.github/workflows/ci.yml</code></strong></td>
+      <td>CI / Automation</td>
+      <td>Automated GitHub Actions test pipeline across Python 3.10, 3.11, and 3.12 runtimes</td>
+    </tr>
+    <tr>
+      <td><strong><code>docs/</code></strong></td>
+      <td>Formal Specifications</td>
+      <td>EBNF grammar formalisms, pushdown automata specifications, and 9 localized guides</td>
+    </tr>
+    <tr>
+      <td><strong><code>references/</code></strong></td>
+      <td>Forensic Corpus</td>
+      <td>Forensic dissections of 7 tools, classic samples, YARA/Sigma rules, and Hugging Face datasets</td>
+    </tr>
+  </tbody>
+</table>
+
+</details>
+
+<br>
 
 <details open>
 <summary><b>📁 Complete Repository Directory Tree (Click to collapse/expand)</b></summary>
@@ -442,6 +579,8 @@ cmd-ast-deobfuscator/
 
 ---
 
+<span id="license-responsible-disclosure"></span>
+<span id="license--responsible-disclosure"></span>
 ## ⚖️ License & Responsible Disclosure
 
 This project is licensed under the **Maya Thorne Systems & Security Research License (MT-SRL)** — see [`LICENSE`](LICENSE) for details.

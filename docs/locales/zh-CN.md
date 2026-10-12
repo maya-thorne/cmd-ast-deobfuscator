@@ -28,16 +28,16 @@
 ## 📑 目录
 
 - [📌 架构设计与理论基础](#-architecture--theoretical-foundations)
-  - [⚙️ `cmd.exe` 5阶段解析器状态机深度剖析](#%EF%B8%8F-cmdexe-5-phase-parser-state-machine)
+  - [⚙️ `cmd.exe` 5阶段解析器状态机深度剖析](#-cmdexe-5-phase-parser-state-machine)
   - [🔄 多轮反混淆管道流程图](#-multi-pass-deobfuscation-pipeline)
-- [🛡️ 攻克12大主流混淆技术向量](#%EF%B8%8F-12-major-obfuscation-vectors-countered)
+- [🛡️ 攻克12大主流混淆技术向量](#-12-major-obfuscation-vectors-countered)
 - [🔬 深入剖析7款主流开源工具核心源码](#-deep-dive-source-code-anatomy-of-7-open-source-tools)
 - [🧬 Ghidra 二进制逆向取证与 PE 剖析](#-ghidra-binary-reverse-engineering-forensics)
 - [🚨 检测工程（YARA 与 Sigma 规则）](#-detection-engineering-yara--sigma-rules)
 - [🚀 快速上手与命令行指南](#-quickstart--cli-usage)
 - [📊 自动化测试套件与基准测试](#-automated-invariant-verification--benchmarks)
 - [📁 仓库目录树设计](#-repository-architecture)
-- [⚖️ 开源许可证与安全披露准则](#%EF%B8%8F-license--responsible-disclosure)
+- [⚖️ 开源许可证与安全披露准则](#-license--responsible-disclosure)
 
 ---
 
@@ -202,14 +202,14 @@ flowchart TD
 
 The suite includes line-by-line dissections and structural references from 7 seminal open-source obfuscation and deobfuscation projects:
 
-<table width=100%>
+<table width="100%">
   <thead>
     <tr>
-      <th width=5% align=center>#</th>
-      <th width=22% align=left>📦 Project Name</th>
-      <th width=18% align=left>👤 Author / Origin</th>
-      <th width=28% align=left>⚙️ Core Mechanism</th>
-      <th width=27% align=left>🛡️ Countermeasure</th>
+      <th width="5%" align="center"><nobr>#</nobr></th>
+      <th width="22%" align="left"><nobr>📦 Project Name</nobr></th>
+      <th width="18%" align="left"><nobr>👤 Author / Origin</nobr></th>
+      <th width="28%" align="left"><nobr>⚙️ Core Mechanism</nobr></th>
+      <th width="27%" align="left"><nobr>🛡️ Countermeasure</nobr></th>
     </tr>
   </thead>
   <tbody>

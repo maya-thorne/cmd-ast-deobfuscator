@@ -28,16 +28,16 @@
 ## 📑 فهرس المحتويات
 
 - [📌 الهندسة المعمارية والأسس النظرية](#-architecture--theoretical-foundations)
-  - [⚙️ آلة الحالة الخماسية لمحلل `cmd.exe` النحوي](#%EF%B8%8F-cmdexe-5-phase-parser-state-machine)
+  - [⚙️ آلة الحالة الخماسية لمحلل `cmd.exe` النحوي](#-cmdexe-5-phase-parser-state-machine)
   - [🔄 مخطط مسار فك التعمية متعدد المراحل](#-multi-pass-deobfuscation-pipeline)
-- [🛡️ التصدي لـ 12 تقنية تعمية رئيسية](#%EF%B8%8F-12-major-obfuscation-vectors-countered)
+- [🛡️ التصدي لـ 12 تقنية تعمية رئيسية](#-12-major-obfuscation-vectors-countered)
 - [🔬 التشريح البرمجي لـ 7 أدوات مفتوحة المصدر](#-deep-dive-source-code-anatomy-of-7-open-source-tools)
 - [🧬 التحليل الجنائي والهندسة العكسية عبر Ghidra](#-ghidra-binary-reverse-engineering-forensics)
 - [🚨 هندسة الاكتشاف (قواعد YARA و Sigma)](#-detection-engineering-yara--sigma-rules)
 - [🚀 البدء السريع واستخدام سطر الأوامر CLI](#-quickstart--cli-usage)
 - [📊 الاختبارات الآلية وقياسات الأداء](#-automated-invariant-verification--benchmarks)
 - [📁 شجرة هيكل المستودع](#-repository-architecture)
-- [⚖️ الترخيص والإفصاح الأمني المسؤول](#%EF%B8%8F-license--responsible-disclosure)
+- [⚖️ الترخيص والإفصاح الأمني المسؤول](#-license--responsible-disclosure)
 
 ---
 
@@ -202,14 +202,14 @@ flowchart TD
 
 The suite includes line-by-line dissections and structural references from 7 seminal open-source obfuscation and deobfuscation projects:
 
-<table width=100%>
+<table width="100%">
   <thead>
     <tr>
-      <th width=5% align=center>#</th>
-      <th width=22% align=left>📦 Project Name</th>
-      <th width=18% align=left>👤 Author / Origin</th>
-      <th width=28% align=left>⚙️ Core Mechanism</th>
-      <th width=27% align=left>🛡️ Countermeasure</th>
+      <th width="5%" align="center"><nobr>#</nobr></th>
+      <th width="22%" align="left"><nobr>📦 Project Name</nobr></th>
+      <th width="18%" align="left"><nobr>👤 Author / Origin</nobr></th>
+      <th width="28%" align="left"><nobr>⚙️ Core Mechanism</nobr></th>
+      <th width="27%" align="left"><nobr>🛡️ Countermeasure</nobr></th>
     </tr>
   </thead>
   <tbody>
