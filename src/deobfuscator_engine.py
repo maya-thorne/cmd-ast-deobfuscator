@@ -18,6 +18,14 @@ except (ImportError, ValueError):
     except ImportError:
         StringReversalAutomaton = None
 
+try:
+    from .quotes import collapse_empty_quotes
+except (ImportError, ValueError):
+    try:
+        from quotes import collapse_empty_quotes
+    except ImportError:
+        collapse_empty_quotes = None
+
 
 class BatchDeobfuscator:
     def __init__(self, max_passes: int = 15):
@@ -39,6 +47,8 @@ class BatchDeobfuscator:
     def strip_bom_and_empty_quotes(self, text: str) -> str:
         """Remove UTF-16/UTF-8 BOM headers and obfuscated empty quote pairs (e.g. w""h""o -> who)."""
         text = text.lstrip("\ufeff\ufffe")
+        if collapse_empty_quotes:
+            return collapse_empty_quotes(text)
         return re.sub(r'([a-zA-Z0-9_/\-\.])""(?=[a-zA-Z0-9_/\-\.])', r"\1", text)
 
     def strip_carets(self, text: str) -> str:

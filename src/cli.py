@@ -47,6 +47,8 @@ def main():
     parser.add_argument("--arithmetic-stats", action="store_true", help="Print arithmetic expression folding metrics summary")
     parser.add_argument("--reversal", action="store_true", help="Perform string reversal and transposition deobfuscation")
     parser.add_argument("--reversal-stats", action="store_true", help="Print string reversal and transposition metrics summary")
+    parser.add_argument("--quotes", action="store_true", help="Perform quote toggle boundary and empty quote pair normalization")
+    parser.add_argument("--quote-stats", action="store_true", help="Print quote normalization metrics summary")
     parser.add_argument("--preserve-vars", help="Comma-separated variable names to protect from dead code elimination")
     parser.add_argument("--benchmark", action="store_true", help="Execute real-world deobfuscation benchmark suite")
     parser.add_argument("--benchmark-engine", choices=["ast", "automaton"], default="ast", help="Engine to evaluate (ast or automaton)")
@@ -135,6 +137,14 @@ def main():
             print(f"  Transposed slices folded : {rev_pass.metrics.transposed_slices_folded}")
             print(f"  GOTO stack loops folded  : {rev_pass.metrics.goto_loops_folded}")
             print(f"  Characters decoded       : {rev_pass.metrics.characters_decoded}")
+
+    if args.quotes or args.quote_stats:
+        from src.transforms.quote_normalizer import QuoteNormalizerPass
+        quote_pass = QuoteNormalizerPass()
+        ast = quote_pass.transform(ast)
+        if args.quote_stats:
+            print("\n=== [QUOTE NORMALIZATION STATS] ===")
+            print(quote_pass.metrics.summary())
 
     if args.dce or args.dce_stats:
         from src.transforms.dce import DeadCodeEliminationPass

@@ -17,6 +17,7 @@ from .dce import (
     DCEMetrics,
     eliminate_dead_code,
 )
+from .quote_normalizer import QuoteNormalizerPass
 
 __all__ = [
     'TransformPass',
@@ -24,6 +25,7 @@ __all__ = [
     'SlicingFolderPass',
     'ConstantFolderPass',
     'CaretNormalizerPass',
+    'QuoteNormalizerPass',
     'ParamResolverPass',
     'ArithmeticFolderPass',
     'fold_arithmetic',

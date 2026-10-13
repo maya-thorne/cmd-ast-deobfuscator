@@ -395,6 +395,12 @@ python src/cli.py -i script.bat --reversal -o cleaned.bat
 # Display string reversal and transposition metrics summary
 python src/cli.py -i script.bat --reversal --reversal-stats
 
+# Normalize quote toggle boundaries, empty quote pairs, and nested quotes
+python src/cli.py -i script.bat --quotes -o cleaned.bat
+
+# Display quote normalization metrics summary
+python src/cli.py -i script.bat --quotes --quote-stats
+
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
@@ -407,7 +413,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 279 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, and real-world benchmark invariants:
+The test suite validates 306 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -494,11 +500,17 @@ test_detect_goto_stack_reversal (test_reversal_suite.TestReversalPatternDetector
 test_fold_for_l_reverse_string (test_reversal_suite.TestReversalFolderPass) ... ok
 test_fold_for_in_dictionary_transposition (test_reversal_suite.TestReversalFolderPass) ... ok
 test_fold_goto_stack_reversal_loop (test_reversal_suite.TestReversalFolderPass) ... ok
-test_full_pipeline_end_to_end (test_reversal_suite.TestReversalFolderPass) ... ok
 test_batch_deobfuscator_reversal (test_reversal_suite.TestBatchDeobfuscatorReversal) ... ok
+test_quote_state_machine_basic_segments (test_quote_normalizer_suite.TestQuoteNormalizerSuite) ... ok
+test_collapse_embedded_empty_quotes (test_quote_normalizer_suite.TestQuoteNormalizerSuite) ... ok
+test_normalize_target_stripped_quotes (test_quote_normalizer_suite.TestQuoteNormalizerSuite) ... ok
+test_normalize_argument_safe_tokens (test_quote_normalizer_suite.TestQuoteNormalizerSuite) ... ok
+test_normalize_assignment_enclosed_quotes (test_quote_normalizer_suite.TestQuoteNormalizerSuite) ... ok
+test_pass_transforms_command_node (test_quote_normalizer_suite.TestQuoteNormalizerSuite) ... ok
+test_pass_manager_pipeline_execution (test_quote_normalizer_suite.TestQuoteNormalizerSuite) ... ok
 
 ----------------------------------------------------------------------
-Ran 279 tests in 0.121s
+Ran 306 tests in 0.190s
 
 OK
 ```
@@ -601,9 +613,14 @@ OK
       <td>Pushdown automaton, pattern detector, and simulation engine for Somalifuscator reverse loops and transpositions</td>
     </tr>
     <tr>
+      <td><strong><code>src/quotes/</code></strong></td>
+      <td>Quotes Engine</td>
+      <td>Pushdown automaton, target deobfuscator, argument canonicalizer, and nested quote reduction engine</td>
+    </tr>
+    <tr>
       <td><strong><code>src/transforms/</code></strong></td>
       <td>Transforms Pipeline</td>
-      <td>Modular AST optimization passes (<code>ReversalFolderPass</code>, <code>ArithmeticFolderPass</code>, <code>DeadCodeEliminationPass</code>, <code>ParamResolverPass</code>, <code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
+      <td>Modular AST optimization passes (<code>ReversalFolderPass</code>, <code>QuoteNormalizerPass</code>, <code>ArithmeticFolderPass</code>, <code>DeadCodeEliminationPass</code>, <code>ParamResolverPass</code>, <code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
     </tr>
     <tr>
       <td><strong><code>src/benchmark/</code></strong></td>
@@ -663,6 +680,11 @@ OK
       <td><strong><code>tests/test_reversal_suite.py</code></strong></td>
       <td>Reversal Suite Tests</td>
       <td>Unit &amp; integration tests for string reversal automata, dictionary transpositions, and GOTO loops</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_quote_normalizer_suite.py</code></strong></td>
+      <td>Quote Normalizer Tests</td>
+      <td>Unit &amp; integration tests for quotation toggle state machine, empty quote collapse, and argument canonicalization</td>
     </tr>
     <!-- Auxiliary Directories -->
     <tr>
