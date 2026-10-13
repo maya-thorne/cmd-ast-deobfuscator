@@ -7,7 +7,8 @@ import json
 from typing import List, Dict, Any
 from .ast_nodes import (
     ASTNode, ScriptNode, CommandNode, PipeNode, ChainNode,
-    BlockNode, AssignmentNode, VarExpandNode, LiteralNode, CommentNode
+    BlockNode, AssignmentNode, VarExpandNode, LiteralNode, CommentNode,
+    ParamExpandNode, ForNode, LabelNode, GotoNode, CallNode, ExitNode
 )
 
 
@@ -85,6 +86,18 @@ class ASTVisualizer:
         if isinstance(node, CommentNode):
             preview = (node.text[:28] + '...') if len(node.text) > 30 else node.text
             return f"CommentNode({preview!r})"
+        if isinstance(node, ParamExpandNode):
+            return f"ParamExpandNode(name={node.name!r}, for_var={node.is_for_var}, mod={node.modifiers!r})"
+        if isinstance(node, ForNode):
+            return f"ForNode(iter={node.iterator!r}, in={node.in_clause!r})"
+        if isinstance(node, LabelNode):
+            return f"LabelNode(:{node.name})"
+        if isinstance(node, GotoNode):
+            return f"GotoNode(target={node.target!r}, dynamic={node.is_dynamic})"
+        if isinstance(node, CallNode):
+            return f"CallNode(target={node.target!r}, sub={node.is_subroutine}, dynamic={node.is_dynamic})"
+        if isinstance(node, ExitNode):
+            return f"ExitNode(batch_return={node.is_batch_return}, code={node.exit_code!r})"
         return name
 
     @staticmethod
@@ -98,8 +111,14 @@ class ASTVisualizer:
         if isinstance(node, PipeNode):
             return [node.left, node.right]
         if isinstance(node, CommandNode):
-            dyn_targets = [t for t in node.target_nodes if isinstance(t, VarExpandNode)]
+            dyn_targets = [t for t in node.target_nodes if isinstance(t, (VarExpandNode, ParamExpandNode))]
             return dyn_targets + node.arguments
+        if isinstance(node, GotoNode):
+            return node.target_nodes
+        if isinstance(node, CallNode):
+            return node.target_nodes + node.arguments
         if isinstance(node, AssignmentNode):
             return node.value_nodes
+        if isinstance(node, ForNode):
+            return [node.body] if node.body else []
         return []

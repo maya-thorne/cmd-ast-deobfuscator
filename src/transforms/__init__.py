@@ -8,6 +8,13 @@ from .base import TransformPass, PassManager, run_transforms
 from .slicing_folder import SlicingFolderPass
 from .constant_folder import ConstantFolderPass
 from .caret_normalizer import CaretNormalizerPass, normalize_carets
+from .param_resolver import ParamResolverPass
+from .dce import (
+    DeadCodeEliminationPass,
+    VariableLivenessAnalyzer,
+    DCEMetrics,
+    eliminate_dead_code,
+)
 
 __all__ = [
     'TransformPass',
@@ -15,6 +22,12 @@ __all__ = [
     'SlicingFolderPass',
     'ConstantFolderPass',
     'CaretNormalizerPass',
+    'ParamResolverPass',
+    'DeadCodeEliminationPass',
+    'VariableLivenessAnalyzer',
+    'DCEMetrics',
+    'eliminate_dead_code',
     'run_transforms',
     'normalize_carets',
 ]
+

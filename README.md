@@ -367,6 +367,16 @@ python src/cli.py -c "set X=calc & !X:~0,4!.exe" --json
 # Deobfuscate batch script using compiler AST normalizer
 python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat -o deobfuscated_output.bat
 
+# Generate Control Flow Graph (CFG) block summary and McCabe complexity
+python src/cli.py -i script.bat --cfg
+
+# Export CFG to Mermaid flowchart or Graphviz DOT diagram
+python src/cli.py -i script.bat --cfg-mermaid
+python src/cli.py -i script.bat --cfg-dot
+
+# Enable symbolic dynamic jump table resolution
+python src/cli.py -i script.bat --cfg --cfg-resolve-jumps
+
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
@@ -379,7 +389,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 130 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, and real-world benchmark invariants:
+The test suite validates 190 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -445,9 +455,13 @@ test_caret_escaping_outside_quotes (test_deobfuscator.TestBatchDeobfuscator) ...
 test_empty_quote_concatenation (test_deobfuscator.TestBatchDeobfuscator) ... ok
 test_environment_variable_slicing (test_deobfuscator.TestBatchDeobfuscator) ... ok
 test_string_substitution (test_deobfuscator.TestBatchDeobfuscator) ... ok
+test_for_loop_modifier_combined_dp (test_for_param_expansion.TestForParamExpansion) ... ok
+test_for_loop_modifier_search_path (test_for_param_expansion.TestForParamExpansion) ... ok
+test_param_resolver_pass_fixed_point (test_for_param_expansion.TestForParamExpansion) ... ok
+test_for_loop_statement_parsing (test_for_param_expansion.TestForParamExpansion) ... ok
 
 ----------------------------------------------------------------------
-Ran 116 tests in 0.033s
+Ran 166 tests in 0.099s
 
 OK
 ```
@@ -530,6 +544,11 @@ OK
       <td>Faithful <code>cmd.exe</code> 5-phase lexical scanner tokenizing carets, percents, and pipes</td>
     </tr>
     <tr>
+      <td><strong><code>src/modifiers.py</code></strong></td>
+      <td>Modifier Engine</td>
+      <td>Windows parameter and FOR loop path modifier resolver (<code>%~dp0</code>, <code>%~f1</code>, <code>%~$PATH:i</code>, 8.3 short names)</td>
+    </tr>
+    <tr>
       <td><strong><code>src/normalizer.py</code></strong></td>
       <td>AST Normalizer</td>
       <td>AST rewriting engine resolving variable slicing, pattern substitution, and caret folding</td>
@@ -542,7 +561,7 @@ OK
     <tr>
       <td><strong><code>src/transforms/</code></strong></td>
       <td>Transforms Pipeline</td>
-      <td>Modular AST optimization passes (<code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
+      <td>Modular AST optimization passes (<code>ParamResolverPass</code>, <code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
     </tr>
     <tr>
       <td><strong><code>src/benchmark/</code></strong></td>
@@ -562,6 +581,11 @@ OK
       <td><strong><code>tests/test_ast_suite.py</code></strong></td>
       <td>Unit Tests</td>
       <td>Compiler verification suite testing lexer tokens, automaton transitions, and AST nodes</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_for_param_expansion.py</code></strong></td>
+      <td>Parameter &amp; Loop Tests</td>
+      <td>Comprehensive verification for FOR loop variable scoping, parameter path modifiers, and 8.3 short paths</td>
     </tr>
     <tr>
       <td><strong><code>tests/test_delayed_expansion.py</code></strong></td>
@@ -644,23 +668,37 @@ cmd-ast-deobfuscator/
 │   └── source-dissections/            # Forensic line-by-line dissections of 7 tools
 ├── src/
 │   ├── __init__.py                    # Clean export of AST compiler & transform symbols
-│   ├── ast_nodes.py                   # Node hierarchy (ScriptNode, CommandNode, etc.)
+│   ├── ast_nodes.py                   # Node hierarchy (ScriptNode, CommandNode, GotoNode, etc.)
 │   ├── automaton.py                   # Pushdown automaton state transition engine
-│   ├── cli.py                         # UTF-8 CLI runner with --tree, --mermaid, --json
+│   ├── cfg/                           # Control Flow Graph & dynamic jump table engine
+│   │   ├── __init__.py                # CFG builder and visualizer exports
+│   │   ├── builder.py                 # AST-to-CFG block partitioning & fallthrough wiring
+│   │   ├── jump_table.py              # Dynamic jump resolver & CFF dispatcher detector
+│   │   ├── models.py                  # BasicBlock, CFGEdge, CFGMetrics, ControlFlowGraph
+│   │   └── visualizer.py              # Mermaid, Graphviz DOT, ASCII & JSON exporters
+│   ├── cli.py                         # UTF-8 CLI runner with --tree, --mermaid, --cfg
 │   ├── deobfuscator_engine.py         # Multi-pass static AST evaluation engine
 │   ├── lexer.py                       # cmd.exe 5-phase lexical analyzer
+│   ├── modifiers.py                   # FOR parameter path modifier resolver (~dp, ~f)
 │   ├── normalizer.py                  # Environment variable expansion & AST normalizer
 │   ├── parser.py                      # Recursive descent pushdown AST parser
+│   ├── statement_parsers.py           # Specialized statement parsers (FOR, IF, SET, GOTO, CALL)
 │   ├── transforms/                    # Modular AST compiler optimization passes
 │   │   ├── __init__.py                # Transform passes export & helpers
 │   │   ├── base.py                    # TransformPass base & PassManager pipeline
+│   │   ├── caret_normalizer.py        # Caret normalization & multi-level unmasker
 │   │   ├── constant_folder.py         # General multi-strategy constant folder
+│   │   ├── param_resolver.py          # FOR variable & parameter path folding pass
 │   │   └── slicing_folder.py          # Substring slicing constant folding pass
 │   └── visualizer.py                  # ASCII tree, Mermaid diagrams, and JSON visualizer
 ├── tests/
 │   ├── test_ast_suite.py              # Compiler, lexer, automaton, AST invariant tests
+│   ├── test_benchmark_suite.py        # 12-sample benchmark & metrics test suite
+│   ├── test_caret_normalizer.py       # Caret normalization & unmasking tests
+│   ├── test_cfg_suite.py              # Control Flow Graph & jump table test suite
 │   ├── test_delayed_expansion.py      # Delayed expansion (!VAR!) test suite
 │   ├── test_deobfuscator.py           # Evaluation engine invariant test suite
+│   ├── test_for_param_expansion.py    # FOR variable & path modifier test suite
 │   └── test_slicing_folder.py         # Substring slicing constant folding tests
 ├── CHANGELOG.md                       # Release notes and version history
 ├── LICENSE                            # Maya Thorne Research License (MT-SRL)

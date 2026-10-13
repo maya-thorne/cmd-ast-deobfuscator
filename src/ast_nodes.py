@@ -69,6 +69,19 @@ class VarExpandNode(ASTNode):
 
 
 @dataclass
+class ParamExpandNode(ASTNode):
+    """
+    Positional script parameter (%0..%9, %*) or FOR loop variable (%%i..%%z).
+    Supports cmd.exe path and attribute modifiers (e.g., %~dp0, %%~fI, %~$PATH:1).
+    """
+    name: str = ""
+    is_for_var: bool = False
+    modifiers: str = ""
+    path_var: Optional[str] = None
+    strip_quotes: bool = False
+
+
+@dataclass
 class AssignmentNode(ASTNode):
     """Represents a variable assignment statement (e.g., set VAR=VAL or set /a)."""
     var_name: str = ""
@@ -124,10 +137,58 @@ class IfNode(ASTNode):
 
 @dataclass
 class ForNode(ASTNode):
-    """Iterative loop: FOR %%i IN (...) DO (...)."""
+    """Iterative loop: FOR [/F | /R | /D | /L] %%i IN (...) DO (...)."""
     iterator: str = ""
+    flags: str = ""
+    options: str = ""
     in_clause: str = ""
     body: ASTNode = field(default_factory=ASTNode)
+
+
+@dataclass
+class LabelNode(ASTNode):
+    """
+    Batch script label definition (e.g., :label_name, :EOF).
+    In cmd.exe, label names are case-insensitive.
+    """
+    name: str = ""
+    is_eof: bool = False
+    raw: str = ""
+
+
+@dataclass
+class GotoNode(ASTNode):
+    """
+    Batch jump statement (e.g., goto :label, goto %TARGET%, goto :EOF).
+    Can target static labels or dynamic expressions.
+    """
+    target: str = ""
+    target_nodes: List[ASTNode] = field(default_factory=list)
+    is_eof: bool = False
+    is_dynamic: bool = False
+
+
+@dataclass
+class CallNode(ASTNode):
+    """
+    Batch subroutine or script invocation (e.g., call :subroutine [args...], call other.bat [args...]).
+    Distinguishes internal label calls from external script execution.
+    """
+    target: str = ""
+    target_nodes: List[ASTNode] = field(default_factory=list)
+    arguments: List[ASTNode] = field(default_factory=list)
+    is_subroutine: bool = False
+    is_dynamic: bool = False
+
+
+@dataclass
+class ExitNode(ASTNode):
+    """
+    Script termination or subroutine return statement (e.g., exit /b 0, exit 1).
+    When is_batch_return is True (/b flag), exits the current subroutine or batch context.
+    """
+    is_batch_return: bool = False
+    exit_code: Optional[str] = None
 
 
 @dataclass

@@ -5,6 +5,55 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-10-13
+
+### Added
+- **Control Flow Graph (CFG) Construction Engine**:
+  - Implemented modular CFG domain package (`src/cfg/`) for static batch script execution analysis and topology generation.
+  - Basic block partitioning (`CFGBuilder`, `src/cfg/builder.py`) segmenting linear instruction sequences between jump targets, conditionals, and subroutine boundaries.
+  - Complete edge classification (`CFGEdgeType`, `src/cfg/models.py`) modeling `SEQUENTIAL`, `FALLTHROUGH` (cmd.exe label fallthrough behavior), `BRANCH_TRUE`, `BRANCH_FALSE`, `UNCONDITIONAL_JUMP`, `CALL_SUBROUTINE`, `RETURN_SUBROUTINE`, and `DYNAMIC_JUMP`.
+  - Topology analysis metrics (`CFGMetrics`) computing total blocks, edges, dead code block count, cycle detection via DFS back-edge discovery, and McCabe cyclomatic complexity ($E - V + 2P$).
+  - Reachability analysis via breadth-first graph traversal identifying unreachable blocks and dead execution paths.
+- **Dynamic CALL & GOTO Jump Table Resolver**:
+  - Implemented `JumpTableResolver` (`src/cfg/jump_table.py`) tracking symbolic variable assignments across script blocks to resolve dynamic targets (`goto %VAR%`, `call !TARGET!`).
+  - Pattern-based prefix resolution matching wildcards (`goto :stage_*`) against available label declarations.
+  - Control Flow Flattening (CFF) dispatcher identification detecting obfuscation state machine loops and dispatch hubs with high in-degree connectivity.
+- **AST Architecture & Statement Parser Modularization**:
+  - Added `LabelNode`, `GotoNode`, `CallNode`, and `ExitNode` to `src/ast_nodes.py` with visitor hierarchy support.
+  - Extracted specialized statement parsers into `src/statement_parsers.py` (`parse_for_statement`, `parse_if_statement`, `parse_set_assignment`, `parse_goto_statement`, `parse_call_statement`, `parse_exit_statement`), maintaining strict modularity under 500 lines per module.
+  - Enhanced recursive descent parser (`src/parser.py`) to recognize label declarations (`:lbl`) and delegate statement parsing cleanly.
+  - Extended `ASTNormalizer` (`src/normalizer.py`), `TransformPass` (`src/transforms/base.py`), `CaretNormalizerPass` (`src/transforms/caret_normalizer.py`), and `ASTVisualizer` (`src/visualizer.py`) to support all control flow AST nodes.
+- **Multi-Format Graph Visualizers & CLI Integration**:
+  - Implemented `CFGVisualizer` (`src/cfg/visualizer.py`) exporting control flow graphs to Mermaid flowcharts with custom styling for dead code and back-edges, Graphviz DOT syntax, formatted ASCII block diagrams, and structured JSON dictionaries.
+  - Added CLI flags (`src/cli.py`): `--cfg` (ASCII control flow summary), `--cfg-mermaid` (Mermaid diagram export), `--cfg-dot` (Graphviz DOT export), and `--cfg-resolve-jumps` (symbolic dynamic jump table resolution).
+- **Verification & Test Suite**:
+  - Added test suite `tests/test_cfg_suite.py` with 26 test cases covering AST node parsing, block partitioning, label fallthrough, conditional branching, call/return pairing, jump tables, CFF dispatchers, visualizers, and CLI flags.
+  - Expanded test suite to 190 passing tests with zero regressions.
+  - Bumped project version to 0.7.0 in `pyproject.toml`.
+
+## [0.6.0] - 2026-10-13
+
+### Added
+- **FOR Loop Variable & Parameter Path Modifier Interpreter**:
+  - Implemented `PathModifierResolver` and `ModifierSpec` (`src/modifiers.py`) evaluating cmd.exe parameter and FOR loop path/attribute modifiers (`~f`, `~d`, `~p`, `~n`, `~x`, `~s`, `~a`, `~t`, `~z`, `~$PATH:`).
+  - Canonical path decomposition into drive, directory path with trailing backslash, filename, and extension components matching cmd.exe runtime semantics without executing host processes.
+  - 8.3 short name synthesizer (`to_83_short_name`) generating compliant representations for long or space-separated paths (e.g., `Program Files` -> `PROGRA~1`).
+  - Search path resolver (`search_in_var`) locating binaries across semicolon-separated directory lists defined in environment variables (such as `%~$PATH:1`).
+  - File metadata simulation hooks for attributes (`~a`), modification timestamps (`~t`), and file byte sizes (`~z`).
+- **AST Architecture & Tokenizer Support**:
+  - Added `ParamExpandNode` to `src/ast_nodes.py` representing positional arguments (`%0`..`%9`, `%*`) and FOR loop variables (`%%i`..`%%z`) with modifier metadata.
+  - Enhanced `ForNode` with explicit `flags`, `options`, `iterator`, `in_clause`, and `body` fields.
+  - Updated lexical analyzer (`src/lexer.py`) with `CmdTokenType.PARAM_VAR` and `CmdTokenType.FOR_VAR` tokens, accurately distinguishing double percent loop prefixes, modifier runs, single-digit script arguments, and literal `%%` escapes.
+  - Enhanced recursive descent parser (`src/parser.py`) with nested parenthesis tracking in `parse_atomic_command` and dedicated `_parse_for_statement` routine handling single-command and block loop bodies.
+- **AST Normalization & Optimization Pass**:
+  - Integrated `visit_ParamExpandNode` and `visit_ForNode` in `ASTNormalizer` (`src/normalizer.py`), resolving known positional parameters and loop variables into evaluated literal path strings.
+  - Created `ParamResolverPass` (`src/transforms/param_resolver.py`) with pass manager integration, argument coalescing, and dynamic symbol propagation.
+  - Updated `ASTVisualizer` (`src/visualizer.py`) with formatted ASCII tree, Mermaid flowchart, and JSON AST representation for parameter and loop nodes.
+- **Verification & Test Suite**:
+  - Added dedicated test suite `tests/test_for_param_expansion.py` containing 36 comprehensive test cases covering lexer tokenization, AST parsing, modifier resolution, 8.3 short paths, PATH searching, and pass transformations.
+  - Expanded test suite coverage to 166 passing tests with zero regressions.
+  - Bumped project version to 0.6.0 in `pyproject.toml`.
+
 ## [0.5.0] - 2026-10-13
 
 ### Added

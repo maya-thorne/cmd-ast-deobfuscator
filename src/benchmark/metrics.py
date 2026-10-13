@@ -11,7 +11,8 @@ from typing import List, Optional
 from ..ast_nodes import (
     ASTNode, ASTVisitor, ScriptNode, CommandNode, PipeNode,
     ChainNode, BlockNode, AssignmentNode, VarExpandNode,
-    LiteralNode, RedirectNode, CommentNode, IfNode, ForNode
+    LiteralNode, RedirectNode, CommentNode, IfNode, ForNode,
+    ParamExpandNode, LabelNode, GotoNode, CallNode, ExitNode
 )
 from ..lexer import CmdLexer, CmdTokenType
 
@@ -102,6 +103,26 @@ class NodeCounterVisitor(ASTVisitor):
 
     def visit_CommentNode(self, node: CommentNode) -> None:
         pass
+
+    def visit_ParamExpandNode(self, node: ParamExpandNode) -> None:
+        pass
+
+    def visit_LabelNode(self, node: LabelNode) -> None:
+        pass
+
+    def visit_GotoNode(self, node: GotoNode) -> None:
+        for t in node.target_nodes:
+            self.visit(t)
+
+    def visit_CallNode(self, node: CallNode) -> None:
+        for t in node.target_nodes:
+            self.visit(t)
+        for a in node.arguments:
+            self.visit(a)
+
+    def visit_ExitNode(self, node: ExitNode) -> None:
+        pass
+
 
 
 def count_ast_nodes(root: Optional[ASTNode]) -> int:

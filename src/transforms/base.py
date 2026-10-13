@@ -4,11 +4,12 @@ Provides the foundational transformation interface, AST traversal defaults,
 environment table tracking, and fixed-point iteration pass management.
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Set
 from ..ast_nodes import (
     ASTVisitor, ASTNode, ScriptNode, CommandNode, PipeNode, ChainNode,
     BlockNode, AssignmentNode, VarExpandNode, LiteralNode, RedirectNode,
-    CommentNode, IfNode, ForNode
+    CommentNode, IfNode, ForNode, ParamExpandNode, LabelNode, GotoNode,
+    CallNode, ExitNode
 )
 
 DEFAULT_ENV: Dict[str, str] = {
@@ -136,10 +137,20 @@ class TransformPass(ASTVisitor):
         return node
 
     def visit_ForNode(self, node: ForNode) -> ForNode:
-        new_body = self.visit(node.body)
+        new_body = self.visit(node.body) if node.body else node.body
         if new_body is not node.body:
             self.modified = True
-            return ForNode(iterator=node.iterator, in_clause=node.in_clause, body=new_body, span=node.span)
+            return ForNode(
+                iterator=node.iterator,
+                flags=node.flags,
+                options=node.options,
+                in_clause=node.in_clause,
+                body=new_body,
+                span=node.span
+            )
+        return node
+
+    def visit_ParamExpandNode(self, node: ParamExpandNode) -> ASTNode:
         return node
 
     def visit_LiteralNode(self, node: LiteralNode) -> ASTNode:
@@ -149,6 +160,47 @@ class TransformPass(ASTVisitor):
         return node
 
     def visit_CommentNode(self, node: CommentNode) -> ASTNode:
+        return node
+
+    def visit_LabelNode(self, node: LabelNode) -> ASTNode:
+        return node
+
+    def visit_GotoNode(self, node: GotoNode) -> ASTNode:
+        new_targets = [self.visit(t) for t in node.target_nodes]
+        if any(nt is not ot for nt, ot in zip(new_targets, node.target_nodes)):
+            self.modified = True
+            raw_t = "".join(self.to_source(nt) for nt in new_targets).lstrip(':')
+            return GotoNode(
+                target=raw_t or node.target,
+                target_nodes=new_targets,
+                is_eof=(raw_t.lower() == 'eof') if raw_t else node.is_eof,
+                is_dynamic=node.is_dynamic,
+                span=node.span
+            )
+        return node
+
+    def visit_CallNode(self, node: CallNode) -> ASTNode:
+        new_targets = [self.visit(t) for t in node.target_nodes]
+        new_args = [self.visit(a) for a in node.arguments]
+        target_changed = any(nt is not ot for nt, ot in zip(new_targets, node.target_nodes))
+        args_changed = any(na is not oa for na, oa in zip(new_args, node.arguments))
+        if target_changed or args_changed:
+            self.modified = True
+            new_target = node.target
+            if target_changed and new_targets:
+                raw_t = "".join(self.to_source(nt) for nt in new_targets)
+                new_target = raw_t.lstrip(':') if node.is_subroutine else raw_t
+            return CallNode(
+                target=new_target,
+                target_nodes=new_targets,
+                arguments=new_args,
+                is_subroutine=node.is_subroutine,
+                is_dynamic=node.is_dynamic,
+                span=node.span
+            )
+        return node
+
+    def visit_ExitNode(self, node: ExitNode) -> ASTNode:
         return node
 
     def generic_visit(self, node: ASTNode) -> ASTNode:
@@ -171,7 +223,8 @@ class TransformPass(ASTVisitor):
             return f"({inner})"
 
         if isinstance(node, AssignmentNode):
-            return f"set {node.var_name}={node.raw_value}"
+            prefix = "set /a " if node.is_arithmetic else "set "
+            return f"{prefix}{node.var_name}={node.raw_value}"
 
         if isinstance(node, CommandNode):
             if node.arguments:
@@ -198,8 +251,48 @@ class TransformPass(ASTVisitor):
                 return f"{delim}{node.name}:{node.sub_search}={sub_replace}{delim}"
             return f"{delim}{node.name}{delim}"
 
+        if isinstance(node, ParamExpandNode):
+            prefix = "%%" if node.is_for_var else "%"
+            return f"{prefix}{node.modifiers}{node.name}"
+
+        if isinstance(node, ForNode):
+            flags_str = f" {node.flags}" if node.flags else ""
+            options_str = f" {node.options}" if node.options else ""
+            in_content = node.in_clause
+            if not in_content.startswith('('):
+                in_content = f"({in_content})"
+            body_src = self.to_source(node.body) if node.body else ""
+            return f"for{flags_str}{options_str} {node.iterator} in {in_content} do {body_src}"
+
         if isinstance(node, CommentNode):
             return node.text
+
+        if isinstance(node, LabelNode):
+            return f":{node.name}"
+
+        if isinstance(node, GotoNode):
+            return f"goto :{node.target}" if node.target else "goto"
+
+        if isinstance(node, CallNode):
+            prefix = "call :" if node.is_subroutine else "call "
+            if node.arguments:
+                args_str = " " + " ".join(self.to_source(a) for a in node.arguments)
+            else:
+                args_str = ""
+            return f"{prefix}{node.target}{args_str}".strip()
+
+        if isinstance(node, IfNode):
+            then_src = self.to_source(node.then_block)
+            else_src = f" else {self.to_source(node.else_block)}" if node.else_block else ""
+            return f"if {node.condition} {then_src}{else_src}"
+
+        if isinstance(node, ExitNode):
+            parts = ["exit"]
+            if node.is_batch_return:
+                parts.append("/b")
+            if node.exit_code is not None:
+                parts.append(str(node.exit_code))
+            return " ".join(parts)
 
         return ""
 
@@ -239,28 +332,60 @@ class PassManager:
         return current_ast
 
     @classmethod
-    def default_pipeline(cls, env: Optional[Dict[str, str]] = None, max_iterations: int = 20) -> 'PassManager':
+    def default_pipeline(
+        cls,
+        env: Optional[Dict[str, str]] = None,
+        max_iterations: int = 20,
+        enable_dce: bool = False,
+        preserve_vars: Optional[Set[str]] = None
+    ) -> 'PassManager':
         from .caret_normalizer import CaretNormalizerPass
         from .slicing_folder import SlicingFolderPass
         from .constant_folder import ConstantFolderPass
-        passes = [
+        passes: List[TransformPass] = [
             CaretNormalizerPass(env=env),
             SlicingFolderPass(env=env),
             ConstantFolderPass(env=env),
         ]
+        if enable_dce:
+            from .dce import DeadCodeEliminationPass
+            passes.append(DeadCodeEliminationPass(env=env, preserve_vars=preserve_vars))
         return cls(passes=passes, max_iterations=max_iterations)
+
+    @classmethod
+    def optimization_pipeline(
+        cls,
+        env: Optional[Dict[str, str]] = None,
+        max_iterations: int = 20,
+        preserve_vars: Optional[Set[str]] = None
+    ) -> 'PassManager':
+        """Full optimization pipeline including constant folding and dead code elimination."""
+        return cls.default_pipeline(
+            env=env,
+            max_iterations=max_iterations,
+            enable_dce=True,
+            preserve_vars=preserve_vars
+        )
 
 
 def run_transforms(
     ast: ASTNode,
     passes: Optional[List[TransformPass]] = None,
     env: Optional[Dict[str, str]] = None,
-    max_iterations: int = 20
+    max_iterations: int = 20,
+    enable_dce: bool = False,
+    preserve_vars: Optional[Set[str]] = None
 ) -> ASTNode:
     """Convenience entry point to execute transforms with fixed-point iteration."""
     if passes is None:
-        pm = PassManager.default_pipeline(env=env, max_iterations=max_iterations)
+        pm = PassManager.default_pipeline(
+            env=env,
+            max_iterations=max_iterations,
+            enable_dce=enable_dce,
+            preserve_vars=preserve_vars
+        )
         return pm.run(ast, env=env)
     pm = PassManager(passes=passes, max_iterations=max_iterations)
     return pm.run(ast, env=env)
+
 

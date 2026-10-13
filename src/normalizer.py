@@ -3,12 +3,16 @@ AST Normalizer & Semantic Reduction Engine.
 Performs symbol table propagation, constant folding, slicing resolution, and dead code elimination.
 """
 
+import os
 import re
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Set
 from .ast_nodes import (
     ASTVisitor, ASTNode, ScriptNode, CommandNode, PipeNode, ChainNode,
-    BlockNode, AssignmentNode, VarExpandNode, LiteralNode, RedirectNode, CommentNode
+    BlockNode, AssignmentNode, VarExpandNode, LiteralNode, RedirectNode,
+    CommentNode, ParamExpandNode, ForNode, IfNode, LabelNode, GotoNode,
+    CallNode, ExitNode
 )
+from .modifiers import parse_modifiers, PathModifierResolver
 
 
 class ASTNormalizer(ASTVisitor):
@@ -16,7 +20,15 @@ class ASTNormalizer(ASTVisitor):
     Transforms obfuscated cmd.exe ASTs into canonical, deterministic forms.
     Propagates variable tables, folds slices, collapses empty quotes, and strips carets.
     """
-    def __init__(self, initial_env: Dict[str, str] = None):
+    def __init__(
+        self,
+        initial_env: Dict[str, str] = None,
+        params: Dict[str, str] = None,
+        for_vars: Dict[str, str] = None,
+        base_dir: str = None,
+        dce: bool = False,
+        preserve_vars: Optional[Set[str]] = None
+    ):
         # Prepopulate standard Windows environment baseline
         self.symbols: Dict[str, str] = {
             'comspec': r'C:\Windows\system32\cmd.exe',
@@ -29,11 +41,38 @@ class ASTNormalizer(ASTVisitor):
             for k, v in initial_env.items():
                 self.symbols[k.lower()] = v
 
+        self.params: Dict[str, str] = params or {}
+        self.for_vars: Dict[str, str] = for_vars or {}
+        if base_dir:
+            self.base_dir = base_dir
+        elif '0' in self.params and self.params['0']:
+            p0 = self.params['0'].replace('/', '\\')
+            self.base_dir = os.path.dirname(p0) if '\\' in p0 else r"C:\Windows\System32"
+        else:
+            self.base_dir = r"C:\Windows\System32"
+
+        self.dce = dce
+        self.preserve_vars = set(preserve_vars) if preserve_vars else set()
         self.referenced_vars = set()
 
     def normalize(self, root: ASTNode) -> ASTNode:
         """Executes normalization passes until fixed-point convergence."""
-        return self.visit(root)
+        res = self.visit(root)
+        if self.dce:
+            from .transforms.dce import DeadCodeEliminationPass
+            dce_pass = DeadCodeEliminationPass(env=self.symbols, preserve_vars=self.preserve_vars)
+            res = dce_pass.transform(res)
+        return res
+
+    def eliminate_dead_code(self, root: ASTNode, preserve_vars: Optional[Set[str]] = None) -> ASTNode:
+        """Explicitly executes dead code elimination on the AST."""
+        from .transforms.dce import DeadCodeEliminationPass
+        pvars = set(self.preserve_vars)
+        if preserve_vars:
+            pvars.update(v.lower() for v in preserve_vars)
+        dce_pass = DeadCodeEliminationPass(env=self.symbols, preserve_vars=pvars)
+        return dce_pass.transform(root)
+
 
     def visit_ScriptNode(self, node: ScriptNode) -> ScriptNode:
         cleaned_stmts: List[ASTNode] = []
@@ -268,6 +307,41 @@ class ASTNormalizer(ASTVisitor):
 
         return LiteralNode(value=val, is_quoted=False)
 
+    def visit_ForNode(self, node: ForNode) -> ForNode:
+        norm_body = self.visit(node.body) if node.body else node.body
+        return ForNode(
+            iterator=node.iterator,
+            flags=node.flags,
+            options=node.options,
+            in_clause=node.in_clause,
+            body=norm_body
+        )
+
+    def visit_ParamExpandNode(self, node: ParamExpandNode) -> ASTNode:
+        var_key = node.name
+        val = None
+
+        if node.is_for_var:
+            if var_key in self.for_vars:
+                val = self.for_vars[var_key]
+            elif var_key.lower() in self.for_vars:
+                val = self.for_vars[var_key.lower()]
+        else:
+            if var_key in self.params:
+                val = self.params[var_key]
+
+        if val is None:
+            return node
+
+        spec = parse_modifiers(node.modifiers)
+        resolved = PathModifierResolver.resolve(
+            spec=spec,
+            target_val=val,
+            base_dir=self.base_dir,
+            env=self.symbols
+        )
+        return LiteralNode(value=resolved, is_quoted=False)
+
     def visit_LiteralNode(self, node: LiteralNode) -> LiteralNode:
         if not node.is_quoted:
             cleaned = self._strip_lexical_artifacts(node.value)
@@ -295,6 +369,30 @@ class ASTNormalizer(ASTVisitor):
             i += 1
         return "".join(res)
 
+    def visit_LabelNode(self, node: LabelNode) -> LabelNode:
+        return node
+
+    def visit_GotoNode(self, node: GotoNode) -> GotoNode:
+        if node.is_dynamic:
+            new_target_nodes = [self.visit(t) for t in node.target_nodes]
+            raw_t = "".join(self.to_source(t) for t in new_target_nodes).lstrip(':')
+            node.target = raw_t or node.target
+            node.target_nodes = new_target_nodes
+            node.is_eof = (node.target.lower() == 'eof')
+        return node
+
+    def visit_CallNode(self, node: CallNode) -> CallNode:
+        node.arguments = [self.visit(a) for a in node.arguments]
+        if node.is_dynamic:
+            new_target_nodes = [self.visit(t) for t in node.target_nodes]
+            raw_t = "".join(self.to_source(t) for t in new_target_nodes)
+            node.target = raw_t.lstrip(':') if node.is_subroutine else raw_t
+            node.target_nodes = new_target_nodes
+        return node
+
+    def visit_ExitNode(self, node: ExitNode) -> ExitNode:
+        return node
+
     def to_source(self, node: ASTNode) -> str:
         """Serializes an AST hierarchy into clean batch script source code."""
         if isinstance(node, ScriptNode):
@@ -312,7 +410,8 @@ class ASTNormalizer(ASTVisitor):
             return f"({inner})"
 
         if isinstance(node, AssignmentNode):
-            return f"set {node.var_name}={node.raw_value}"
+            prefix = "set /a " if node.is_arithmetic else "set "
+            return f"{prefix}{node.var_name}={node.raw_value}"
 
         if isinstance(node, CommandNode):
             if node.arguments:
@@ -337,7 +436,47 @@ class ASTNormalizer(ASTVisitor):
                 return f"{delim}{node.name}:{node.sub_search}={sub_replace}{delim}"
             return f"{delim}{node.name}{delim}"
 
+        if isinstance(node, ParamExpandNode):
+            prefix = "%%" if node.is_for_var else "%"
+            return f"{prefix}{node.modifiers}{node.name}"
+
+        if isinstance(node, ForNode):
+            flags_str = f" {node.flags}" if node.flags else ""
+            options_str = f" {node.options}" if node.options else ""
+            in_content = node.in_clause
+            if not in_content.startswith('('):
+                in_content = f"({in_content})"
+            body_src = self.to_source(node.body) if node.body else ""
+            return f"for{flags_str}{options_str} {node.iterator} in {in_content} do {body_src}"
+
         if isinstance(node, CommentNode):
             return node.text
+
+        if isinstance(node, LabelNode):
+            return f":{node.name}"
+
+        if isinstance(node, GotoNode):
+            return f"goto :{node.target}" if node.target else "goto"
+
+        if isinstance(node, CallNode):
+            prefix = "call :" if node.is_subroutine else "call "
+            if node.arguments:
+                args_str = " " + " ".join(self.to_source(a) for a in node.arguments)
+            else:
+                args_str = ""
+            return f"{prefix}{node.target}{args_str}".strip()
+
+        if isinstance(node, IfNode):
+            then_src = self.to_source(node.then_block)
+            else_src = f" else {self.to_source(node.else_block)}" if node.else_block else ""
+            return f"if {node.condition} {then_src}{else_src}"
+
+        if isinstance(node, ExitNode):
+            parts = ["exit"]
+            if node.is_batch_return:
+                parts.append("/b")
+            if node.exit_code is not None:
+                parts.append(str(node.exit_code))
+            return " ".join(parts)
 
         return ""

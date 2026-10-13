@@ -14,6 +14,8 @@ class CmdTokenType(Enum):
     CARET = auto()
     QUOTE = auto()
     PERCENT_VAR = auto()
+    PARAM_VAR = auto()
+    FOR_VAR = auto()
     EXCLAM_VAR = auto()
     PIPE = auto()
     AMP = auto()
@@ -180,13 +182,48 @@ class CmdLexer:
 
     def _lex_percent_var(self) -> Optional[CmdToken]:
         start = self.pos
-        self.advance()  # Skip initial '%'
+        rem = self.source[start:]
 
-        # Check for double percent %% (batch loop variable)
-        if self.peek() == '%':
-            self.advance()
+        # 1. Double percent %%: FOR loop variable or escaped %%
+        if rem.startswith('%%'):
+            # Check for FOR variable with modifiers: %%~...
+            m_for_mod = re.match(r'^%%~(?:\$[a-zA-Z0-9_]+:)?[fdpnxsatzFDPNXSATZ]*([a-zA-Z0-9])', rem)
+            if m_for_mod:
+                val = m_for_mod.group(0)
+                self.pos += len(val)
+                return CmdToken(CmdTokenType.FOR_VAR, val, (start, self.pos), self.in_quote)
+
+            # Check for standard single-letter FOR variable: %%i, %%I, %%a
+            if len(rem) >= 3 and rem[2].isalpha():
+                val = rem[:3]
+                self.pos += 3
+                return CmdToken(CmdTokenType.FOR_VAR, val, (start, self.pos), self.in_quote)
+
+            # Escaped literal %%
+            self.pos += 2
             return CmdToken(CmdTokenType.LITERAL, '%%', (start, self.pos), self.in_quote)
 
+        # 2. Positional parameter with modifiers: %~dp0, %~f1, %~$PATH:1, %~1
+        m_param_mod = re.match(r'^%~(?:\$[a-zA-Z0-9_]+:)?[fdpnxsatzFDPNXSATZ]*([0-9*]|[a-zA-Z])', rem)
+        if m_param_mod:
+            val = m_param_mod.group(0)
+            self.pos += len(val)
+            return CmdToken(CmdTokenType.PARAM_VAR, val, (start, self.pos), self.in_quote)
+
+        # 3. Positional parameter without modifiers: %0..%9, %*
+        if len(rem) >= 2 and (rem[1].isdigit() or rem[1] == '*'):
+            # Only treat as environment variable if format is %1abc% (alphanumeric name with closing %)
+            is_env_var = False
+            if len(rem) >= 3 and rem[2].isalnum() and '%' in rem[2:]:
+                is_env_var = True
+
+            if not is_env_var:
+                val = rem[:2]
+                self.pos += 2
+                return CmdToken(CmdTokenType.PARAM_VAR, val, (start, self.pos), self.in_quote)
+
+        # 4. Standard Environment Variable: %VAR%, %VAR:~s,l%, %VAR:search=replace%
+        self.advance()  # Skip initial '%'
         var_content = []
         in_nested_var = False
 

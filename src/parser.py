@@ -8,9 +8,19 @@ from typing import List, Optional, Tuple
 from .lexer import CmdToken, CmdTokenType, CmdLexer
 from .ast_nodes import (
     ASTNode, ScriptNode, CommandNode, PipeNode, ChainNode,
-    BlockNode, AssignmentNode, VarExpandNode, LiteralNode, RedirectNode, CommentNode
+    BlockNode, AssignmentNode, VarExpandNode, LiteralNode, RedirectNode,
+    CommentNode, ParamExpandNode, ForNode, IfNode, LabelNode, GotoNode,
+    CallNode, ExitNode
 )
 from .automaton import PushdownAutomaton
+from .statement_parsers import (
+    parse_for_statement,
+    parse_if_statement,
+    parse_set_assignment,
+    parse_goto_statement,
+    parse_call_statement,
+    parse_exit_statement
+)
 
 
 class CmdASTParser:
@@ -19,7 +29,9 @@ class CmdASTParser:
     Handles command chaining (&, &&, ||), pipes (|), and block expressions ( ... ).
     """
     def __init__(self, tokens: List[CmdToken]):
-        self.tokens = tokens
+        self.tokens = list(tokens)
+        if not self.tokens or self.tokens[-1].type != CmdTokenType.EOF:
+            self.tokens.append(CmdToken(CmdTokenType.EOF, '', (0, 0), False))
         self.pos = 0
         self.pda = PushdownAutomaton()
 
@@ -35,10 +47,12 @@ class CmdASTParser:
         return self.tokens[-1]  # Return EOF
 
     def advance(self) -> CmdToken:
-        tok = self.tokens[self.pos]
-        self.pos += 1
-        self.pda.transition(tok)
-        return tok
+        if self.pos < len(self.tokens):
+            tok = self.tokens[self.pos]
+            self.pos += 1
+            self.pda.transition(tok)
+            return tok
+        return self.tokens[-1]
 
     def match(self, *token_types: CmdTokenType) -> bool:
         if self.peek().type in token_types:
@@ -68,6 +82,20 @@ class CmdASTParser:
                 while self.peek().type not in (CmdTokenType.NEWLINE, CmdTokenType.EOF):
                     comment_parts.append(self.advance().value)
                 statements.append(CommentNode(text="".join(comment_parts).strip()))
+                continue
+
+            # Handle label definition lines starting with single ':'
+            if val_lower.startswith(':') and not val_lower.startswith('::'):
+                label_parts = []
+                while self.peek().type not in (CmdTokenType.NEWLINE, CmdTokenType.EOF):
+                    label_parts.append(self.advance().value)
+                raw_lbl = "".join(label_parts).strip()
+                clean_name = raw_lbl.lstrip(':').strip().split()[0] if raw_lbl.lstrip(':').strip() else ""
+                statements.append(LabelNode(
+                    name=clean_name,
+                    is_eof=(clean_name.lower() == 'eof'),
+                    raw=raw_lbl
+                ))
                 continue
 
             stmt = self.parse_statement()
@@ -143,12 +171,27 @@ class CmdASTParser:
         self.skip_whitespace()
         tokens_in_cmd: List[CmdToken] = []
 
-        terminators = {
-            CmdTokenType.AMP, CmdTokenType.DOUBLE_AMP, CmdTokenType.DOUBLE_PIPE,
-            CmdTokenType.PIPE, CmdTokenType.NEWLINE, CmdTokenType.EOF, CmdTokenType.RPAREN
-        }
-
-        while self.peek().type not in terminators:
+        paren_depth = 0
+        while True:
+            tok = self.peek()
+            if paren_depth == 0 and tok.type in (
+                CmdTokenType.AMP, CmdTokenType.DOUBLE_AMP, CmdTokenType.DOUBLE_PIPE,
+                CmdTokenType.PIPE, CmdTokenType.NEWLINE, CmdTokenType.EOF
+            ):
+                break
+            if tok.type == CmdTokenType.EOF:
+                break
+            if tok.type == CmdTokenType.LPAREN:
+                paren_depth += 1
+                tokens_in_cmd.append(self.advance())
+                continue
+            if tok.type == CmdTokenType.RPAREN:
+                if paren_depth > 0:
+                    paren_depth -= 1
+                    tokens_in_cmd.append(self.advance())
+                    continue
+                else:
+                    break
             tokens_in_cmd.append(self.advance())
 
         # Strip trailing whitespace tokens
@@ -158,10 +201,48 @@ class CmdASTParser:
         if not tokens_in_cmd:
             return None
 
-        # Check if this command is a 'SET' statement
+        # Check if this command is a label definition (e.g. inside a block or chain)
         first_val = tokens_in_cmd[0].value.strip().lower()
+        if first_val.startswith(':') and not first_val.startswith('::'):
+            raw_text = "".join(t.value for t in tokens_in_cmd).strip()
+            clean_name = raw_text.lstrip(':').strip().split()[0] if raw_text.lstrip(':').strip() else ""
+            return LabelNode(
+                name=clean_name,
+                is_eof=(clean_name.lower() == 'eof'),
+                raw=raw_text
+            )
+
+        # Check if this command is a 'SET' statement
         if first_val == 'set' and len(tokens_in_cmd) > 1:
             return self._parse_set_assignment(tokens_in_cmd)
+
+        # Check if this command is a 'FOR' loop statement
+        if first_val == 'for' and len(tokens_in_cmd) > 1:
+            for_node = self._parse_for_statement(tokens_in_cmd)
+            if for_node:
+                return for_node
+
+        # Check if this command is an 'IF' statement
+        if first_val == 'if' and len(tokens_in_cmd) > 1:
+            if_node = self._parse_if_statement(tokens_in_cmd)
+            if if_node:
+                return if_node
+
+        # Check if this command is a 'GOTO' statement
+        if first_val == 'goto' and len(tokens_in_cmd) > 1:
+            goto_node = self._parse_goto_statement(tokens_in_cmd)
+            if goto_node:
+                return goto_node
+
+        # Check if this command is a 'CALL' statement
+        if first_val == 'call' and len(tokens_in_cmd) > 1:
+            call_node = self._parse_call_statement(tokens_in_cmd)
+            if call_node:
+                return call_node
+
+        # Check if this command is an 'EXIT' statement
+        if first_val == 'exit':
+            return self._parse_exit_statement(tokens_in_cmd)
 
         # Separate tokens before first whitespace as target_nodes, and after as arguments
         target_tokens: List[CmdToken] = []
@@ -183,58 +264,13 @@ class CmdASTParser:
         raw_target = "".join(t.value for t in target_tokens)
         return CommandNode(target=raw_target, target_nodes=target_nodes, arguments=arg_nodes)
 
+    def _parse_for_statement(self, tokens: List[CmdToken]) -> Optional[ForNode]:
+        """Parses 'FOR [/F | /R | /D | /L] %%i IN (...) DO (...)' statements."""
+        return parse_for_statement(tokens, CmdASTParser)
+
     def _parse_set_assignment(self, tokens: List[CmdToken]) -> AssignmentNode:
         """Parses 'set VAR=VAL' statements with slicing/quote resolution."""
-        # Combine all subsequent tokens into raw assignment text
-        raw_tail = "".join(t.value for t in tokens[1:]).strip()
-        
-        # Strip outer quotes if format is set "VAR=VAL"
-        is_enclosed_quotes = False
-        if raw_tail.startswith('"') and raw_tail.endswith('"'):
-            raw_tail = raw_tail[1:-1]
-            is_enclosed_quotes = True
-
-        if '=' in raw_tail:
-            var_name, var_val = raw_tail.split('=', 1)
-        else:
-            var_name, var_val = raw_tail, ""
-
-        # Extract tokens occurring after '='
-        val_tokens: List[CmdToken] = []
-        found_eq = False
-        for t in tokens[1:]:
-            if found_eq:
-                val_tokens.append(t)
-            elif t.type == CmdTokenType.EQUALS:
-                found_eq = True
-            elif '=' in t.value:
-                found_eq = True
-                _, after_eq = t.value.split('=', 1)
-                if after_eq:
-                    val_tokens.append(CmdToken(CmdTokenType.LITERAL, after_eq, t.span, t.in_quote))
-
-        if is_enclosed_quotes:
-            while val_tokens and (val_tokens[-1].type == CmdTokenType.QUOTE or val_tokens[-1].value == '"'):
-                val_tokens.pop()
-
-        # Strip trailing whitespace tokens
-        while val_tokens and val_tokens[-1].type == CmdTokenType.WHITESPACE:
-            val_tokens.pop()
-
-        value_nodes: List[ASTNode] = []
-        for t in val_tokens:
-            if t.type == CmdTokenType.EOF:
-                continue
-            value_nodes.append(self._token_to_ast_node(t))
-
-        if not value_nodes and var_val:
-            value_nodes = [LiteralNode(value=var_val)]
-
-        return AssignmentNode(
-            var_name=var_name.strip(),
-            raw_value=var_val,
-            value_nodes=value_nodes
-        )
+        return parse_set_assignment(tokens, self._token_to_ast_node)
 
     def _token_to_ast_node(self, tok: CmdToken) -> ASTNode:
         """Converts lexical tokens into AST nodes."""
@@ -242,6 +278,10 @@ class CmdASTParser:
             node = self._parse_var_content(tok.value[1:-1], is_delayed=False)
         elif tok.type == CmdTokenType.EXCLAM_VAR:
             node = self._parse_var_content(tok.value[1:-1], is_delayed=True)
+        elif tok.type == CmdTokenType.PARAM_VAR:
+            node = self.parse_param_content(tok.value, is_for_var=False)
+        elif tok.type == CmdTokenType.FOR_VAR:
+            node = self.parse_param_content(tok.value, is_for_var=True)
         elif tok.type == CmdTokenType.CARET:
             # ^x -> x
             unmasked = tok.value[1:] if len(tok.value) > 1 else ''
@@ -337,3 +377,48 @@ class CmdASTParser:
 
     def _parse_var_content(self, content: str, is_delayed: bool = False) -> VarExpandNode:
         return self.parse_var_content(content, is_delayed=is_delayed)
+
+    @staticmethod
+    def parse_param_content(val: str, is_for_var: bool) -> ParamExpandNode:
+        """Parses parameter (%1, %~dp0, %~$PATH:1) or FOR variable (%%i, %%~dpi)."""
+        prefix = '%%' if is_for_var else '%'
+        raw = val[len(prefix):] if val.startswith(prefix) else val
+
+        if '~' in raw:
+            var_name = raw[-1]
+            mod_part = raw[:-1]
+            from .modifiers import parse_modifiers
+            spec = parse_modifiers(mod_part)
+            return ParamExpandNode(
+                name=var_name,
+                is_for_var=is_for_var,
+                modifiers=mod_part,
+                path_var=spec.search_var,
+                strip_quotes=spec.strip_quotes
+            )
+        else:
+            return ParamExpandNode(
+                name=raw,
+                is_for_var=is_for_var,
+                modifiers="",
+                path_var=None,
+                strip_quotes=False
+            )
+
+    def _parse_goto_statement(self, tokens: List[CmdToken]) -> Optional[GotoNode]:
+        """Parses 'goto :label' or dynamic 'goto %VAR%' statement."""
+        return parse_goto_statement(tokens, self._token_to_ast_node)
+
+    def _parse_call_statement(self, tokens: List[CmdToken]) -> Optional[CallNode]:
+        """Parses 'call :label [args...]' or 'call script.bat [args...]'."""
+        return parse_call_statement(tokens, self._token_to_ast_node)
+
+    def _parse_exit_statement(self, tokens: List[CmdToken]) -> ExitNode:
+        """Parses 'exit [/b] [code]' statement."""
+        return parse_exit_statement(tokens)
+
+    def _parse_if_statement(self, tokens: List[CmdToken]) -> Optional[IfNode]:
+        """Parses 'IF [NOT] condition ( then ) ELSE ( else )' or single-command IF."""
+        return parse_if_statement(tokens, CmdASTParser)
+
+

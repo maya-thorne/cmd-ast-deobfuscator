@@ -7,7 +7,8 @@ and nested/multi-level caret obfuscation while strictly preserving quotes and es
 from typing import Dict, List, Optional, Tuple
 from ..ast_nodes import (
     ASTNode, LiteralNode, CommandNode, AssignmentNode, VarExpandNode,
-    RedirectNode, IfNode, ForNode, BlockNode, ChainNode, PipeNode, ScriptNode
+    RedirectNode, IfNode, ForNode, BlockNode, ChainNode, PipeNode, ScriptNode,
+    GotoNode, CallNode
 )
 from .base import TransformPass
 
@@ -242,6 +243,36 @@ class CaretNormalizerPass(TransformPass):
                     is_folded_slice=node.is_folded_slice,
                     span=node.span
                 )
+        return node
+
+    def visit_CallNode(self, node: CallNode) -> CallNode:
+        cleaned_target = self.normalize_text(node.target, in_quote=False) if not node.is_dynamic else node.target
+        new_targets = self._coalesce_nodes(node.target_nodes, is_target=True) if node.target_nodes else []
+        new_args = self._coalesce_nodes(node.arguments, is_target=False) if node.arguments else []
+        if cleaned_target != node.target or new_targets != node.target_nodes or new_args != node.arguments:
+            self.modified = True
+            return CallNode(
+                target=cleaned_target,
+                target_nodes=new_targets or node.target_nodes,
+                arguments=new_args or node.arguments,
+                is_subroutine=node.is_subroutine,
+                is_dynamic=node.is_dynamic,
+                span=node.span
+            )
+        return node
+
+    def visit_GotoNode(self, node: GotoNode) -> GotoNode:
+        cleaned_target = self.normalize_text(node.target, in_quote=False) if not node.is_dynamic else node.target
+        new_targets = self._coalesce_nodes(node.target_nodes, is_target=True) if node.target_nodes else []
+        if cleaned_target != node.target or new_targets != node.target_nodes:
+            self.modified = True
+            return GotoNode(
+                target=cleaned_target,
+                target_nodes=new_targets or node.target_nodes,
+                is_eof=(cleaned_target.lower() == 'eof'),
+                is_dynamic=node.is_dynamic,
+                span=node.span
+            )
         return node
 
     def visit_CommandNode(self, node: CommandNode) -> CommandNode:
