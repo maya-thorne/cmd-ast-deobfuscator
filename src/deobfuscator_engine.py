@@ -10,6 +10,14 @@ import sys
 import os
 from typing import Optional
 
+try:
+    from .reversal.automaton import StringReversalAutomaton
+except (ImportError, ValueError):
+    try:
+        from reversal.automaton import StringReversalAutomaton
+    except ImportError:
+        StringReversalAutomaton = None
+
 
 class BatchDeobfuscator:
     def __init__(self, max_passes: int = 15):
@@ -165,6 +173,66 @@ class BatchDeobfuscator:
 
         return text
 
+    def resolve_reversal_loops(self, text: str) -> str:
+        """Resolve Somalifuscator FOR /L reverse string loops e.g. for /l %i in (len,-1,0) do set out=!out!!s:~%i,1!."""
+        if not StringReversalAutomaton:
+            return text
+
+        def loop_repl(m):
+            iterator = m.group(1).lstrip('%')
+            in_clause = m.group(2).strip()
+            in_clause = self.resolve_variables(in_clause)
+            parts = [p.strip() for p in re.split(r'[, \t]+', in_clause) if p.strip()]
+            if len(parts) != 3:
+                return m.group(0)
+            try:
+                start, step, stop = int(parts[0]), int(parts[1]), int(parts[2])
+            except ValueError:
+                return m.group(0)
+
+            dest_var = m.group(3)
+            body_expr = m.group(4)
+
+            pat_app = re.compile(
+                r'[%!]' + re.escape(dest_var) + r'[%!]\s*[%!]([a-zA-Z0-9_\-\.\$]+):~%*' +
+                re.escape(iterator) + r'(?:,(\d+))?[%!]',
+                re.IGNORECASE
+            )
+            pat_prep = re.compile(
+                r'[%!]([a-zA-Z0-9_\-\.\$]+):~%*' + re.escape(iterator) +
+                r'(?:,(\d+))?[%!]\s*[%!]' + re.escape(dest_var) + r'[%!]',
+                re.IGNORECASE
+            )
+
+            m_app = pat_app.search(body_expr)
+            m_prep = pat_prep.search(body_expr)
+            if not m_app and not m_prep:
+                return m.group(0)
+
+            source_var = (m_app or m_prep).group(1)
+            slice_len = int((m_app or m_prep).group(2)) if (m_app or m_prep).group(2) else 1
+            is_prepend = bool(m_prep)
+
+            source_key = source_var.lower()
+            if source_key not in self.env_vars:
+                return m.group(0)
+
+            source_val = self.env_vars[source_key]
+            sim_res = StringReversalAutomaton.simulate_slice_loop(
+                source_text=source_val,
+                start=start,
+                step=step,
+                stop=stop,
+                slice_len=slice_len,
+                is_prepend=is_prepend
+            )
+            decoded = sim_res.decoded_text
+            self.env_vars[dest_var.lower()] = decoded
+            return f'set "{dest_var}={decoded}"'
+
+        pattern = r'(?i)for\s+/l\s+(%[a-zA-Z0-9_]+)\s+in\s*\(([^)]+)\)\s+do\s+(?:\()?set\s+(?:/a\s+|/p\s+)?(?:")?([a-zA-Z0-9_\-\.\$]+)=([^"\r\n\)]+)(?:")?(?:\))?'
+        return re.sub(pattern, loop_repl, text)
+
     def deobfuscate(self, script_content: str) -> str:
         """Execute multi-pass deobfuscation until fixed-point convergence."""
         current = self.strip_bom_and_empty_quotes(script_content)
@@ -173,6 +241,7 @@ class BatchDeobfuscator:
             prev = current
             current = self.strip_carets(current)
             current = self.strip_bom_and_empty_quotes(current)
+            current = self.resolve_reversal_loops(current)
 
             lines = current.splitlines()
             processed_lines = []

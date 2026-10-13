@@ -10,6 +10,7 @@ from .constant_folder import ConstantFolderPass
 from .caret_normalizer import CaretNormalizerPass, normalize_carets
 from .param_resolver import ParamResolverPass
 from .arithmetic_folder import ArithmeticFolderPass, fold_arithmetic
+from .reversal_folder import ReversalFolderPass
 from .dce import (
     DeadCodeEliminationPass,
     VariableLivenessAnalyzer,
@@ -26,6 +27,7 @@ __all__ = [
     'ParamResolverPass',
     'ArithmeticFolderPass',
     'fold_arithmetic',
+    'ReversalFolderPass',
     'DeadCodeEliminationPass',
     'VariableLivenessAnalyzer',
     'DCEMetrics',
