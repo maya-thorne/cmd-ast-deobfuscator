@@ -14,12 +14,12 @@ This document tracks shipped capabilities and future engineering milestones for 
 - [x] **FOR Loop Variable & Parameter Path Modifier Interpreter** — Tokenizer, AST nodes, and evaluation engine (`src/modifiers.py`, `src/transforms/param_resolver.py`) supporting parameter path modifiers (`~dp`, `~f`, `~nx`, `~s`, `~a`, `~t`, `~z`, `~$PATH:`), 8.3 short name conversion, and FOR loop block statements.
 - [x] **Control Flow Graph (CFG) Construction & Dynamic Jump Table Resolver** — Basic block partitioning, cmd.exe label fallthrough semantics, edge classification, reachability analysis, McCabe cyclomatic complexity metric, symbolic dynamic jump resolution (`goto %VAR%`, `call !TARGET!`), pattern prefix matching, Control Flow Flattening (CFF) dispatcher identification, and multi-format exporters (Mermaid, DOT, ASCII, JSON).
 - [x] **Dead Code Elimination (DCE) & Unreferenced SET Pruning Pass** — Compiler optimization pass (`src/transforms/dce.py`) featuring `DeadCodeEliminationPass`, `VariableLivenessAnalyzer`, and `DCEMetrics` for fixed-point elimination of unreferenced variable assignments, consecutive dead store overwrites, unreachable statements following unconditional terminators (`exit`, `goto`), redundant block collapsing, and configurable symbol preservation.
+- [x] **Arithmetic Expression Folding (`set /a`) & AST Optimization Pass** — Compiler-grade arithmetic evaluation engine (`src/arithmetic/`, `src/transforms/arithmetic_folder.py`) featuring `CmdArithmeticEvaluator` and `ArithmeticFolderPass` supporting 32-bit signed two's complement integer math, cmd.exe arithmetic and bitwise operators (`*`, `/`, `%`, `+`, `-`, `<<`, `>>`, `&`, `^`, `|`, `~`, `!`), compound assignments (`+=`, `-=`, etc.), comma-separated sequencing, decimal/hex/octal literal formats, and zero-division fault protection.
 
 ---
 
 ## Planned Milestones
 
-- [ ] **Arithmetic Expression Folding (`set /a`)** — Constant evaluation for obfuscated arithmetic operations.
 - [ ] **Multi-Encoding Lossless Ingestion Pipeline** — Automatic detection and decoding of legacy batch encodings (ANSI, OEM-CP437, UTF-16LE, and UTF-8 BOM).
 - [ ] **Adversarial Batch Obfuscation Entropy & Threat Scoring** — Heuristic detection and complexity metrics for enterprise SIEM, YARA, and Sigma integration.
 - [ ] **Dynamic AST Instrumentation & Runtime Tracer** — Lightweight execution tracer monitoring runtime environment variable mutations and temporary file drops.
@@ -30,3 +30,4 @@ This document tracks shipped capabilities and future engineering milestones for 
 - [ ] **Batch Script Taint Analysis & Data Flow Tracking** — Source-to-sink tracking for untrusted user inputs and execution sinks (cmd.exe, powershell, certutil, wscript).
 - [ ] **Bat2Exe Embedded Archive Extractor & Binary Forensics Pipeline** — Static extraction and decompilation of embedded `.bat` scripts packed inside PE binaries (IExpress, Quick Batch Compiler, Bat To Exe Converter).
 - [ ] **Batch Script Static CFG Dominator Tree & Natural Loop Detection** — Dominance frontiers, loop headers, and back-edge cycle decomposition for automated restructuring of obfuscated spaghetti control flows.
+- [ ] **Metamorphic Batch Script Normalization & Entropy Flattening Pass** — Reversing anti-signature polynomial transformations and mutating command aliases.

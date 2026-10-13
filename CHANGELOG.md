@@ -5,6 +5,27 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2026-10-13
+
+### Added
+- **Arithmetic Expression Folding (`set /a`) & AST Optimization Pass**:
+  - Implemented dedicated arithmetic domain engine (`src/arithmetic/`):
+    - Lexer and recursive descent parser (`src/arithmetic/parser.py`) implementing exact cmd.exe operator precedence, number formats (decimal, hexadecimal `0x...`, octal `0...`), unary operators (`+`, `-`, `~`, `!`), arithmetic operators (`*`, `/`, `%`), bitwise shifts (`<<`, `>>`), bitwise logic (`&`, `^`, `|`), compound assignments (`=`, `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `^=`, `|=`, `<<=`, `>>=`), and comma sequence expressions (`a=1, b=2`).
+    - 32-bit signed integer evaluation engine (`CmdArithmeticEvaluator`, `src/arithmetic/evaluator.py`) with signed overflow wrapping (`[-2147483648, 2147483647]`), C-style truncation toward zero for integer division, and safe zero-division/modulus handling returning 0 without raising exceptions.
+    - Environment symbol table integration resolving bare variable identifiers, percent variables (`%VAR%`), and delayed expansion (`!VAR!`) with recursion depth limits preventing denial-of-service on cyclic references.
+- **Arithmetic AST Transform Pass (`ArithmeticFolderPass`)**:
+  - Implemented `ArithmeticFolderPass` (`src/transforms/arithmetic_folder.py`) evaluating static arithmetic statements, updating the pass environment symbol table for downstream slicing and constant folding passes, and normalizing folded `AssignmentNode` representations.
+  - Multi-variable assignment support (`set /a "a=1, b=2"`) with optional statement decomposition (`decompose_multi`).
+  - Integrated into `PassManager.default_pipeline` and `PassManager.optimization_pipeline`.
+  - Integrated with `ASTNormalizer` and `ConstantFolderPass` for unified constant propagation.
+- **CLI Flags & Metrics Telemetry**:
+  - Added `--arithmetic` (enable arithmetic expression folding) and `--arithmetic-stats` (print evaluation telemetry) CLI flags in `src/cli.py`.
+  - `ArithmeticMetrics` tracking expressions evaluated, assignments folded, variables resolved, and operators evaluated.
+- **Verification & Test Suite**:
+  - Added comprehensive test suite `tests/test_arithmetic_suite.py` with 33 unit and integration tests covering tokenization, operator precedence, 32-bit overflow wrapping, zero-division safety, number bases, compound assignments, caret unmasking, AST folding, and pipeline deobfuscation.
+  - Expanded test suite coverage from 222 to 255 passing tests with 100% success rate.
+  - Bumped project version to 0.9.0 in `pyproject.toml`.
+
 ## [0.8.0] - 2026-10-13
 
 ### Added

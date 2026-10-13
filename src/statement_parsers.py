@@ -227,23 +227,40 @@ def parse_set_assignment(
         raw_tail = raw_tail[1:-1]
         is_enclosed_quotes = True
 
-    if '=' in raw_tail:
+    if is_arithmetic:
+        if '=' in raw_tail and ',' not in raw_tail:
+            var_name, var_val = raw_tail.split('=', 1)
+        else:
+            var_name, var_val = "", raw_tail
+    elif '=' in raw_tail:
         var_name, var_val = raw_tail.split('=', 1)
     else:
         var_name, var_val = raw_tail, ""
 
     val_tokens: List[CmdToken] = []
-    found_eq = False
-    for t in tokens[1:]:
-        if found_eq:
+    if is_arithmetic and not var_name:
+        for t in tokens[1:]:
+            val_str = t.value.strip().lower()
+            if val_str in ('/a', '/p'):
+                continue
+            if val_str.startswith('/a') or val_str.startswith('/p'):
+                trimmed = t.value.strip()[2:].strip()
+                if trimmed:
+                    val_tokens.append(CmdToken(t.type, trimmed, t.span, t.in_quote))
+                continue
             val_tokens.append(t)
-        elif t.type == CmdTokenType.EQUALS:
-            found_eq = True
-        elif '=' in t.value:
-            found_eq = True
-            _, after_eq = t.value.split('=', 1)
-            if after_eq:
-                val_tokens.append(CmdToken(CmdTokenType.LITERAL, after_eq, t.span, t.in_quote))
+    else:
+        found_eq = False
+        for t in tokens[1:]:
+            if found_eq:
+                val_tokens.append(t)
+            elif t.type == CmdTokenType.EQUALS:
+                found_eq = True
+            elif '=' in t.value:
+                found_eq = True
+                _, after_eq = t.value.split('=', 1)
+                if after_eq:
+                    val_tokens.append(CmdToken(CmdTokenType.LITERAL, after_eq, t.span, t.in_quote))
 
     if is_enclosed_quotes:
         while val_tokens and (val_tokens[-1].type == CmdTokenType.QUOTE or val_tokens[-1].value == '"'):

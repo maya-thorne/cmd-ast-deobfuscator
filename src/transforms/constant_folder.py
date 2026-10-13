@@ -184,6 +184,17 @@ class ConstantFolderPass(TransformPass):
         return node
 
     def visit_AssignmentNode(self, node: AssignmentNode) -> AssignmentNode:
+        if node.is_arithmetic:
+            from .arithmetic_folder import ArithmeticFolderPass
+            arith_pass = ArithmeticFolderPass(env=self.env)
+            folded = arith_pass.visit_AssignmentNode(node)
+            for k, v in arith_pass.env.items():
+                self.env[k] = v
+            if arith_pass.modified or folded != node:
+                self.modified = True
+                return folded
+            return node
+
         new_vals = self._coalesce_nodes(node.value_nodes, is_value=True) if node.value_nodes else []
         new_raw = node.raw_value
         if new_vals:
