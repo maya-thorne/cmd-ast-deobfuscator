@@ -14,6 +14,7 @@ from ..ast_nodes import (
 from .base import TransformPass
 from .slicing_folder import SlicingFolderPass
 from .caret_normalizer import CaretNormalizerPass
+from ..quotes import collapse_empty_quotes
 
 
 class ConstantFolderPass(TransformPass):
@@ -37,7 +38,7 @@ class ConstantFolderPass(TransformPass):
             return ""
 
         # Collapse empty quotes ""
-        text = text.replace('""', '')
+        text = collapse_empty_quotes(text)
 
         self.caret_normalizer.env = self.env
         return self.caret_normalizer.normalize_text(text)

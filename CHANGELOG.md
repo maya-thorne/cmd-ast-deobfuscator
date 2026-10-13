@@ -5,6 +5,30 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] - 2026-10-13
+
+### Added
+- **Quote Toggle Boundary & Nested Quote Normalization Engine**:
+  - Implemented dedicated quotes domain package (`src/quotes/`):
+    - `QuoteToggleAutomaton` (`src/quotes/automaton.py`): Pushdown state machine tracking cmd.exe quotation toggle boundaries, unmasking escaped quotes (`^"`), collapsing empty quote pairs (`""`), and reducing multi-level consecutive quotes (`""""`, `""""""` -> `""`) with memory bounds.
+    - Command target executable deobfuscator (`normalize_target`): Implements cmd.exe command lookup semantics by stripping all quote toggles and unmasking carets from target names (`"c"m"d"`, `c""m""d`, `""powershell""`, `w^"h^"o^"a^"m^"i` -> `cmd`, `powershell`, `whoami`).
+    - Argument canonicalizer (`normalize_argument`): Strips redundant quote toggles from safe alphanumeric tokens while preserving canonical quotes for arguments containing whitespace or special metacharacters (`&`, `|`, `<`, `>`, `^`).
+    - Assignment normalizer (`normalize_assignment`): Canonicalizes enclosed variable assignments (`set "k=v"`, `set ""k=v""`, `set "k"="v"` -> `k=v`).
+    - `QuoteNormalizer` (`src/quotes/normalizer.py`): High-level normalization coordinator and AST literal coalescer fusing contiguous tokens within lexical argument boundaries.
+    - Telemetry and data structures (`src/quotes/models.py`) with `QuoteState`, `QuoteSegment`, and `QuoteNormalizerMetrics`.
+- **Quote Normalization AST Transform Pass (`QuoteNormalizerPass`)**:
+  - Implemented `QuoteNormalizerPass` (`src/transforms/quote_normalizer.py`) traversing AST hierarchies:
+    - Fuses contiguous literal argument tokens sharing adjacent source spans (`prev.span[1] == curr.span[0]`) before evaluating quotation boundaries.
+    - Normalizes command targets, command arguments, and variable assignments across commands, assignments, blocks, chains, and conditional statements.
+    - Integrated into `PassManager.default_pipeline` and `PassManager.optimization_pipeline`.
+    - Integrated with `ConstantFolderPass` and `BatchDeobfuscator` for unified empty quote pair elimination.
+- **CLI Options & Telemetry**:
+  - Added `--quotes` (enable quote toggle boundary and empty quote normalization) and `--quote-stats` (print quote normalization metrics summary) CLI flags to `src/cli.py`.
+- **Verification & Test Suite**:
+  - Added dedicated test suite `tests/test_quote_normalizer_suite.py` with 27 unit and integration tests covering quote toggle state transitions, empty quote collapsing, command target deobfuscation, argument canonicalization, variable assignment normalization, AST pass transformations, PassManager pipeline execution, and memory zeroization.
+  - Expanded test suite coverage from 279 to 306 passing tests with 100% success rate.
+  - Bumped project version to 0.11.0 in `pyproject.toml`.
+
 ## [0.10.0] - 2026-10-13
 
 ### Added
