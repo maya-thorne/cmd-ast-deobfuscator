@@ -43,6 +43,8 @@ def main():
     parser.add_argument("--cfg-resolve-jumps", action="store_true", help="Perform dynamic jump table resolution on CFG")
     parser.add_argument("--dce", action="store_true", help="Perform Dead Code Elimination (DCE) and unreferenced SET pruning")
     parser.add_argument("--dce-stats", action="store_true", help="Print Dead Code Elimination metrics summary")
+    parser.add_argument("--arithmetic", action="store_true", help="Perform arithmetic expression folding (set /a)")
+    parser.add_argument("--arithmetic-stats", action="store_true", help="Print arithmetic expression folding metrics summary")
     parser.add_argument("--preserve-vars", help="Comma-separated variable names to protect from dead code elimination")
     parser.add_argument("--benchmark", action="store_true", help="Execute real-world deobfuscation benchmark suite")
     parser.add_argument("--benchmark-engine", choices=["ast", "automaton"], default="ast", help="Engine to evaluate (ast or automaton)")
@@ -108,6 +110,17 @@ def main():
     preserve_set = None
     if args.preserve_vars:
         preserve_set = {v.strip() for v in args.preserve_vars.split(",") if v.strip()}
+
+    if args.arithmetic or args.arithmetic_stats:
+        from src.transforms.arithmetic_folder import ArithmeticFolderPass
+        arith_pass = ArithmeticFolderPass()
+        ast = arith_pass.transform(ast)
+        if args.arithmetic_stats:
+            print("\n=== [ARITHMETIC FOLDING STATS] ===")
+            print(f"  Expressions evaluated: {arith_pass.metrics.expressions_evaluated}")
+            print(f"  Assignments folded   : {arith_pass.metrics.assignments_folded}")
+            print(f"  Variables resolved   : {arith_pass.metrics.variables_resolved}")
+            print(f"  Operators evaluated  : {arith_pass.metrics.operators_evaluated}")
 
     if args.dce or args.dce_stats:
         from src.transforms.dce import DeadCodeEliminationPass

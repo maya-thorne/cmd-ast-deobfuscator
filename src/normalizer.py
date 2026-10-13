@@ -100,6 +100,21 @@ class ASTNormalizer(ASTVisitor):
         return node
 
     def visit_AssignmentNode(self, node: AssignmentNode) -> Optional[ASTNode]:
+        if node.is_arithmetic:
+            from .arithmetic.evaluator import evaluate_arithmetic
+            raw_expr = f"{node.var_name}={node.raw_value}" if node.var_name else node.raw_value
+            res = evaluate_arithmetic(raw_expr, env=self.symbols)
+            for v_name, val in res.assignments.items():
+                self.symbols[v_name.lower()] = str(val)
+            if res.assignments and len(res.assignments) == 1 and ',' not in raw_expr:
+                target_var = list(res.assignments.keys())[0]
+                folded_val = str(res.assignments[target_var])
+                return AssignmentNode(var_name=target_var, raw_value=folded_val, is_arithmetic=True)
+            elif res.assignments:
+                return AssignmentNode(var_name="", raw_value=res.folded_repr, is_arithmetic=True)
+            else:
+                return AssignmentNode(var_name="", raw_value=str(res.value), is_arithmetic=True)
+
         var_key = node.var_name.lower()
         val_resolved = node.raw_value
 
@@ -411,6 +426,8 @@ class ASTNormalizer(ASTVisitor):
 
         if isinstance(node, AssignmentNode):
             prefix = "set /a " if node.is_arithmetic else "set "
+            if not node.var_name:
+                return f"{prefix}{node.raw_value}".strip()
             return f"{prefix}{node.var_name}={node.raw_value}"
 
         if isinstance(node, CommandNode):

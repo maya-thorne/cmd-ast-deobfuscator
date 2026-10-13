@@ -9,6 +9,7 @@ from .slicing_folder import SlicingFolderPass
 from .constant_folder import ConstantFolderPass
 from .caret_normalizer import CaretNormalizerPass, normalize_carets
 from .param_resolver import ParamResolverPass
+from .arithmetic_folder import ArithmeticFolderPass, fold_arithmetic
 from .dce import (
     DeadCodeEliminationPass,
     VariableLivenessAnalyzer,
@@ -23,6 +24,8 @@ __all__ = [
     'ConstantFolderPass',
     'CaretNormalizerPass',
     'ParamResolverPass',
+    'ArithmeticFolderPass',
+    'fold_arithmetic',
     'DeadCodeEliminationPass',
     'VariableLivenessAnalyzer',
     'DCEMetrics',

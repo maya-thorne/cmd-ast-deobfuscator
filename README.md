@@ -383,6 +383,12 @@ python src/cli.py -i script.bat --dce --dce-stats
 # Protect specific variables from dead code elimination
 python src/cli.py -i script.bat --dce --preserve-vars EXPORT_VAR,OUTPUT_KEY
 
+# Evaluate and fold arithmetic expressions (set /a)
+python src/cli.py -i script.bat --arithmetic -o cleaned.bat
+
+# Display arithmetic expression folding metrics summary
+python src/cli.py -i script.bat --arithmetic --arithmetic-stats
+
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
@@ -395,7 +401,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 222 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), and real-world benchmark invariants:
+The test suite validates 255 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -468,9 +474,14 @@ test_for_loop_statement_parsing (test_for_param_expansion.TestForParamExpansion)
 test_dce_unreferenced_pruned (test_dce_suite.TestDeadCodeEliminationSuite) ... ok
 test_dce_dead_store_overwrite (test_dce_suite.TestDeadCodeEliminationSuite) ... ok
 test_dce_unreachable_pruned (test_dce_suite.TestDeadCodeEliminationSuite) ... ok
+test_basic_arithmetic (test_arithmetic_suite.TestArithmeticEvaluator) ... ok
+test_32bit_signed_overflow_and_underflow (test_arithmetic_suite.TestArithmeticEvaluator) ... ok
+test_compound_assignments (test_arithmetic_suite.TestArithmeticEvaluator) ... ok
+test_fold_multi_assignment_sequence (test_arithmetic_suite.TestArithmeticFolderPass) ... ok
+test_real_world_obfuscation_payload (test_arithmetic_suite.TestArithmeticFolderPass) ... ok
 
 ----------------------------------------------------------------------
-Ran 222 tests in 0.082s
+Ran 255 tests in 0.096s
 
 OK
 ```

@@ -224,6 +224,8 @@ class TransformPass(ASTVisitor):
 
         if isinstance(node, AssignmentNode):
             prefix = "set /a " if node.is_arithmetic else "set "
+            if not node.var_name:
+                return f"{prefix}{node.raw_value}".strip()
             return f"{prefix}{node.var_name}={node.raw_value}"
 
         if isinstance(node, CommandNode):
@@ -340,10 +342,12 @@ class PassManager:
         preserve_vars: Optional[Set[str]] = None
     ) -> 'PassManager':
         from .caret_normalizer import CaretNormalizerPass
+        from .arithmetic_folder import ArithmeticFolderPass
         from .slicing_folder import SlicingFolderPass
         from .constant_folder import ConstantFolderPass
         passes: List[TransformPass] = [
             CaretNormalizerPass(env=env),
+            ArithmeticFolderPass(env=env),
             SlicingFolderPass(env=env),
             ConstantFolderPass(env=env),
         ]
