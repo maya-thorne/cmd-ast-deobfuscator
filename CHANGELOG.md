@@ -5,6 +5,26 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-10-13
+
+### Added
+- **Dead Code Elimination (DCE) & SET Pruning Pass**:
+  - Implemented `DeadCodeEliminationPass` (`src/transforms/dce.py`) for iterative fixed-point optimization and dead code reduction across batch script ASTs.
+  - Multi-pass variable liveness analysis engine (`VariableLivenessAnalyzer`) tracking referenced symbols across variable expansion nodes (`%VAR%`, `!VAR!`), substring slices, substitution parameters, conditional tests (`if defined`, `if %VAR%`), FOR in-clauses, dynamic jumps (`goto`, `call`), redirections, and arithmetic expressions (`set /a`).
+  - Unreferenced assignment pruning stripping dead variable assignments (`set NOISE=...`) injected by adversarial tools (e.g. 0xidiz3r, Invoke-DOSfuscation, Somalifuscator).
+  - Consecutive overwritten dead store elimination removing redundant write-after-write operations within linear execution sequences while respecting label and control-flow barriers.
+  - Unreachable statement pruning removing code blocks and statement sequences immediately following unconditional control transfers (`exit`, `exit /b`, static `goto`).
+  - Redundant block collapsing pruning empty parenthesized compound blocks (`()`) and dangling empty chain fragments.
+  - Configurable symbol preservation safeguarding default Windows system environment variables (`DEFAULT_PRESERVE_VARS` such as `PATH`, `COMSPEC`, `SYSTEMROOT`, `ERRORLEVEL`) and custom user-provided export variable lists.
+- **Pipeline & CLI Integration**:
+  - Integrated `DeadCodeEliminationPass` into `PassManager.optimization_pipeline` and `run_transforms` with fixed-point iteration convergence guards.
+  - Added CLI options (`src/cli.py`): `--dce` (enable dead code elimination), `--dce-stats` (print pruning summary metrics), and `--preserve-vars` (comma-separated list of symbols to protect).
+  - Detailed metrics reporting via `DCEMetrics` tracking pruned assignments, overwritten stores, unreachable statements, empty blocks, and affected symbol names.
+- **Verification & Test Suite**:
+  - Added comprehensive test suite `tests/test_dce_suite.py` with 32 unit and integration tests covering unreferenced variable pruning, transitive dependency chains, conditional branch tracking, dynamic jump targets, arithmetic expressions, consecutive overwrites, unreachable branches, and CLI flags.
+  - Expanded test suite coverage to 222 passing tests with 100% success rate.
+  - Bumped project version to 0.8.0 in `pyproject.toml`.
+
 ## [0.7.0] - 2026-10-13
 
 ### Added

@@ -94,10 +94,10 @@ class VariableLivenessAnalyzer(ASTVisitor):
         if not text:
             return
         # Match %VAR% and !VAR! with optional slicing/substitution
-        for m in re.finditer(r'[%!]([a-zA-Z0-9_#$@]+)(?::[^%!]+)?[%!]', text):
+        for m in re.finditer(r'[%!]([a-zA-Z0-9_#$@.-]+)(?::[^%!]+)?[%!]', text):
             self.uses.add(m.group(1).lower())
         # Match "defined VAR" or "not defined VAR" in IF statements
-        for m in re.finditer(r'(?i)\bdefined\s+([a-zA-Z0-9_#$@]+)', text):
+        for m in re.finditer(r'(?i)\bdefined\s+([a-zA-Z0-9_#$@.-]+)', text):
             self.uses.add(m.group(1).lower())
         # Check errorlevel reference
         if re.search(r'(?i)\berrorlevel\b', text):
@@ -208,7 +208,8 @@ class VariableLivenessAnalyzer(ASTVisitor):
         pass
 
     def visit_ExitNode(self, node: ExitNode) -> None:
-        pass
+        if node.exit_code:
+            self._extract_embedded_vars(str(node.exit_code))
 
     def visit_CommentNode(self, node: CommentNode) -> None:
         pass
@@ -275,6 +276,8 @@ class DeadCodeEliminationPass(TransformPass):
         if isinstance(node, ExitNode):
             return True
         if isinstance(node, GotoNode) and not node.is_dynamic:
+            return True
+        if isinstance(node, CommandNode) and node.target.strip().lower() == 'exit':
             return True
         return False
 
@@ -397,6 +400,12 @@ class DeadCodeEliminationPass(TransformPass):
             self.modified = True
             return right
         if right is None:
+            self.modified = True
+            return left
+
+        # If left is an unconditional terminator in & or && chains, right is unreachable
+        if self.prune_unreachable and node.operator in ('&', '&&') and self._is_unconditional_terminator(left):
+            self.metrics.pruned_unreachable += 1
             self.modified = True
             return left
 

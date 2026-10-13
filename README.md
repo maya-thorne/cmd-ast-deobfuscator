@@ -374,8 +374,14 @@ python src/cli.py -i script.bat --cfg
 python src/cli.py -i script.bat --cfg-mermaid
 python src/cli.py -i script.bat --cfg-dot
 
-# Enable symbolic dynamic jump table resolution
-python src/cli.py -i script.bat --cfg --cfg-resolve-jumps
+# Enable Dead Code Elimination (DCE) to prune unreferenced SET noise and dead stores
+python src/cli.py -i script.bat --dce -o cleaned.bat
+
+# Display Dead Code Elimination metrics summary
+python src/cli.py -i script.bat --dce --dce-stats
+
+# Protect specific variables from dead code elimination
+python src/cli.py -i script.bat --dce --preserve-vars EXPORT_VAR,OUTPUT_KEY
 
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
@@ -389,7 +395,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 190 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, and real-world benchmark invariants:
+The test suite validates 222 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -459,9 +465,12 @@ test_for_loop_modifier_combined_dp (test_for_param_expansion.TestForParamExpansi
 test_for_loop_modifier_search_path (test_for_param_expansion.TestForParamExpansion) ... ok
 test_param_resolver_pass_fixed_point (test_for_param_expansion.TestForParamExpansion) ... ok
 test_for_loop_statement_parsing (test_for_param_expansion.TestForParamExpansion) ... ok
+test_dce_unreferenced_pruned (test_dce_suite.TestDeadCodeEliminationSuite) ... ok
+test_dce_dead_store_overwrite (test_dce_suite.TestDeadCodeEliminationSuite) ... ok
+test_dce_unreachable_pruned (test_dce_suite.TestDeadCodeEliminationSuite) ... ok
 
 ----------------------------------------------------------------------
-Ran 166 tests in 0.099s
+Ran 222 tests in 0.082s
 
 OK
 ```
@@ -561,7 +570,7 @@ OK
     <tr>
       <td><strong><code>src/transforms/</code></strong></td>
       <td>Transforms Pipeline</td>
-      <td>Modular AST optimization passes (<code>ParamResolverPass</code>, <code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
+      <td>Modular AST optimization passes (<code>DeadCodeEliminationPass</code>, <code>ParamResolverPass</code>, <code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
     </tr>
     <tr>
       <td><strong><code>src/benchmark/</code></strong></td>
@@ -581,6 +590,11 @@ OK
       <td><strong><code>tests/test_ast_suite.py</code></strong></td>
       <td>Unit Tests</td>
       <td>Compiler verification suite testing lexer tokens, automaton transitions, and AST nodes</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_dce_suite.py</code></strong></td>
+      <td>DCE &amp; Pruning Tests</td>
+      <td>Dead Code Elimination, unreferenced SET pruning, dead store removal, and unreachable statement tests</td>
     </tr>
     <tr>
       <td><strong><code>tests/test_for_param_expansion.py</code></strong></td>

@@ -374,6 +374,51 @@ class TestDeadCodeEliminationSuite(unittest.TestCase):
         output = normalizer.to_source(cleaned).strip()
         self.assertEqual(output, "dir")
 
+    def test_exit_code_variable_preserved(self):
+        source = "set RETVAL=42\nexit /b %RETVAL%"
+        ast = CmdASTParser.from_source(source).parse()
+        dce = DeadCodeEliminationPass()
+        cleaned_ast = dce.transform(ast)
+
+        normalizer = ASTNormalizer()
+        output = normalizer.to_source(cleaned_ast)
+        self.assertIn("set RETVAL=42", output)
+        self.assertIn("exit /b %RETVAL%", output)
+        self.assertEqual(dce.metrics.pruned_assignments, 0)
+
+    def test_variable_name_with_dot_and_hyphen(self):
+        source = "set my-var.config=active\necho %my-var.config%"
+        ast = CmdASTParser.from_source(source).parse()
+        dce = DeadCodeEliminationPass()
+        cleaned_ast = dce.transform(ast)
+
+        normalizer = ASTNormalizer()
+        output = normalizer.to_source(cleaned_ast)
+        self.assertIn("set my-var.config=active", output)
+        self.assertEqual(dce.metrics.pruned_assignments, 0)
+
+    def test_chain_unreachable_after_exit(self):
+        source = "exit /b 0 & echo dead_code & set dead_val=99"
+        ast = CmdASTParser.from_source(source).parse()
+        dce = DeadCodeEliminationPass()
+        cleaned_ast = dce.transform(ast)
+
+        normalizer = ASTNormalizer()
+        output = normalizer.to_source(cleaned_ast).strip()
+        self.assertEqual(output, "exit /b 0")
+        self.assertGreaterEqual(dce.metrics.pruned_unreachable, 1)
+
+    def test_chain_unreachable_after_goto(self):
+        source = "goto :fin && echo unreachable"
+        ast = CmdASTParser.from_source(source).parse()
+        dce = DeadCodeEliminationPass()
+        cleaned_ast = dce.transform(ast)
+
+        normalizer = ASTNormalizer()
+        output = normalizer.to_source(cleaned_ast).strip()
+        self.assertEqual(output, "goto :fin")
+        self.assertGreaterEqual(dce.metrics.pruned_unreachable, 1)
+
 
 if __name__ == '__main__':
     unittest.main()
