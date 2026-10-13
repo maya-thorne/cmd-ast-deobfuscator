@@ -1,0 +1,1 @@
+v^s^s^a^d^m^i^n d^e^l^e^t^e s^h^a^d^o^w^s /a^l^l /q^u^i^e^t

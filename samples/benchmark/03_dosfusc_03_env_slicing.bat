@@ -1,0 +1,1 @@
+%COMSPEC:~-7,3% /c %COMSPEC:~-7,3%

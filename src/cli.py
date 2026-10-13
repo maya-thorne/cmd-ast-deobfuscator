@@ -17,10 +17,12 @@ if __package__ is None or __package__ == "":
     from src.parser import CmdASTParser
     from src.normalizer import ASTNormalizer
     from src.visualizer import ASTVisualizer
+    from src.benchmark import BenchmarkRunner
 else:
     from .parser import CmdASTParser
     from .normalizer import ASTNormalizer
     from .visualizer import ASTVisualizer
+    from .benchmark import BenchmarkRunner
 
 
 def main():
@@ -33,8 +35,26 @@ def main():
     parser.add_argument("--mermaid", action="store_true", help="Print Mermaid flowchart syntax of the AST")
     parser.add_argument("--json", action="store_true", help="Print JSON serialization of the AST")
     parser.add_argument("-c", "--code", help="Inline batch code string to parse")
+    parser.add_argument("--benchmark", action="store_true", help="Execute real-world deobfuscation benchmark suite")
+    parser.add_argument("--benchmark-engine", choices=["ast", "automaton"], default="ast", help="Engine to evaluate (ast or automaton)")
+    parser.add_argument("--benchmark-export", help="Path to save benchmark report (.md or .json)")
 
     args = parser.parse_args()
+
+    if args.benchmark:
+        runner = BenchmarkRunner(engine=args.benchmark_engine)
+        summary = runner.run_all()
+        md_report = summary.to_markdown()
+        print(md_report)
+        if args.benchmark_export:
+            ext = os.path.splitext(args.benchmark_export)[1].lower()
+            with open(args.benchmark_export, "w", encoding="utf-8") as f:
+                if ext == ".json":
+                    f.write(summary.to_json())
+                else:
+                    f.write(md_report)
+            print(f"[✓] Benchmark report exported to {args.benchmark_export}")
+        sys.exit(0)
 
     if args.code:
         source = args.code

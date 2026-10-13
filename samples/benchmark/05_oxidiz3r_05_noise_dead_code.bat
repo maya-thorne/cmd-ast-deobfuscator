@@ -1,0 +1,6 @@
+set "noise1=93821039"
+set "p1=po"
+set "noise2=junk_token"
+set "p2=wer"
+set "p3=shell"
+%p1%%p2%%p3% -NoProfile -Command "dir"

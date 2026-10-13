@@ -16,7 +16,15 @@ from .transforms import (
     PassManager,
     SlicingFolderPass,
     ConstantFolderPass,
+    CaretNormalizerPass,
+    normalize_carets,
     run_transforms
+)
+from .benchmark import (
+    BenchmarkRunner,
+    BenchmarkSummary,
+    BenchmarkSample,
+    get_benchmark_corpus,
 )
 
 __all__ = [
@@ -43,5 +51,11 @@ __all__ = [
     'PassManager',
     'SlicingFolderPass',
     'ConstantFolderPass',
-    'run_transforms'
+    'CaretNormalizerPass',
+    'normalize_carets',
+    'run_transforms',
+    'BenchmarkRunner',
+    'BenchmarkSummary',
+    'BenchmarkSample',
+    'get_benchmark_corpus',
 ]

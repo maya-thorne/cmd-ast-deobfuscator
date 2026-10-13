@@ -217,11 +217,13 @@ class CmdASTParser:
             while val_tokens and (val_tokens[-1].type == CmdTokenType.QUOTE or val_tokens[-1].value == '"'):
                 val_tokens.pop()
 
+        # Strip trailing whitespace tokens
+        while val_tokens and val_tokens[-1].type == CmdTokenType.WHITESPACE:
+            val_tokens.pop()
+
         value_nodes: List[ASTNode] = []
         for t in val_tokens:
             if t.type == CmdTokenType.EOF:
-                continue
-            if t.type == CmdTokenType.WHITESPACE and not t.in_quote:
                 continue
             value_nodes.append(self._token_to_ast_node(t))
 

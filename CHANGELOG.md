@@ -5,6 +5,22 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-10-13
+
+### Added
+- **Real-World Sample Deobfuscation Benchmark & Evaluation Harness**:
+  - Curated evaluation corpus of 12 production-representative batch obfuscation samples (`src/benchmark/corpus.py`) covering Invoke-DOSfuscation (caret masking, empty quote stuffing, environment variable negative slicing, piecewise bootstrap staging), 0xidiz3r (dead variable interleaving), Somalifuscator (substitution cipher tables), download cradles (certutil, bitsadmin), living-off-the-land discovery sequences, and service shadow deletion scripts.
+  - Exported standalone `.bat` sample collection in `samples/benchmark/` for direct inspection and offline testing.
+  - Quantitative complexity metrics engine (`src/benchmark/metrics.py`) computing Shannon entropy deltas, AST node count reduction, character reduction rates, and lexical token density.
+  - Multi-engine benchmark runner (`src/benchmark/runner.py`) evaluating the recursive-descent AST pipeline (`PassManager` + `ASTNormalizer`) and pushdown automaton engine (`BatchDeobfuscator`), achieving 100% ground-truth payload recovery across all test cases.
+  - Structured reporting with formatted Markdown summaries, detailed per-sample comparison tables, and JSON export capabilities.
+  - Command-line interface integration (`src/cli.py`) with `--benchmark`, `--benchmark-engine {ast,automaton}`, and `--benchmark-export <file>`.
+  - Added dedicated unit test suite `tests/test_benchmark_suite.py` containing 14 tests (expanding test suite to 130 passing tests).
+- **Core Engine & Normalizer Enhancements**:
+  - Enhanced `src/parser.py` to preserve internal whitespace tokens across SET assignment values (`set VAR=VAL`), preventing loss of whitespace delimiters in unquoted assignment arguments.
+  - Fixed command argument reconstruction in `src/transforms/caret_normalizer.py` to join arguments with spaces when promoting dynamically resolved commands into `AssignmentNode`.
+  - Extended `NodeCounterVisitor` in `src/benchmark/metrics.py` with leaf visitor methods and clean `generic_visit` handling.
+
 ## [0.4.0] - 2026-10-13
 
 ### Added

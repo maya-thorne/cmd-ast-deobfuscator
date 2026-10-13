@@ -1,0 +1,1 @@
+p^o^w^e^r^s^h^e^l^l.e^x^e -N^o^P^r^o^f^i^l^e -E^x^e^c^u^t^i^o^n^P^o^l^i^c^y B^y^p^a^s^s -W^i^n^d^o^w^S^t^y^l^e H^i^d^d^e^n -C^o^m^m^a^n^d "Write-Output Payload"

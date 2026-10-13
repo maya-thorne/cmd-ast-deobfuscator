@@ -366,6 +366,12 @@ python src/cli.py -c "set X=calc & !X:~0,4!.exe" --json
 
 # Deobfuscate batch script using compiler AST normalizer
 python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat -o deobfuscated_output.bat
+
+# Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
+python src/cli.py --benchmark
+
+# Run benchmark evaluation with JSON report export
+python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmark_report.json
 ```
 
 ---
@@ -373,7 +379,7 @@ python src/cli.py -i references/classic_samples/01_env_slicing_sample.bat -o deo
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 54 fundamental compiler, lexer, automaton, AST normalization, and delayed expansion (`!VAR!`) invariants:
+The test suite validates 130 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -539,6 +545,11 @@ OK
       <td>Modular AST optimization passes (<code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
     </tr>
     <tr>
+      <td><strong><code>src/benchmark/</code></strong></td>
+      <td>Benchmark Harness</td>
+      <td>Real-world sample evaluation suite, Shannon entropy metrics, and multi-engine verification</td>
+    </tr>
+    <tr>
       <td><strong><code>src/visualizer.py</code></strong></td>
       <td>Visualizer Engine</td>
       <td>Multi-target visualizer emitting ASCII syntax trees, Mermaid flowcharts, and JSON</td>
@@ -568,6 +579,11 @@ OK
       <td>Optimization tests for multi-level caret escape sequences, quote tracking, and pipeline passes</td>
     </tr>
     <tr>
+      <td><strong><code>tests/test_benchmark_suite.py</code></strong></td>
+      <td>Benchmark Tests</td>
+      <td>Shannon entropy, AST node reduction, corpus validation, and 100% payload recovery tests</td>
+    </tr>
+    <tr>
       <td><strong><code>tests/test_deobfuscator.py</code></strong></td>
       <td>Integration Tests</td>
       <td>End-to-end invariant validation verifying deobfuscation of 12 adversarial vectors</td>
@@ -575,6 +591,11 @@ OK
     <!-- Auxiliary Directories -->
     <tr>
       <td colspan="3" bgcolor="#0f172a"><strong>📚 Supporting Directories &amp; Research Assets</strong></td>
+    </tr>
+    <tr>
+      <td><strong><code>samples/benchmark/</code></strong></td>
+      <td>Benchmark Corpus</td>
+      <td>12 standalone obfuscated batch script samples (.bat) across Invoke-DOSfuscation, 0xidiz3r, and Somalifuscator</td>
     </tr>
     <tr>
       <td><strong><code>.github/workflows/ci.yml</code></strong></td>

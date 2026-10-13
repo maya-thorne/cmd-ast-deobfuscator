@@ -16,6 +16,7 @@ Security updates are applied to the latest release series on the `main` branch.
 3. **Regular Expression & Injection Defense**: Dynamic search and substitution expressions (`%VAR:s1=s2%`) are sanitized using `re.escape()` and literal lambda replacers, eliminating regex injection and unintended backreference expansions.
 4. **Credential & Environment Hygiene**: Virtual symbol tables and AST visitor instances provide complete environment isolation from the host operating system, preventing accidental disclosure of host environment variables.
 5. **Caret Iteration Caps & Escape Depth Bounds**: Multi-level caret reduction algorithms enforce bounded pass iterations (default max 10 passes) with fixed-point termination guards, preventing infinite looping or memory exhaustion when processing pathological input containing recursive caret sequences.
+6. **Benchmark Sandbox & Zero Dynamic Execution**: The benchmark evaluation harness (`src/benchmark/`) processes all real-world adversarial samples strictly offline in memory using static AST transformations, with zero dynamic shell dispatch, external network requests, or child process spawning.
 
 ## Reporting a Vulnerability
 

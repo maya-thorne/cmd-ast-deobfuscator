@@ -257,7 +257,7 @@ class CaretNormalizerPass(TransformPass):
         else:
             new_target = self.normalize_text(node.target)
         if new_target.lower() == 'set' and new_args:
-            arg_text = "".join(n.value if isinstance(n, LiteralNode) else self.to_source(n) for n in new_args).strip()
+            arg_text = " ".join(n.value if isinstance(n, LiteralNode) else self.to_source(n) for n in new_args).strip()
             if arg_text.startswith('"') and arg_text.endswith('"'):
                 arg_text = arg_text[1:-1]
             if '=' in arg_text:
