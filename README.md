@@ -389,6 +389,12 @@ python src/cli.py -i script.bat --arithmetic -o cleaned.bat
 # Display arithmetic expression folding metrics summary
 python src/cli.py -i script.bat --arithmetic --arithmetic-stats
 
+# Deobfuscate string reversal loops and dictionary transpositions
+python src/cli.py -i script.bat --reversal -o cleaned.bat
+
+# Display string reversal and transposition metrics summary
+python src/cli.py -i script.bat --reversal --reversal-stats
+
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
@@ -401,7 +407,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 255 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), and real-world benchmark invariants:
+The test suite validates 279 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -479,9 +485,20 @@ test_32bit_signed_overflow_and_underflow (test_arithmetic_suite.TestArithmeticEv
 test_compound_assignments (test_arithmetic_suite.TestArithmeticEvaluator) ... ok
 test_fold_multi_assignment_sequence (test_arithmetic_suite.TestArithmeticFolderPass) ... ok
 test_real_world_obfuscation_payload (test_arithmetic_suite.TestArithmeticFolderPass) ... ok
+test_reverse_direct (test_reversal_suite.TestStringReversalAutomaton) ... ok
+test_simulate_slice_loop_reverse (test_reversal_suite.TestStringReversalAutomaton) ... ok
+test_simulate_index_sequence (test_reversal_suite.TestStringReversalAutomaton) ... ok
+test_simulate_stack_reversal (test_reversal_suite.TestStringReversalAutomaton) ... ok
+test_detect_for_l_append (test_reversal_suite.TestReversalPatternDetector) ... ok
+test_detect_goto_stack_reversal (test_reversal_suite.TestReversalPatternDetector) ... ok
+test_fold_for_l_reverse_string (test_reversal_suite.TestReversalFolderPass) ... ok
+test_fold_for_in_dictionary_transposition (test_reversal_suite.TestReversalFolderPass) ... ok
+test_fold_goto_stack_reversal_loop (test_reversal_suite.TestReversalFolderPass) ... ok
+test_full_pipeline_end_to_end (test_reversal_suite.TestReversalFolderPass) ... ok
+test_batch_deobfuscator_reversal (test_reversal_suite.TestBatchDeobfuscatorReversal) ... ok
 
 ----------------------------------------------------------------------
-Ran 255 tests in 0.096s
+Ran 279 tests in 0.121s
 
 OK
 ```
@@ -579,9 +596,14 @@ OK
       <td>Recursive descent pushdown AST parser constructing strict syntax trees from tokens</td>
     </tr>
     <tr>
+      <td><strong><code>src/reversal/</code></strong></td>
+      <td>Reversal Engine</td>
+      <td>Pushdown automaton, pattern detector, and simulation engine for Somalifuscator reverse loops and transpositions</td>
+    </tr>
+    <tr>
       <td><strong><code>src/transforms/</code></strong></td>
       <td>Transforms Pipeline</td>
-      <td>Modular AST optimization passes (<code>DeadCodeEliminationPass</code>, <code>ParamResolverPass</code>, <code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
+      <td>Modular AST optimization passes (<code>ReversalFolderPass</code>, <code>ArithmeticFolderPass</code>, <code>DeadCodeEliminationPass</code>, <code>ParamResolverPass</code>, <code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
     </tr>
     <tr>
       <td><strong><code>src/benchmark/</code></strong></td>
@@ -636,6 +658,11 @@ OK
       <td><strong><code>tests/test_deobfuscator.py</code></strong></td>
       <td>Integration Tests</td>
       <td>End-to-end invariant validation verifying deobfuscation of 12 adversarial vectors</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_reversal_suite.py</code></strong></td>
+      <td>Reversal Suite Tests</td>
+      <td>Unit &amp; integration tests for string reversal automata, dictionary transpositions, and GOTO loops</td>
     </tr>
     <!-- Auxiliary Directories -->
     <tr>

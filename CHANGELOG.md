@@ -5,6 +5,29 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2026-10-13
+
+### Added
+- **String Reversal & Transposition Deobfuscation Engine**:
+  - Implemented dedicated reversal and transposition domain package (`src/reversal/`):
+    - `StringReversalAutomaton` (`src/reversal/automaton.py`): Pushdown automaton and state-machine engine simulating `FOR /L` reverse string loops (`for /l %i in (len,-1,0)`), prepending accumulation loops (`for /l %i in (0,1,len)`), dictionary index transpositions (`for %a in (indices)`), pushdown stack GOTO reversal loops, permutation vectors, and rail-fence transposition ciphers with strict DoS simulation step limits (`MAX_SIMULATION_STEPS = 20000`) and safe out-of-bounds slice clamping.
+    - `ReversalPatternDetector` (`src/reversal/detector.py`): AST pattern recognition engine identifying Somalifuscator-style `FOR /L` reverse loops, `FOR IN` dictionary lookup loops, GOTO stack reversal state machines, and contiguous decreasing slice sequences (`%s:~3,1%%s:~2,1%%s:~1,1%%s:~0,1%`) with high precision.
+    - Data models and telemetry structures (`src/reversal/models.py`) with `ReversalPatternType`, `ReversalLoopSpec`, `TranspositionResult`, and `ReversalMetrics`.
+- **Reversal AST Transform Pass (`ReversalFolderPass`)**:
+  - Implemented `ReversalFolderPass` (`src/transforms/reversal_folder.py`) optimizing reversal and transposition patterns within AST trees:
+    - Resolves reverse `FOR /L` and `FOR IN` loops into static decoded assignments (`set out=decoded_val`), propagating decoded symbols to `self.env` for downstream constant folding and dead code elimination.
+    - Folds GOTO stack reversal loops into single assignments while marking the source stack variable as exhausted.
+    - Folds contiguous runs of decreasing/transposed slices in commands and assignments into single consolidated literals.
+    - Integrated into `PassManager.default_pipeline` and `PassManager.optimization_pipeline`.
+- **Regex & Automaton Engine Integration**:
+  - Enhanced `BatchDeobfuscator` (`src/deobfuscator_engine.py`) with `resolve_reversal_loops` for seamless multi-pass reverse loop resolution and symbol extraction.
+- **CLI Options & Telemetry**:
+  - Added `--reversal` (enable string reversal and transposition deobfuscation) and `--reversal-stats` (print reversal metrics) flags to `src/cli.py`.
+- **Verification & Test Suite**:
+  - Added dedicated test suite `tests/test_reversal_suite.py` with 24 unit and integration tests covering automaton simulation, pattern detection, AST folding, pipeline integration, GOTO stack loops, and real-world Somalifuscator payloads.
+  - Expanded test suite coverage from 255 to 279 passing tests with 100% success rate.
+  - Bumped project version to 0.10.0 in `pyproject.toml`.
+
 ## [0.9.0] - 2026-10-13
 
 ### Added

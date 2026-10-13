@@ -344,11 +344,13 @@ class PassManager:
         from .caret_normalizer import CaretNormalizerPass
         from .arithmetic_folder import ArithmeticFolderPass
         from .slicing_folder import SlicingFolderPass
+        from .reversal_folder import ReversalFolderPass
         from .constant_folder import ConstantFolderPass
         passes: List[TransformPass] = [
             CaretNormalizerPass(env=env),
             ArithmeticFolderPass(env=env),
             SlicingFolderPass(env=env),
+            ReversalFolderPass(env=env),
             ConstantFolderPass(env=env),
         ]
         if enable_dce:

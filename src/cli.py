@@ -45,6 +45,8 @@ def main():
     parser.add_argument("--dce-stats", action="store_true", help="Print Dead Code Elimination metrics summary")
     parser.add_argument("--arithmetic", action="store_true", help="Perform arithmetic expression folding (set /a)")
     parser.add_argument("--arithmetic-stats", action="store_true", help="Print arithmetic expression folding metrics summary")
+    parser.add_argument("--reversal", action="store_true", help="Perform string reversal and transposition deobfuscation")
+    parser.add_argument("--reversal-stats", action="store_true", help="Print string reversal and transposition metrics summary")
     parser.add_argument("--preserve-vars", help="Comma-separated variable names to protect from dead code elimination")
     parser.add_argument("--benchmark", action="store_true", help="Execute real-world deobfuscation benchmark suite")
     parser.add_argument("--benchmark-engine", choices=["ast", "automaton"], default="ast", help="Engine to evaluate (ast or automaton)")
@@ -121,6 +123,18 @@ def main():
             print(f"  Assignments folded   : {arith_pass.metrics.assignments_folded}")
             print(f"  Variables resolved   : {arith_pass.metrics.variables_resolved}")
             print(f"  Operators evaluated  : {arith_pass.metrics.operators_evaluated}")
+
+    if args.reversal or args.reversal_stats:
+        from src.transforms.reversal_folder import ReversalFolderPass
+        rev_pass = ReversalFolderPass()
+        ast = rev_pass.transform(ast)
+        if args.reversal_stats:
+            print("\n=== [STRING REVERSAL & TRANSPOSITION STATS] ===")
+            print(f"  Loops detected           : {rev_pass.metrics.loops_detected}")
+            print(f"  Loops folded             : {rev_pass.metrics.loops_folded}")
+            print(f"  Transposed slices folded : {rev_pass.metrics.transposed_slices_folded}")
+            print(f"  GOTO stack loops folded  : {rev_pass.metrics.goto_loops_folded}")
+            print(f"  Characters decoded       : {rev_pass.metrics.characters_decoded}")
 
     if args.dce or args.dce_stats:
         from src.transforms.dce import DeadCodeEliminationPass
