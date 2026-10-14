@@ -401,6 +401,18 @@ python src/cli.py -i script.bat --quotes -o cleaned.bat
 # Display quote normalization metrics summary
 python src/cli.py -i script.bat --quotes --quote-stats
 
+# Normalize I/O redirection streams, handle duplication, and device sinks
+python src/cli.py -i script.bat --redirects -o cleaned.bat
+
+# Display I/O redirection routing metrics summary
+python src/cli.py -i script.bat --redirects --redirect-stats
+
+# Deobfuscate Invoke-DOSfuscation concatenation (variable chains, delimiters, loops)
+python src/cli.py -i script.bat --dosfuscation -o cleaned.bat
+
+# Display Invoke-DOSfuscation concatenation metrics summary
+python src/cli.py -i script.bat --dosfuscation --dosf-stats
+
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
@@ -413,7 +425,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 306 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, and real-world benchmark invariants:
+The test suite validates 388 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v

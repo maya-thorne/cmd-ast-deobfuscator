@@ -468,37 +468,27 @@ echo Unreachable
 
     def test_cfg_to_dict_json_serialization(self):
         """Verify graph serialization produces expected dictionary structure."""
-        source = """:entry_point
-echo Running
-goto :EOF
-"""
-        ast = CmdASTParser.from_source(source).parse()
+        ast = CmdASTParser.from_source(":entry_point\necho Running\ngoto :EOF\n").parse()
         builder = CFGBuilder()
         cfg = builder.build(ast)
 
         d = cfg.to_dict()
-        self.assertIn("entry_id", d)
-        self.assertIn("exit_id", d)
-        self.assertIn("nodes", d)
-        self.assertIn("edges", d)
-        self.assertIn("metrics", d)
+        for key in ("entry_id", "exit_id", "nodes", "edges", "metrics"):
+            self.assertIn(key, d)
         self.assertIn("cyclomatic_complexity", d["metrics"])
 
     def test_cli_cfg_integration(self):
         """Verify CLI invocations with --cfg, --cfg-mermaid, --cfg-dot."""
         from src.cli import main
-        import sys
-        import io
+        import sys, io
 
-        old_stdout = sys.stdout
+        old_stdout, sys.stdout = sys.stdout, io.StringIO()
         try:
-            sys.stdout = io.StringIO()
             sys.argv = ["cmd-ast-deobfuscator", "-c", "echo Test & goto :EOF", "--cfg", "--cfg-mermaid", "--cfg-dot"]
             main()
             output = sys.stdout.getvalue()
-            self.assertIn("CONTROL FLOW GRAPH SUMMARY", output)
-            self.assertIn("flowchart TD", output)
-            self.assertIn("digraph ControlFlowGraph", output)
+            for pattern in ("CONTROL FLOW GRAPH SUMMARY", "flowchart TD", "digraph ControlFlowGraph"):
+                self.assertIn(pattern, output)
         finally:
             sys.stdout = old_stdout
 

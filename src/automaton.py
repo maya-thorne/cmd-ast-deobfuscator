@@ -59,7 +59,7 @@ class PushdownAutomaton:
             self.state = AutomatonState.IN_PIPE
             return self.state
 
-        if token.type in (CmdTokenType.REDIRECT_OUT, CmdTokenType.REDIRECT_APPEND, CmdTokenType.REDIRECT_IN):
+        if token.type in (CmdTokenType.REDIRECT_OUT, CmdTokenType.REDIRECT_APPEND, CmdTokenType.REDIRECT_IN, CmdTokenType.REDIRECT_DUP):
             self.state = AutomatonState.IN_REDIRECT
             return self.state
 

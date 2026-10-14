@@ -5,6 +5,54 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2026-10-14
+
+### Added
+- **Invoke-DOSfuscation Concatenation Heuristic Engine (M13)**:
+  - Implemented dedicated domain package (`src/dosfuscation/`):
+    - `DosfuscationConcatenationDecoder` (`src/dosfuscation/concatenation.py`): Multi-phase heuristic deobfuscator specifically tuned for Daniel Bohannon's Invoke-DOSfuscation concatenation techniques, resolving environment variable fragment chains (`%a%%b%%c%`), stripping interleaved junk/empty variables (`%junk%c%junk%m%junk%d`), normalizing scrambled parameter delimiters (commas `,`, semicolons `;`) outside quotes, slices, and loops into canonical single spaces, resolving FOR token accumulation loops (`for %x in (c a l c) do set out=!out!%x`), and unwrapping dynamic CALL execution trampolines (`call %cmd% -> cmd`).
+    - `DosfuscationDetector` (`src/dosfuscation/detector.py`): Heuristic classifier and scoring engine analyzing token fragmentation density, delimiter scrambling index, variable expansion ratios, and entropy to detect and classify Invoke-DOSfuscation Levels 1 through 5.
+    - Data models and telemetry structures (`src/dosfuscation/models.py`) with `ConcatenationType`, `ConcatenationPattern`, `DosfuscationMetrics`, and `DosfuscationResult` with explicit in-memory zeroization (`zeroize()`).
+    - Package interface (`src/dosfuscation/__init__.py`) exposing clean public domain symbols.
+- **Concatenation AST Transform Pass (`DosfuscationPass`)**:
+  - Implemented `DosfuscationPass` (`src/transforms/dosfuscation_pass.py`):
+    - Transforms `CommandNode`, `AssignmentNode`, `ForNode`, `CallNode`, and `ChainNode` hierarchies to unmask concatenated command targets and arguments.
+    - Propagates virtual environment symbol definitions across sequential and compound (`&`, `&&`) statement chains.
+    - Folds FOR token accumulation loops into direct constant `AssignmentNode` entries.
+    - Integrated as standard pass in `PassManager.default_pipeline` and `PassManager.optimization_pipeline`.
+- **Batch Deobfuscator Engine Integration**:
+  - Integrated `DosfuscationConcatenationDecoder` into `BatchDeobfuscator.deobfuscate` (`src/deobfuscator_engine.py`) for automated multi-pass peeling of Invoke-DOSfuscation concatenation layers.
+- **CLI Flags**:
+  - Added `--dosfuscation`, `--dosf`, and `--dosf-stats` flags to `src/cli.py` for direct command line concatenation deobfuscation and reduction metric reporting.
+- **Dedicated Test Suite**:
+  - Created `tests/test_dosfuscation_suite.py` with 26 comprehensive tests covering junk variable stripping, delimiter scrambling with quote/slice preservation, variable chaining, loop accumulation, trampoline unwrapping, AST pass transformation, detector scoring, memory zeroization, and CLI invocation.
+  - Test suite expanded to 388 total tests with 100% pass rate.
+
+## [0.12.0] - 2026-10-13
+
+### Added
+- **I/O Redirection & Stream Routing Engine (M12)**:
+  - Implemented dedicated redirection domain package (`src/redirection/`):
+    - `StreamRouter` (`src/redirection/router.py`): Simulates cmd.exe stream redirection handle routing, sequential left-to-right descriptor state tracking, handle duplication chains (`>&`, `<&`), circular forwarding cycle protection with recursion depth limiting (`MAX_FORWARD_DEPTH = 10`), and stealth command execution detection.
+    - Token extractor and AST builder (`src/redirection/extractor.py`): Extracts prefix, middle, and suffix redirections from token streams, supporting all source handles 0..9, handle duplication (`2>&1`, `1>&2`, `>&2`), handle closing (`2>&-`), quoted destination paths, and DOS reserved device classification (`nul`, `con`, `prn`, `aux`, `com1`..`com9`, `lpt1`..`lpt9`) with DoS boundary guards (`MAX_REDIRECTS_PER_COMMAND = 64`).
+    - Data models and telemetry structures (`src/redirection/models.py`) with `StreamType`, `RedirectOperator`, `DestinationType`, `RedirectEntry`, `StreamRoute`, `RedirectPlan`, and `RedirectMetrics`.
+    - Package interface (`src/redirection/__init__.py`) exposing clean public symbols.
+- **Redirection AST Transform Pass (`RedirectionPass`)**:
+  - Implemented `RedirectionPass` (`src/transforms/redirection_pass.py`):
+    - Canonicalizes destination paths by unmasking carets (`o^u^t.txt` -> `out.txt`), collapsing empty quotes, and resolving environment variable substitutions.
+    - Lifts unparsed literal redirect tokens from command argument lists into structured `RedirectNode` hierarchies.
+    - Simulates stream routes, updates telemetry counters, and supports zeroization for secure memory sanitization.
+    - Aliased `RedirectNormalizerPass = RedirectionPass` for backward compatibility.
+    - Integrated into `PassManager.default_pipeline`.
+- **Grammar Separation & Parser Integration**:
+  - Integrated `extract_redirections` and `build_redirect_tree` into `CmdASTParser` (`src/parser.py`) for atomic commands and parenthesized compound blocks `( ... ) > out.txt 2>&1`.
+  - Added `RedirectNode` serialization in `ASTNormalizer.to_source` (`src/normalizer.py`).
+- **CLI Flags**:
+  - Added `--redirection`, `--redirects`, `--redirection-stats`, `--redirect-stats` flags to `src/cli.py`.
+- **Exhaustive Test Suite**:
+  - Created dedicated test suites `tests/test_redirect_suite.py` and `tests/test_redirection_suite.py` covering tokenization, handle extraction (0..9), duplication/closing, device classification, stream routing simulation, stealth detection, AST integration, normalizer pass execution, and security bounds.
+  - Overall test suite expanded to 362 passing tests with 100% pass rate.
+
 ## [0.11.0] - 2026-10-13
 
 ### Added

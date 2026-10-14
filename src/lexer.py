@@ -26,6 +26,7 @@ class CmdTokenType(Enum):
     REDIRECT_OUT = auto()
     REDIRECT_APPEND = auto()
     REDIRECT_IN = auto()
+    REDIRECT_DUP = auto()
     EQUALS = auto()
     WHITESPACE = auto()
     NEWLINE = auto()
@@ -159,13 +160,23 @@ class CmdLexer:
                     if self.peek() == '>':
                         self.advance()
                         tokens.append(CmdToken(CmdTokenType.REDIRECT_APPEND, '>>', (start_pos, self.pos), False))
+                    elif self.peek() == '&':
+                        self.advance()
+                        tokens.append(CmdToken(CmdTokenType.REDIRECT_DUP, '>&', (start_pos, self.pos), False))
                     else:
                         tokens.append(CmdToken(CmdTokenType.REDIRECT_OUT, '>', (start_pos, self.pos), False))
                     continue
 
                 if ch == '<':
                     self.advance()
-                    tokens.append(CmdToken(CmdTokenType.REDIRECT_IN, '<', (start_pos, self.pos), False))
+                    if self.peek() == '&':
+                        self.advance()
+                        tokens.append(CmdToken(CmdTokenType.REDIRECT_DUP, '<&', (start_pos, self.pos), False))
+                    elif self.peek() == '<':
+                        self.advance()
+                        tokens.append(CmdToken(CmdTokenType.REDIRECT_IN, '<<', (start_pos, self.pos), False))
+                    else:
+                        tokens.append(CmdToken(CmdTokenType.REDIRECT_IN, '<', (start_pos, self.pos), False))
                     continue
 
                 if ch == '=':

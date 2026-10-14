@@ -117,8 +117,13 @@ class ChainNode(ASTNode):
 class RedirectNode(ASTNode):
     """Stream redirection: target_cmd > out.txt, 2>&1, < in.txt."""
     command: ASTNode = field(default_factory=ASTNode)
-    stream: str = ">"  # '>', '>>', '<', '2>&1'
+    stream: str = ">"  # '>', '>>', '<', '2>&1', '2>', '1>', etc.
     destination: str = ""
+    source_fd: Optional[int] = None
+    target_fd: Optional[int] = None
+    is_append: bool = False
+    is_input: bool = False
+    is_dup: bool = False
 
 
 @dataclass

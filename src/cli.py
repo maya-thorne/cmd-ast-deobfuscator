@@ -49,6 +49,10 @@ def main():
     parser.add_argument("--reversal-stats", action="store_true", help="Print string reversal and transposition metrics summary")
     parser.add_argument("--quotes", action="store_true", help="Perform quote toggle boundary and empty quote pair normalization")
     parser.add_argument("--quote-stats", action="store_true", help="Print quote normalization metrics summary")
+    parser.add_argument("--redirects", "--redirection", action="store_true", dest="redirects", help="Perform I/O redirection and stream routing normalization")
+    parser.add_argument("--redirect-stats", "--redirection-stats", action="store_true", dest="redirect_stats", help="Print I/O redirection and stream routing metrics summary")
+    parser.add_argument("--dosfuscation", "--dosf", action="store_true", dest="dosfuscation", help="Perform Invoke-DOSfuscation concatenation decoding (variable chains, delimiters, loops)")
+    parser.add_argument("--dosf-stats", action="store_true", help="Print Invoke-DOSfuscation concatenation metrics summary")
     parser.add_argument("--preserve-vars", help="Comma-separated variable names to protect from dead code elimination")
     parser.add_argument("--benchmark", action="store_true", help="Execute real-world deobfuscation benchmark suite")
     parser.add_argument("--benchmark-engine", choices=["ast", "automaton"], default="ast", help="Engine to evaluate (ast or automaton)")
@@ -145,6 +149,28 @@ def main():
         if args.quote_stats:
             print("\n=== [QUOTE NORMALIZATION STATS] ===")
             print(quote_pass.metrics.summary())
+
+    if args.redirects or args.redirect_stats:
+        from src.transforms.redirection_pass import RedirectionPass
+        red_pass = RedirectionPass()
+        ast = red_pass.transform(ast)
+        if args.redirect_stats:
+            print("\n=== [I/O REDIRECTION & STREAM ROUTING STATS] ===")
+            stats = red_pass.metrics.to_dict()
+            for k, v in stats.items():
+                print(f"  {k:<24}: {v}")
+
+    if args.dosfuscation or args.dosf_stats:
+        from src.transforms.dosfuscation_pass import DosfuscationPass
+        dosf_pass = DosfuscationPass()
+        ast = dosf_pass.transform(ast)
+        if args.dosf_stats:
+            print("\n=== [INVOKE-DOSFUSCATION CONCATENATION STATS] ===")
+            print(f"  Variable chains fused    : {dosf_pass.metrics.var_chains_fused}")
+            print(f"  Junk variables stripped  : {dosf_pass.metrics.junk_vars_stripped}")
+            print(f"  Delimiters normalized    : {dosf_pass.metrics.delimiters_normalized}")
+            print(f"  Loops accumulated        : {dosf_pass.metrics.loops_accumulated}")
+            print(f"  Trampolines unrolled     : {dosf_pass.metrics.trampolines_unrolled}")
 
     if args.dce or args.dce_stats:
         from src.transforms.dce import DeadCodeEliminationPass

@@ -1,7 +1,7 @@
 """
 AST Transformation and Optimization Pass Infrastructure for cmd-ast-deobfuscator.
 Exports the base TransformPass, PassManager pipeline, SlicingFolderPass, ConstantFolderPass,
-CaretNormalizerPass, and run_transforms runner.
+CaretNormalizerPass, RedirectionPass, and run_transforms runner.
 """
 
 from .base import TransformPass, PassManager, run_transforms
@@ -18,6 +18,8 @@ from .dce import (
     eliminate_dead_code,
 )
 from .quote_normalizer import QuoteNormalizerPass
+from .redirection_pass import RedirectionPass, RedirectNormalizerPass
+from .dosfuscation_pass import DosfuscationPass
 
 __all__ = [
     'TransformPass',
@@ -26,6 +28,9 @@ __all__ = [
     'ConstantFolderPass',
     'CaretNormalizerPass',
     'QuoteNormalizerPass',
+    'RedirectionPass',
+    'RedirectNormalizerPass',
+    'DosfuscationPass',
     'ParamResolverPass',
     'ArithmeticFolderPass',
     'fold_arithmetic',
@@ -37,4 +42,3 @@ __all__ = [
     'run_transforms',
     'normalize_carets',
 ]
-
