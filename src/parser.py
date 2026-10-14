@@ -162,7 +162,21 @@ class CmdASTParser:
                     block_statements.append(stmt)
             if self.peek().type == CmdTokenType.RPAREN:
                 self.advance()  # Consume ')'
-            return BlockNode(statements=block_statements)
+            block_node = BlockNode(statements=block_statements)
+
+            # Check for trailing redirection on block: ( ... ) > out.txt
+            trailing_tokens: List[CmdToken] = []
+            while self.peek().type not in (
+                CmdTokenType.AMP, CmdTokenType.DOUBLE_AMP, CmdTokenType.DOUBLE_PIPE,
+                CmdTokenType.PIPE, CmdTokenType.NEWLINE, CmdTokenType.EOF, CmdTokenType.RPAREN
+            ):
+                trailing_tokens.append(self.advance())
+            if trailing_tokens:
+                from .redirection.extractor import extract_redirections, build_redirect_tree
+                _, block_redirects = extract_redirections(trailing_tokens)
+                if block_redirects:
+                    return build_redirect_tree(block_node, block_redirects)
+            return block_node
 
         return self.parse_atomic_command()
 
@@ -201,55 +215,71 @@ class CmdASTParser:
         if not tokens_in_cmd:
             return None
 
+        # Check for I/O redirections in command tokens
+        from .redirection.extractor import extract_redirections, build_redirect_tree
+        clean_tokens, redirect_entries = extract_redirections(tokens_in_cmd)
+        while clean_tokens and clean_tokens[0].type == CmdTokenType.WHITESPACE:
+            clean_tokens.pop(0)
+        while clean_tokens and clean_tokens[-1].type == CmdTokenType.WHITESPACE:
+            clean_tokens.pop()
+
+        if not clean_tokens and not redirect_entries:
+            return None
+        if not clean_tokens:
+            return build_redirect_tree(CommandNode(target=""), redirect_entries)
+
         # Check if this command is a label definition (e.g. inside a block or chain)
-        first_val = tokens_in_cmd[0].value.strip().lower()
+        first_val = clean_tokens[0].value.strip().lower()
         if first_val.startswith(':') and not first_val.startswith('::'):
-            raw_text = "".join(t.value for t in tokens_in_cmd).strip()
+            raw_text = "".join(t.value for t in clean_tokens).strip()
             clean_name = raw_text.lstrip(':').strip().split()[0] if raw_text.lstrip(':').strip() else ""
-            return LabelNode(
+            base_lbl = LabelNode(
                 name=clean_name,
                 is_eof=(clean_name.lower() == 'eof'),
                 raw=raw_text
             )
+            return build_redirect_tree(base_lbl, redirect_entries)
 
         # Check if this command is a 'SET' statement
-        if first_val == 'set' and len(tokens_in_cmd) > 1:
-            return self._parse_set_assignment(tokens_in_cmd)
+        if first_val == 'set' and len(clean_tokens) > 1:
+            base_set = self._parse_set_assignment(clean_tokens)
+            return build_redirect_tree(base_set, redirect_entries)
 
         # Check if this command is a 'FOR' loop statement
-        if first_val == 'for' and len(tokens_in_cmd) > 1:
-            for_node = self._parse_for_statement(tokens_in_cmd)
+        if first_val == 'for' and len(clean_tokens) > 1:
+            for_node = self._parse_for_statement(clean_tokens)
             if for_node:
-                return for_node
+                return build_redirect_tree(for_node, redirect_entries)
 
         # Check if this command is an 'IF' statement
-        if first_val == 'if' and len(tokens_in_cmd) > 1:
-            if_node = self._parse_if_statement(tokens_in_cmd)
+        if first_val == 'if' and len(clean_tokens) > 1:
+            if_node = self._parse_if_statement(clean_tokens)
             if if_node:
-                return if_node
+                return build_redirect_tree(if_node, redirect_entries)
 
         # Check if this command is a 'GOTO' statement
-        if first_val == 'goto' and len(tokens_in_cmd) > 1:
-            goto_node = self._parse_goto_statement(tokens_in_cmd)
+        if first_val == 'goto' and len(clean_tokens) > 1:
+            goto_node = self._parse_goto_statement(clean_tokens)
             if goto_node:
-                return goto_node
+                return build_redirect_tree(goto_node, redirect_entries)
 
         # Check if this command is a 'CALL' statement
-        if first_val == 'call' and len(tokens_in_cmd) > 1:
-            call_node = self._parse_call_statement(tokens_in_cmd)
+        if first_val == 'call' and len(clean_tokens) > 1:
+            call_node = self._parse_call_statement(clean_tokens)
             if call_node:
-                return call_node
+                return build_redirect_tree(call_node, redirect_entries)
 
         # Check if this command is an 'EXIT' statement
         if first_val == 'exit':
-            return self._parse_exit_statement(tokens_in_cmd)
+            base_exit = self._parse_exit_statement(clean_tokens)
+            return build_redirect_tree(base_exit, redirect_entries)
 
         # Separate tokens before first whitespace as target_nodes, and after as arguments
         target_tokens: List[CmdToken] = []
         arg_tokens: List[CmdToken] = []
         seen_whitespace = False
 
-        for tok in tokens_in_cmd:
+        for tok in clean_tokens:
             if not seen_whitespace:
                 if tok.type == CmdTokenType.WHITESPACE:
                     seen_whitespace = True
@@ -262,7 +292,8 @@ class CmdASTParser:
         arg_nodes = [self._token_to_ast_node(t) for t in arg_tokens if t.type != CmdTokenType.WHITESPACE or t.in_quote]
 
         raw_target = "".join(t.value for t in target_tokens)
-        return CommandNode(target=raw_target, target_nodes=target_nodes, arguments=arg_nodes)
+        base_cmd = CommandNode(target=raw_target, target_nodes=target_nodes, arguments=arg_nodes)
+        return build_redirect_tree(base_cmd, redirect_entries)
 
     def _parse_for_statement(self, tokens: List[CmdToken]) -> Optional[ForNode]:
         """Parses 'FOR [/F | /R | /D | /L] %%i IN (...) DO (...)' statements."""

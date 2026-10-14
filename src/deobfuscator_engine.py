@@ -26,6 +26,14 @@ except (ImportError, ValueError):
     except ImportError:
         collapse_empty_quotes = None
 
+try:
+    from .dosfuscation import DosfuscationConcatenationDecoder
+except (ImportError, ValueError):
+    try:
+        from dosfuscation import DosfuscationConcatenationDecoder
+    except ImportError:
+        DosfuscationConcatenationDecoder = None
+
 
 class BatchDeobfuscator:
     def __init__(self, max_passes: int = 15):
@@ -247,11 +255,18 @@ class BatchDeobfuscator:
         """Execute multi-pass deobfuscation until fixed-point convergence."""
         current = self.strip_bom_and_empty_quotes(script_content)
 
+        dosf_decoder = DosfuscationConcatenationDecoder(env=self.env_vars) if DosfuscationConcatenationDecoder else None
+
         for _ in range(1, self.max_passes + 1):
             prev = current
             current = self.strip_carets(current)
             current = self.strip_bom_and_empty_quotes(current)
             current = self.resolve_reversal_loops(current)
+
+            if dosf_decoder:
+                current, _ = dosf_decoder.strip_junk_variables(current, self.env_vars)
+                current, _ = dosf_decoder.resolve_token_accumulation_loops(current, self.env_vars)
+                current, _ = dosf_decoder.normalize_delimiters(current)
 
             lines = current.splitlines()
             processed_lines = []
@@ -261,6 +276,10 @@ class BatchDeobfuscator:
                 processed_lines.append(resolved_line)
 
             current = "\n".join(processed_lines)
+
+            if dosf_decoder:
+                current, _ = dosf_decoder.fuse_variable_chains(current, self.env_vars)
+
             if current == prev:
                 break
 

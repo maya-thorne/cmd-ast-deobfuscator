@@ -21,13 +21,9 @@ class ASTNormalizer(ASTVisitor):
     Propagates variable tables, folds slices, collapses empty quotes, and strips carets.
     """
     def __init__(
-        self,
-        initial_env: Dict[str, str] = None,
-        params: Dict[str, str] = None,
-        for_vars: Dict[str, str] = None,
-        base_dir: str = None,
-        dce: bool = False,
-        preserve_vars: Optional[Set[str]] = None
+        self, initial_env: Dict[str, str] = None, params: Dict[str, str] = None,
+        for_vars: Dict[str, str] = None, base_dir: str = None,
+        dce: bool = False, preserve_vars: Optional[Set[str]] = None
     ):
         # Prepopulate standard Windows environment baseline
         self.symbols: Dict[str, str] = {
@@ -75,26 +71,34 @@ class ASTNormalizer(ASTVisitor):
 
 
     def visit_ScriptNode(self, node: ScriptNode) -> ScriptNode:
-        cleaned_stmts: List[ASTNode] = []
-        for stmt in node.statements:
-            norm_stmt = self.visit(stmt)
-            if norm_stmt is not None:
-                cleaned_stmts.append(norm_stmt)
-        return ScriptNode(statements=cleaned_stmts)
+        cleaned_stmts = [self.visit(s) for s in node.statements]
+        return ScriptNode(statements=[s for s in cleaned_stmts if s is not None])
 
     def visit_ChainNode(self, node: ChainNode) -> ChainNode:
-        norm_left = self.visit(node.left)
-        norm_right = self.visit(node.right)
-        return ChainNode(left=norm_left, operator=node.operator, right=norm_right)
+        return ChainNode(left=self.visit(node.left), operator=node.operator, right=self.visit(node.right))
 
     def visit_PipeNode(self, node: PipeNode) -> PipeNode:
-        norm_left = self.visit(node.left)
-        norm_right = self.visit(node.right)
-        return PipeNode(left=norm_left, right=norm_right)
+        return PipeNode(left=self.visit(node.left), right=self.visit(node.right))
 
     def visit_BlockNode(self, node: BlockNode) -> BlockNode:
         cleaned_stmts = [self.visit(s) for s in node.statements if s is not None]
         return BlockNode(statements=cleaned_stmts)
+
+    def visit_RedirectNode(self, node: RedirectNode) -> ASTNode:
+        norm_cmd = self.visit(node.command)
+        norm_dest = self._strip_lexical_artifacts(node.destination)
+        if not node.is_dup and norm_dest:
+            def _sub_pct(m):
+                return self.symbols.get(m.group(1).lower(), m.group(0))
+            def _sub_exc(m):
+                return self.symbols.get(m.group(1).lower(), m.group(0))
+            norm_dest = re.sub(r'%([a-zA-Z0-9_]+)%', _sub_pct, norm_dest)
+            norm_dest = re.sub(r'!([a-zA-Z0-9_]+)!', _sub_exc, norm_dest)
+        return RedirectNode(
+            command=norm_cmd, stream=node.stream, destination=norm_dest,
+            source_fd=node.source_fd, target_fd=node.target_fd,
+            is_append=node.is_append, is_input=node.is_input, is_dup=node.is_dup, span=node.span
+        )
 
     def visit_CommentNode(self, node: CommentNode) -> Optional[ASTNode]:
         return node
@@ -177,36 +181,15 @@ class ASTNormalizer(ASTVisitor):
 
     @staticmethod
     def calculate_slice(val: str, start: int, length: Optional[int]) -> str:
-        """
-        Computes cmd.exe substring slicing with positive and negative indices.
-        Semantics:
-        - start >= 0: 0-based offset from start of string.
-        - start < 0: offset from end of string (e.g. -3 means 3 chars from end).
-        - length is None: slice to the end of string.
-        - length >= 0: number of characters to extract.
-        - length < 0: leave off abs(length) characters from the end of string.
-        """
+        """Computes cmd.exe substring slicing with positive and negative indices."""
         n = len(val)
-        if start < 0:
-            offset = max(0, n + start)
-        else:
-            offset = start
-
+        offset = max(0, n + start) if start < 0 else start
         if offset >= n:
             return ""
-
         if length is None:
             return val[offset:]
-
-        if length < 0:
-            end_offset = n + length
-        else:
-            end_offset = offset + length
-
-        if end_offset <= offset:
-            return ""
-
-        return val[offset:end_offset]
+        end_offset = (n + length) if length < 0 else (offset + length)
+        return "" if end_offset <= offset else val[offset:end_offset]
 
     def _calculate_slice(self, val: str, start: int, length: Optional[int]) -> str:
         return self.calculate_slice(val, start, length)
@@ -253,31 +236,17 @@ class ASTNormalizer(ASTVisitor):
 
         # Resolve nested expressions in slice parameters
         if node.slice_start_expr is not None:
-            resolved_s = re.sub(
-                r'[%!]([a-zA-Z0-9_]+)[%!]',
-                lambda m: self.symbols.get(m.group(1).lower(), m.group(0)),
-                node.slice_start_expr
-            )
+            resolved_s = re.sub(r'[%!]([a-zA-Z0-9_]+)[%!]', lambda m: self.symbols.get(m.group(1).lower(), m.group(0)), node.slice_start_expr)
             try:
-                s_clean = re.sub(r'\s+', '', resolved_s)
-                if s_clean.startswith('+'):
-                    s_clean = s_clean[1:]
-                node.slice_start = int(s_clean or '0')
+                node.slice_start = int(re.sub(r'\s+', '', resolved_s).lstrip('+') or '0')
                 node.slice_start_expr = None
             except ValueError:
                 pass
 
         if node.slice_len_expr is not None:
-            resolved_l = re.sub(
-                r'[%!]([a-zA-Z0-9_]+)[%!]',
-                lambda m: self.symbols.get(m.group(1).lower(), m.group(0)),
-                node.slice_len_expr
-            )
+            resolved_l = re.sub(r'[%!]([a-zA-Z0-9_]+)[%!]', lambda m: self.symbols.get(m.group(1).lower(), m.group(0)), node.slice_len_expr)
             try:
-                l_clean = re.sub(r'\s+', '', resolved_l)
-                if l_clean.startswith('+'):
-                    l_clean = l_clean[1:]
-                node.slice_len = int(l_clean or '0')
+                node.slice_len = int(re.sub(r'\s+', '', resolved_l).lstrip('+') or '0')
                 node.slice_len_expr = None
             except ValueError:
                 pass
@@ -365,21 +334,16 @@ class ASTNormalizer(ASTVisitor):
 
     def _strip_lexical_artifacts(self, text: str) -> str:
         """Removes carets and collapses empty double quotes."""
-        # Collapse ""
         text = text.replace('""', '')
-        
-        # Remove non-escaped carets ^
-        res = []
-        i = 0
-        while i < len(text):
+        res, i, n = [], 0, len(text)
+        while i < n:
             if text[i] == '^':
-                if i + 1 < len(text):
+                if i + 1 < n:
                     res.append(text[i + 1])
                     i += 2
                     continue
-                else:
-                    i += 1
-                    continue
+                i += 1
+                continue
             res.append(text[i])
             i += 1
         return "".join(res)
@@ -419,6 +383,27 @@ class ASTNormalizer(ASTVisitor):
 
         if isinstance(node, PipeNode):
             return f"{self.to_source(node.left)} | {self.to_source(node.right)}"
+
+        if isinstance(node, RedirectNode):
+            cmd_src = self.to_source(node.command)
+            prefix = str(node.source_fd) if (
+                node.source_fd is not None and (
+                    (node.source_fd != 1 and not node.is_input) or (node.source_fd != 0 and node.is_input)
+                )
+            ) else ""
+            if node.is_dup:
+                target = f"&{node.target_fd}" if node.target_fd is not None else (node.destination or "&-")
+                if not target.startswith('&'):
+                    target = f"&{target}"
+                op = node.stream if node.stream in (">&", "<&") else (">" if not node.is_input else "<")
+                if not op.endswith('&'):
+                    op = f"{op}&"
+                target_str = target[1:] if target.startswith('&') else target
+                full_op = f"{prefix}{op}{target_str}"
+                return f"{cmd_src} {full_op}".strip()
+
+            stream_op = f"{prefix}{node.stream}" if (prefix and not node.stream.startswith(prefix)) else node.stream
+            return f"{cmd_src} {stream_op} {node.destination}".strip() if node.destination else f"{cmd_src} {stream_op}".strip()
 
         if isinstance(node, BlockNode):
             inner = " & ".join(self.to_source(s) for s in node.statements)
@@ -496,4 +481,19 @@ class ASTNormalizer(ASTVisitor):
                 parts.append(str(node.exit_code))
             return " ".join(parts)
 
+        if isinstance(node, RedirectNode):
+            cmd_src = self.to_source(node.command)
+            prefix = str(node.source_fd) if (
+                node.source_fd is not None and (
+                    (node.source_fd != 1 and not node.is_input) or (node.source_fd != 0 and node.is_input)
+                )
+            ) else ""
+            stream_op = node.stream
+            if prefix and not stream_op.startswith(prefix):
+                stream_op = f"{prefix}{stream_op}"
+            if node.destination:
+                return f"{cmd_src} {stream_op} {node.destination}".strip()
+            return f"{cmd_src} {stream_op}".strip()
+
         return ""
+

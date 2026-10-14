@@ -20,9 +20,20 @@ from .transforms import (
     SlicingFolderPass,
     ConstantFolderPass,
     CaretNormalizerPass,
+    QuoteNormalizerPass,
+    RedirectNormalizerPass,
     ParamResolverPass,
     normalize_carets,
     run_transforms
+)
+from .redirect import (
+    StreamRouter,
+    RedirectEntry,
+    StreamRoute,
+    RedirectPlan,
+    RedirectMetrics,
+    extract_redirections,
+    build_redirect_tree,
 )
 from .benchmark import (
     BenchmarkRunner,
@@ -77,7 +88,15 @@ __all__ = [
     'PassManager',
     'SlicingFolderPass',
     'ConstantFolderPass',
-    'CaretNormalizerPass',
+    'QuoteNormalizerPass',
+    'RedirectNormalizerPass',
+    'StreamRouter',
+    'RedirectEntry',
+    'StreamRoute',
+    'RedirectPlan',
+    'RedirectMetrics',
+    'extract_redirections',
+    'build_redirect_tree',
     'ParamResolverPass',
     'normalize_carets',
     'run_transforms',

@@ -296,6 +296,20 @@ class TransformPass(ASTVisitor):
                 parts.append(str(node.exit_code))
             return " ".join(parts)
 
+        if isinstance(node, RedirectNode):
+            cmd_src = self.to_source(node.command)
+            prefix = str(node.source_fd) if (
+                node.source_fd is not None and (
+                    (node.source_fd != 1 and not node.is_input) or (node.source_fd != 0 and node.is_input)
+                )
+            ) else ""
+            stream_op = node.stream
+            if prefix and not stream_op.startswith(prefix):
+                stream_op = f"{prefix}{stream_op}"
+            if node.destination:
+                return f"{cmd_src} {stream_op} {node.destination}".strip()
+            return f"{cmd_src} {stream_op}".strip()
+
         return ""
 
 
@@ -347,13 +361,17 @@ class PassManager:
         from .reversal_folder import ReversalFolderPass
         from .constant_folder import ConstantFolderPass
         from .quote_normalizer import QuoteNormalizerPass
+        from .redirection_pass import RedirectionPass
+        from .dosfuscation_pass import DosfuscationPass
         passes: List[TransformPass] = [
             CaretNormalizerPass(env=env),
             ArithmeticFolderPass(env=env),
             SlicingFolderPass(env=env),
             ReversalFolderPass(env=env),
+            DosfuscationPass(env=env),
             ConstantFolderPass(env=env),
             QuoteNormalizerPass(env=env),
+            RedirectionPass(env=env),
         ]
         if enable_dce:
             from .dce import DeadCodeEliminationPass
