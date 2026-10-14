@@ -56,6 +56,11 @@ def main():
     parser.add_argument("--deflat", action="store_true", help="Perform Control Flow De-flattening (Anti-CFF) and state machine unrolling")
     parser.add_argument("--deflat-stats", action="store_true", help="Print Control Flow De-flattening metrics summary")
     parser.add_argument("--packer-detect", action="store_true", help="Detect 0xidiz3r, Somalifuscator, CertUtil, and batch packer signatures")
+    parser.add_argument("--to-python", "--to-py", action="store_true", dest="to_python", help="Transpile batch script to clean Python 3 script via IR")
+    parser.add_argument("--to-powershell", "--to-ps1", action="store_true", dest="to_powershell", help="Transpile batch script to clean PowerShell script via IR")
+    parser.add_argument("--emit-ir", action="store_true", help="Print Intermediate Representation (IR) JSON dump")
+    parser.add_argument("--ir-stats", action="store_true", help="Print Intermediate Representation compilation & transpilation telemetry")
+    parser.add_argument("--ir-no-main", action="store_true", help="Do not wrap Python transpilation output in def main()")
     parser.add_argument("--preserve-vars", help="Comma-separated variable names to protect from dead code elimination")
     parser.add_argument("--benchmark", action="store_true", help="Execute real-world deobfuscation benchmark suite")
     parser.add_argument("--benchmark-engine", choices=["ast", "automaton"], default="ast", help="Engine to evaluate (ast or automaton)")
@@ -215,6 +220,45 @@ def main():
     norm_ast = normalizer.normalize(ast)
     clean_code = normalizer.to_source(norm_ast)
 
+
+    if args.to_python or args.to_powershell or args.emit_ir or args.ir_stats:
+        from src.ir import BatchTranspiler, ASTToIRBuilder
+        builder = ASTToIRBuilder()
+        ir_prog = builder.build(norm_ast)
+
+        if args.ir_stats:
+            print("\n=== [INTERMEDIATE REPRESENTATION (IR) STATS] ===")
+            print(builder.metrics.summary())
+            stats = builder.metrics.to_dict()
+            for k, v in stats.items():
+                print(f"  {k:<24}: {v}")
+
+        if args.emit_ir:
+            import json
+            print("\n=== [INTERMEDIATE REPRESENTATION (IR) DUMP] ===")
+            print(json.dumps(ir_prog.to_dict(), indent=2))
+
+        transpiler = BatchTranspiler()
+        if args.to_python:
+            trans_res = transpiler.transpile(norm_ast, target="python", wrap_in_main=not args.ir_no_main)
+            final_output = trans_res.emitted_code
+            if args.output:
+                with open(args.output, "w", encoding="utf-8") as f:
+                    f.write(final_output)
+                print(f"[✓] Transpiled Python code written to {args.output}")
+            else:
+                print(final_output)
+            sys.exit(0)
+        elif args.to_powershell:
+            trans_res = transpiler.transpile(norm_ast, target="powershell")
+            final_output = trans_res.emitted_code
+            if args.output:
+                with open(args.output, "w", encoding="utf-8") as f:
+                    f.write(final_output)
+                print(f"[✓] Transpiled PowerShell code written to {args.output}")
+            else:
+                print(final_output)
+            sys.exit(0)
 
     if args.output:
         with open(args.output, "w", encoding="utf-8") as f:

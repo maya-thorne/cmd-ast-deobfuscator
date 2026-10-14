@@ -5,6 +5,30 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] - 2026-10-14
+
+### Added
+- **Intermediate Representation (IR) Transpiler Engine (`src/ir/`)**:
+  - Implemented language-agnostic Intermediate Representation data models (`src/ir/models.py`) with `IRProgram`, `IRBlock`, `IRFunction`, `IRStatement`, `IRExpression`, `IRConstant`, `IRVariable`, `IRPathModifier`, `IRBinaryOp`, `IRUnaryOp`, `IRSlice`, `IRSubst`, `IRAssignment`, `IRExec`, `IREcho`, `IRRedirect`, `IRIf`, `IRFor`, `IRCall`, and `IRReturn`.
+  - Added telemetry and security metrics (`IRMetrics`) with secure in-memory zeroization (`zeroize()`).
+  - Implemented AST-to-IR builder (`src/ir/builder.py`) converting cmd.exe AST trees into structured IR programs, lifting internal subroutine labels into callable functions, mapping batch built-in commands (`echo`, `cls`, `pause`, `mkdir`, `del`, `copy`, `move`, `timeout`), parsing complex `IF` conditions (`==`, `equ`, `neq`, `exist`, `errorlevel`), structured `FOR` loops (`/l` range, `/r` recursive files, items), and argument and environment expansions.
+  - Implemented expression and condition parser (`src/ir/expressions.py`) providing modular operand conversion, comparison operator normalization, and variable slice extraction.
+- **Python 3 Target Emitter (`src/ir/targets/python.py`)**:
+  - Emits clean, PEP 8-compliant Python 3 code with automated standard library import resolution (`os`, `sys`, `subprocess`, `pathlib.Path`, `shutil`, `time`).
+  - Translates batch parameter modifiers (`%~dp0` -> `SCRIPT_DIR = Path(__file__).resolve().parent`, `%*` -> `sys.argv`).
+  - Emits callable functions for lifted batch subroutines and structured `def main():` entry point with `if __name__ == "__main__":`.
+  - Translates built-ins to native operations (`Path.mkdir`, `Path.unlink`, `shutil.copy`, `shutil.move`, `time.sleep`, `print`).
+- **PowerShell Target Emitter (`src/ir/targets/powershell.py`)**:
+  - Emits clean, idiomatic PowerShell code with cmdlet mappings (`Write-Host`, `New-Item`, `Remove-Item`, `Copy-Item`, `Move-Item`, `Start-Sleep`).
+  - Maps environment variables to `$env:VAR`, path modifiers to `$PSScriptRoot`, and subroutines to `function Invoke-*` with `[CmdletBinding()]`.
+  - Maps I/O redirections (`> nul` -> `| Out-Null`, `>> file` -> `Out-File -Append`).
+- **Batch Transpiler Coordinator (`src/ir/transpiler.py`)**:
+  - Added `BatchTranspiler` providing unified `transpile()`, `transpile_to_python()`, and `transpile_to_powershell()` APIs, with optional automated pre-deobfuscation pipeline.
+- **CLI Commands**:
+  - Added `--to-python` (`--to-py`), `--to-powershell` (`--to-ps1`), `--emit-ir`, `--ir-stats`, and `--ir-no-main` flags to `src/cli.py`.
+- **Comprehensive Test Suite**:
+  - Added `tests/test_ir_transpiler_suite.py` with 15 tests covering IR node models, AST-to-IR translation, Python compilation syntax validation via `ast.parse()`, PowerShell emission, subroutine lifting, memory zeroization, and CLI execution. Total test suite expanded to 418 tests with 100% pass rate.
+
 ## [0.14.0] - 2026-10-14
 
 ### Added
