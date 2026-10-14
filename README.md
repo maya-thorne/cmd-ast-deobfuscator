@@ -422,6 +422,18 @@ python src/cli.py -i script.bat --deflat -o cleaned.bat
 # Display Control Flow De-flattening and packer extraction metrics summary
 python src/cli.py -i script.bat --deflat --deflat-stats
 
+# Transpile batch script to clean PEP 8 Python 3 via IR
+python src/cli.py -i script.bat --to-python -o script.py
+
+# Transpile batch script to clean idiomatic PowerShell (.ps1) via IR
+python src/cli.py -i script.bat --to-powershell -o script.ps1
+
+# Inspect language-agnostic Intermediate Representation (IR) JSON dump
+python src/cli.py -i script.bat --emit-ir
+
+# Display Intermediate Representation compilation and transpilation telemetry
+python src/cli.py -i script.bat --ir-stats
+
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
@@ -434,7 +446,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 403 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), and real-world benchmark invariants:
+The test suite validates 418 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -649,6 +661,11 @@ OK
       <td>CFF dispatcher analyzer, state machine topology builder, and linearizing AST decompiler</td>
     </tr>
     <tr>
+      <td><strong><code>src/ir/</code></strong></td>
+      <td>IR &amp; Transpiler</td>
+      <td>Language-agnostic Intermediate Representation models, AST-to-IR builder, and Python 3 / PowerShell target code generators</td>
+    </tr>
+    <tr>
       <td><strong><code>src/transforms/</code></strong></td>
       <td>Transforms Pipeline</td>
       <td>Modular AST optimization passes (<code>DeflatPass</code>, <code>DosfuscationPass</code>, <code>RedirectionPass</code>, <code>QuoteNormalizerPass</code>, <code>ReversalFolderPass</code>, <code>ArithmeticFolderPass</code>, <code>DeadCodeEliminationPass</code>, <code>ParamResolverPass</code>, <code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
@@ -721,6 +738,11 @@ OK
       <td><strong><code>tests/test_deflat_suite.py</code></strong></td>
       <td>Packers &amp; CFF Tests</td>
       <td>Unit &amp; integration tests for 0xidiz3r signature detection, CertUtil unpacking, CFF state analysis, and AST de-flattening</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_ir_transpiler_suite.py</code></strong></td>
+      <td>IR &amp; Transpiler Tests</td>
+      <td>Unit &amp; integration tests for IR models, ASTToIRBuilder, PythonEmitter, PowerShellEmitter, and CLI transpiler flags</td>
     </tr>
     <!-- Auxiliary Directories -->
     <tr>

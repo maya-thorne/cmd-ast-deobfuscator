@@ -52,6 +52,16 @@ from .cfg import (
     JumpTableResolutionResult,
     CFGVisualizer,
 )
+from .ir import (
+    BatchTranspiler,
+    TranspilationResult,
+    ASTToIRBuilder,
+    PythonEmitter,
+    PowerShellEmitter,
+    IRProgram,
+    IRBlock,
+    IRMetrics,
+)
 
 __all__ = [
     'ASTNode',
@@ -113,5 +123,13 @@ __all__ = [
     'JumpTableResolver',
     'JumpTableResolutionResult',
     'CFGVisualizer',
+    'BatchTranspiler',
+    'TranspilationResult',
+    'ASTToIRBuilder',
+    'PythonEmitter',
+    'PowerShellEmitter',
+    'IRProgram',
+    'IRBlock',
+    'IRMetrics',
 ]
 
