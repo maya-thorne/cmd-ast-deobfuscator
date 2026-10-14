@@ -5,6 +5,27 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2026-10-14
+
+### Added
+- **0xidiz3r & Batch Packer Signature Detection and Unpacking (`src/packers/`)**:
+  - Implemented multi-rule signature detector (`src/packers/detector.py`) identifying 0xidiz3r obfuscation banners, noise variables, hex character maps, CertUtil self-extracting payload stubs (base64 and hex), Somalifuscator ciphers, script drop stubs (`.vbs`, `.ps1`), and generic control flow flattening dispatchers with weighted confidence metrics.
+  - Implemented recursive multi-layer payload unpacker (`src/packers/unpacker.py`) decoding embedded PEM/base64 and hex blocks from CertUtil stubs, stripping 0xidiz3r anti-debugging name guards and noise comments, and unrolling up to 5 nested packaging layers with strict size limits (`MAX_PAYLOAD_SIZE = 10 MB`).
+  - Added domain models and telemetry (`src/packers/models.py`) with `PackerType`, `PackerSignature`, `PackerMetrics`, and `PackerDetectionResult` featuring secure memory zeroization (`zeroize()`).
+- **Control Flow De-flattening & State Machine Linearization Engine (`src/cff/`)**:
+  - Implemented CFF analyzer (`src/cff/analyzer.py`) detecting central dispatcher loops across basic blocks, extracting state variables (`state`, `s`), state keys, switch cases, and computed jump targets (`goto :state_%s%`).
+  - Implemented CFF linearizer and decompiler (`src/cff/decompiler.py`) unrolling state machine paths from initial state, splicing sequential basic blocks into clean linear statement orders, reconstructing structured conditional branching (`IfNode`), detecting natural loops, eliminating dispatcher loops, and pruning intermediate state assignments and dead jumps back to the hub.
+  - Added CFF domain models (`src/cff/models.py`) with `CFFPatternType`, `CFFBlockInfo`, `CFFStateMachine`, `DeflatMetrics`, and `DeflatResult`.
+- **De-flattening AST Transform Pass (`DeflatPass`)**:
+  - Implemented `DeflatPass` (`src/transforms/deflat_pass.py`) orchestrating packer unwrapping and CFF linearization directly on `ScriptNode` and `BlockNode` hierarchies, preserving independent external routines while eliminating obfuscated dispatcher hubs.
+  - Integrated `DeflatPass` into `PassManager.default_pipeline` and `PassManager.optimization_pipeline`.
+  - Integrated `PackerUnpacker` into `BatchDeobfuscator.deobfuscate` (`src/deobfuscator_engine.py`) for automatic unpacking during multi-pass regex and automaton deobfuscation.
+- **CLI Commands**:
+  - Added `--deflat`, `--deflat-stats`, and `--packer-detect` flags to `src/cli.py` for standalone packer analysis and control flow unrolling.
+- **Comprehensive Test Suite**:
+  - Added `tests/test_deflat_suite.py` with 15 tests covering 0xidiz3r signature matching, CertUtil base64/hex payload recovery, anti-debug stripping, switch/computed CFF analysis, linear sequence unrolling, conditional branch structuring, loop reconstruction, AST pass pipeline execution, DoS recursion clamping, and memory zeroization.
+  - Overall test suite expanded to 403 tests with 100% pass rate.
+
 ## [0.13.0] - 2026-10-14
 
 ### Added

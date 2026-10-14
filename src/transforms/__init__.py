@@ -20,6 +20,7 @@ from .dce import (
 from .quote_normalizer import QuoteNormalizerPass
 from .redirection_pass import RedirectionPass, RedirectNormalizerPass
 from .dosfuscation_pass import DosfuscationPass
+from .deflat_pass import DeflatPass
 
 __all__ = [
     'TransformPass',
@@ -31,6 +32,7 @@ __all__ = [
     'RedirectionPass',
     'RedirectNormalizerPass',
     'DosfuscationPass',
+    'DeflatPass',
     'ParamResolverPass',
     'ArithmeticFolderPass',
     'fold_arithmetic',

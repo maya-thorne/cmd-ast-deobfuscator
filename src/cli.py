@@ -53,6 +53,9 @@ def main():
     parser.add_argument("--redirect-stats", "--redirection-stats", action="store_true", dest="redirect_stats", help="Print I/O redirection and stream routing metrics summary")
     parser.add_argument("--dosfuscation", "--dosf", action="store_true", dest="dosfuscation", help="Perform Invoke-DOSfuscation concatenation decoding (variable chains, delimiters, loops)")
     parser.add_argument("--dosf-stats", action="store_true", help="Print Invoke-DOSfuscation concatenation metrics summary")
+    parser.add_argument("--deflat", action="store_true", help="Perform Control Flow De-flattening (Anti-CFF) and state machine unrolling")
+    parser.add_argument("--deflat-stats", action="store_true", help="Print Control Flow De-flattening metrics summary")
+    parser.add_argument("--packer-detect", action="store_true", help="Detect 0xidiz3r, Somalifuscator, CertUtil, and batch packer signatures")
     parser.add_argument("--preserve-vars", help="Comma-separated variable names to protect from dead code elimination")
     parser.add_argument("--benchmark", action="store_true", help="Execute real-world deobfuscation benchmark suite")
     parser.add_argument("--benchmark-engine", choices=["ast", "automaton"], default="ast", help="Engine to evaluate (ast or automaton)")
@@ -171,6 +174,34 @@ def main():
             print(f"  Delimiters normalized    : {dosf_pass.metrics.delimiters_normalized}")
             print(f"  Loops accumulated        : {dosf_pass.metrics.loops_accumulated}")
             print(f"  Trampolines unrolled     : {dosf_pass.metrics.trampolines_unrolled}")
+
+    if args.packer_detect:
+        from src.packers import PackerSignatureDetector
+        p_detector = PackerSignatureDetector()
+        p_res = p_detector.detect(source)
+        print("\n=== [BATCH PACKER & OBFUSCATOR DETECTION] ===")
+        print(f"  Primary packer : {p_res.primary_packer.value}")
+        print(f"  Is packed      : {p_res.is_packed}")
+        print(f"  Confidence     : {p_res.confidence:.2f}")
+        for sig in p_res.detected_signatures:
+            print(f"  - [{sig.packer_type.value}] {sig.name} (conf: {sig.confidence:.2f})")
+            for ind in sig.indicators:
+                print(f"      * {ind}")
+
+    if args.deflat or args.deflat_stats:
+        from src.transforms.deflat_pass import DeflatPass
+        deflat_pass = DeflatPass()
+        ast = deflat_pass.transform(ast)
+        if args.deflat_stats:
+            print("\n=== [CONTROL FLOW DE-FLATTENING STATS] ===")
+            stats = deflat_pass.deflat_metrics.to_dict()
+            for k, v in stats.items():
+                print(f"  {k:<32}: {v}")
+            if deflat_pass.packer_detection and deflat_pass.packer_detection.is_packed:
+                p_stats = deflat_pass.packer_detection.metrics.to_dict()
+                print("  --- Packer Extraction Telemetry ---")
+                for k, v in p_stats.items():
+                    print(f"  {k:<32}: {v}")
 
     if args.dce or args.dce_stats:
         from src.transforms.dce import DeadCodeEliminationPass
