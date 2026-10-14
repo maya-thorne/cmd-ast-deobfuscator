@@ -34,6 +34,14 @@ except (ImportError, ValueError):
     except ImportError:
         DosfuscationConcatenationDecoder = None
 
+try:
+    from .packers import PackerUnpacker
+except (ImportError, ValueError):
+    try:
+        from packers import PackerUnpacker
+    except ImportError:
+        PackerUnpacker = None
+
 
 class BatchDeobfuscator:
     def __init__(self, max_passes: int = 15):
@@ -254,6 +262,12 @@ class BatchDeobfuscator:
     def deobfuscate(self, script_content: str) -> str:
         """Execute multi-pass deobfuscation until fixed-point convergence."""
         current = self.strip_bom_and_empty_quotes(script_content)
+
+        if PackerUnpacker:
+            unpacker = PackerUnpacker()
+            p_res = unpacker.unpack(current)
+            if p_res.unpacked_source:
+                current = p_res.unpacked_source
 
         dosf_decoder = DosfuscationConcatenationDecoder(env=self.env_vars) if DosfuscationConcatenationDecoder else None
 

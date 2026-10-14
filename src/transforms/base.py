@@ -363,6 +363,7 @@ class PassManager:
         from .quote_normalizer import QuoteNormalizerPass
         from .redirection_pass import RedirectionPass
         from .dosfuscation_pass import DosfuscationPass
+        from .deflat_pass import DeflatPass
         passes: List[TransformPass] = [
             CaretNormalizerPass(env=env),
             ArithmeticFolderPass(env=env),
@@ -372,6 +373,7 @@ class PassManager:
             ConstantFolderPass(env=env),
             QuoteNormalizerPass(env=env),
             RedirectionPass(env=env),
+            DeflatPass(env=env),
         ]
         if enable_dce:
             from .dce import DeadCodeEliminationPass

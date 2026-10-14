@@ -413,6 +413,15 @@ python src/cli.py -i script.bat --dosfuscation -o cleaned.bat
 # Display Invoke-DOSfuscation concatenation metrics summary
 python src/cli.py -i script.bat --dosfuscation --dosf-stats
 
+# Detect 0xidiz3r, Somalifuscator, CertUtil, and batch packer signatures
+python src/cli.py -i script.bat --packer-detect
+
+# Perform Control Flow De-flattening (Anti-CFF) and state machine unrolling
+python src/cli.py -i script.bat --deflat -o cleaned.bat
+
+# Display Control Flow De-flattening and packer extraction metrics summary
+python src/cli.py -i script.bat --deflat --deflat-stats
+
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
@@ -425,7 +434,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 388 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, and real-world benchmark invariants:
+The test suite validates 403 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -630,9 +639,19 @@ OK
       <td>Pushdown automaton, target deobfuscator, argument canonicalizer, and nested quote reduction engine</td>
     </tr>
     <tr>
+      <td><strong><code>src/packers/</code></strong></td>
+      <td>Packers &amp; Stubs</td>
+      <td>Signature detector, multi-layer payload unpacker, CertUtil base64/hex extractor, and 0xidiz3r noise stripper</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/cff/</code></strong></td>
+      <td>Control Flow De-flattening</td>
+      <td>CFF dispatcher analyzer, state machine topology builder, and linearizing AST decompiler</td>
+    </tr>
+    <tr>
       <td><strong><code>src/transforms/</code></strong></td>
       <td>Transforms Pipeline</td>
-      <td>Modular AST optimization passes (<code>ReversalFolderPass</code>, <code>QuoteNormalizerPass</code>, <code>ArithmeticFolderPass</code>, <code>DeadCodeEliminationPass</code>, <code>ParamResolverPass</code>, <code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
+      <td>Modular AST optimization passes (<code>DeflatPass</code>, <code>DosfuscationPass</code>, <code>RedirectionPass</code>, <code>QuoteNormalizerPass</code>, <code>ReversalFolderPass</code>, <code>ArithmeticFolderPass</code>, <code>DeadCodeEliminationPass</code>, <code>ParamResolverPass</code>, <code>CaretNormalizerPass</code>, <code>SlicingFolderPass</code>, <code>ConstantFolderPass</code>, <code>PassManager</code>)</td>
     </tr>
     <tr>
       <td><strong><code>src/benchmark/</code></strong></td>
@@ -697,6 +716,11 @@ OK
       <td><strong><code>tests/test_quote_normalizer_suite.py</code></strong></td>
       <td>Quote Normalizer Tests</td>
       <td>Unit &amp; integration tests for quotation toggle state machine, empty quote collapse, and argument canonicalization</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_deflat_suite.py</code></strong></td>
+      <td>Packers &amp; CFF Tests</td>
+      <td>Unit &amp; integration tests for 0xidiz3r signature detection, CertUtil unpacking, CFF state analysis, and AST de-flattening</td>
     </tr>
     <!-- Auxiliary Directories -->
     <tr>
