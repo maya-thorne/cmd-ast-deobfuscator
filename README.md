@@ -434,6 +434,21 @@ python src/cli.py -i script.bat --emit-ir
 # Display Intermediate Representation compilation and transpilation telemetry
 python src/cli.py -i script.bat --ir-stats
 
+# Print colored unified diff between original obfuscated code and deobfuscated output
+python src/cli.py -i script.bat --diff
+
+# Render two-column side-by-side colored diff with Unicode borders
+python src/cli.py -i script.bat --side-by-side
+
+# Print step-by-step diff for every transformation pass that modified the AST
+python src/cli.py -i script.bat --step-diff
+
+# Display quantitative difference metrics (lines, additions, deletions, similarity ratio)
+python src/cli.py -i script.bat --diff-stats
+
+# Launch interactive terminal AST pipeline debugger (TUI)
+python src/cli.py -i script.bat --inspect
+
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
@@ -446,7 +461,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 418 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), and real-world benchmark invariants:
+The test suite validates 444 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v

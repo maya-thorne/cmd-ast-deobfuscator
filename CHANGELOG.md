@@ -5,6 +5,30 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0] - 2026-10-15
+
+### Added
+- **Interactive Terminal AST Inspector & TUI Debugger (`src/tui/`)**:
+  - Implemented step-by-step transform pipeline debugger (`src/tui/debugger.py`) featuring `ASTPipelineDebugger` with command evaluation loop (`step`, `next`, `run`, `diff`, `tree`, `env`, `source`, `node <id>`, `passes`, `reset`, `stats`, `help`, `quit`) and interactive REPL mode.
+  - Added pipeline execution snapshot history tracking (`StepRecord`) preserving AST states, serialized code, and environment symbol tables across passes.
+  - Implemented node property inspector (`inspect_node`) providing attribute details for individual AST nodes by identifier.
+- **Colored Diff Visualizer (`src/tui/diff.py`)**:
+  - Implemented unified diff renderer (`render_unified`) with ANSI escape coloring for added lines (`+`), deleted lines (`-`), hunks (`@@`), and file headers.
+  - Implemented side-by-side split column diff renderer (`render_side_by_side`) with clean Unicode box-drawing borders (`┌`, `┬`, `┐`, `│`, `├`, `┼`, `┤`, `└`, `┴`, `┘`), line number tracking, modification markers (`|`, `+`, `-`), and dynamic terminal width auto-adaptation.
+  - Added step-by-step pipeline diff renderer (`render_step_diff`) highlighting modifications introduced by each transform pass.
+  - Added quantitative difference metrics (`compute_metrics`) computing line counts, additions, deletions, modifications, and character similarity ratios.
+- **Colorized AST Syntax Tree Renderer (`src/tui/tree_view.py`)**:
+  - Implemented `ColoredASTTreeRenderer` rendering AST hierarchies with colorized node types, variable names, literals, and operators, with sequential index badges (`[#1]`, `[#2]`, ...) and bounded recursion depth (`max_depth`).
+- **Data Models, Terminal Stylers & Telemetry (`src/tui/models.py`)**:
+  - Added `DiffStyle`, `ColorMode` (`AUTO`, `ALWAYS`, `NEVER`), `DiffLineType`, `DiffLine`, `DiffMetrics`, and `InspectorMetrics`.
+  - Added `ANSI` styling constants, `strip_ansi()`, `ansi_len()`, and `should_color()` supporting the `NO_COLOR` standard and terminal capability detection.
+  - Implemented secure memory zeroization (`zeroize()`) on telemetry models, diff buffers, and debugger snapshots.
+- **CLI Options**:
+  - Added `--diff`, `--side-by-side` (`--side`), `--diff-width`, `--diff-stats`, `--step-diff`, `--inspect` (`--tui`, `--debugger`), and `--no-color` flags to `src/cli.py`.
+- **Test Suite**:
+  - Added `tests/test_tui_inspector_suite.py` with 26 unit and integration tests covering ANSI strip/length calculation, unified and side-by-side diff rendering, colored AST trees, debugger commands and REPL sessions, memory zeroization, and CLI flags.
+  - Overall test suite expanded to 444 tests with 100% pass rate.
+
 ## [0.15.0] - 2026-10-14
 
 ### Added
