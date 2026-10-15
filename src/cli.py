@@ -61,6 +61,13 @@ def main():
     parser.add_argument("--emit-ir", action="store_true", help="Print Intermediate Representation (IR) JSON dump")
     parser.add_argument("--ir-stats", action="store_true", help="Print Intermediate Representation compilation & transpilation telemetry")
     parser.add_argument("--ir-no-main", action="store_true", help="Do not wrap Python transpilation output in def main()")
+    parser.add_argument("--diff", action="store_true", help="Print colored diff between original and deobfuscated code")
+    parser.add_argument("--side-by-side", "--side", action="store_true", dest="side_by_side", help="Render side-by-side split column diff")
+    parser.add_argument("--diff-width", type=int, default=None, help="Terminal column width for side-by-side diff (default auto)")
+    parser.add_argument("--diff-stats", action="store_true", help="Print quantitative code difference metrics")
+    parser.add_argument("--step-diff", action="store_true", help="Print step-by-step diff for every transform pass that modified the AST")
+    parser.add_argument("--inspect", "--tui", "--debugger", action="store_true", dest="inspect", help="Launch interactive terminal AST pipeline debugger (TUI)")
+    parser.add_argument("--no-color", action="store_true", help="Disable ANSI color escape codes in diffs and trees")
     parser.add_argument("--preserve-vars", help="Comma-separated variable names to protect from dead code elimination")
     parser.add_argument("--benchmark", action="store_true", help="Execute real-world deobfuscation benchmark suite")
     parser.add_argument("--benchmark-engine", choices=["ast", "automaton"], default="ast", help="Engine to evaluate (ast or automaton)")
@@ -94,6 +101,32 @@ def main():
 
     ast_parser = CmdASTParser.from_source(source)
     ast = ast_parser.parse()
+
+    if args.inspect:
+        from src.tui import ASTPipelineDebugger, ColorMode
+        color_mode = ColorMode.NEVER if args.no_color else ColorMode.AUTO
+        dbg = ASTPipelineDebugger(source=source, color_mode=color_mode)
+        dbg.repl()
+        sys.exit(0)
+
+    if args.step_diff:
+        from src.tui import ASTPipelineDebugger, ColorMode, DiffStyle
+        color_mode = ColorMode.NEVER if args.no_color else ColorMode.AUTO
+        dbg = ASTPipelineDebugger(source=source, color_mode=color_mode)
+        recs = dbg.run_all()
+        style = DiffStyle.SIDE_BY_SIDE if args.side_by_side else DiffStyle.UNIFIED
+        print("\n=== [STEP-BY-STEP TRANSFORM PIPELINE DIFF] ===")
+        modified_steps = [r for r in recs if r.modified]
+        if not modified_steps:
+            print("[*] No transformation passes modified the script.")
+        else:
+            prev_code = source
+            for r in modified_steps:
+                print(dbg.diff_renderer.render_step_diff(
+                    r.pass_name, prev_code, r.source_code, style=style
+                ))
+                prev_code = r.source_code
+        sys.exit(0)
 
     if args.tree:
         print("\n=== [AST SYNTAX TREE] ===")
@@ -260,11 +293,29 @@ def main():
                 print(final_output)
             sys.exit(0)
 
+    if args.diff or args.side_by_side:
+        from src.tui import ColoredDiffRenderer, ColorMode
+        color_mode = ColorMode.NEVER if args.no_color else ColorMode.AUTO
+        diff_renderer = ColoredDiffRenderer(color_mode=color_mode)
+        print("\n=== [DEOBFUSCATION DIFF] ===")
+        if args.side_by_side:
+            print(diff_renderer.render_side_by_side(source, clean_code, width=args.diff_width))
+        else:
+            print(diff_renderer.render_unified(source, clean_code))
+
+    if args.diff_stats:
+        from src.tui import ColoredDiffRenderer
+        diff_renderer = ColoredDiffRenderer()
+        metrics = diff_renderer.compute_metrics(source, clean_code)
+        print("\n=== [DEOBFUSCATION DIFF STATS] ===")
+        for k, v in metrics.to_dict().items():
+            print(f"  {k:<20}: {v}")
+
     if args.output:
         with open(args.output, "w", encoding="utf-8") as f:
             f.write(clean_code + "\n")
         print(f"[✓] Deobfuscated code written to {args.output}")
-    elif not (args.tree or args.mermaid or args.json or args.cfg or args.cfg_mermaid or args.cfg_dot):
+    elif not (args.tree or args.mermaid or args.json or args.cfg or args.cfg_mermaid or args.cfg_dot or args.diff or args.side_by_side):
         print(clean_code)
 
 
