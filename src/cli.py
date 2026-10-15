@@ -72,6 +72,20 @@ def main():
     parser.add_argument("--benchmark", action="store_true", help="Execute real-world deobfuscation benchmark suite")
     parser.add_argument("--benchmark-engine", choices=["ast", "automaton"], default="ast", help="Engine to evaluate (ast or automaton)")
     parser.add_argument("--benchmark-export", help="Path to save benchmark report (.md or .json)")
+    parser.add_argument("--scan-dir", help="Path to directory containing batch scripts to scan and deobfuscate in bulk")
+    parser.add_argument("--output-dir", help="Destination directory for deobfuscated batch scripts")
+    parser.add_argument("--in-place", action="store_true", help="Modify batch scripts in-place within the scanned directory")
+    parser.add_argument("--backup", action="store_true", default=True, help="Create .bak backups when modifying in-place (default: True)")
+    parser.add_argument("--no-backup", action="store_false", dest="backup", help="Disable .bak backups when modifying in-place")
+    parser.add_argument("--workers", type=int, default=4, help="Number of concurrent worker threads for directory scanning (default: 4)")
+    parser.add_argument("--max-size", type=int, default=10 * 1024 * 1024, help="Maximum file size in bytes to scan (default: 10MB)")
+    parser.add_argument("--file-patterns", help="Comma-separated file extensions or glob patterns to scan (default: *.bat,*.cmd,*.btm)")
+    parser.add_argument("--report-json", help="Path to export directory scan summary report as JSON")
+    parser.add_argument("--report-csv", help="Path to export directory scan summary report as CSV")
+    parser.add_argument("--report-md", help="Path to export directory scan summary report as Markdown")
+    parser.add_argument("--dry-run", action="store_true", help="Perform discovery, AST parsing, and analysis without writing output")
+    parser.add_argument("--fail-fast", action="store_true", help="Halt directory scan immediately upon encountering first error")
+    parser.add_argument("-q", "--quiet", action="store_true", help="Suppress per-file progress log during directory scan")
 
     args = parser.parse_args()
 
@@ -89,6 +103,65 @@ def main():
                     f.write(md_report)
             print(f"[✓] Benchmark report exported to {args.benchmark_export}")
         sys.exit(0)
+
+    if args.scan_dir:
+        from src.scanner import DirectoryScanner, ScanConfig, FileScanStatus
+        preserve_set = None
+        if args.preserve_vars:
+            preserve_set = {v.strip() for v in args.preserve_vars.split(",") if v.strip()}
+
+        patterns = ["*.bat", "*.cmd", "*.btm"]
+        if args.file_patterns:
+            patterns = [p.strip() for p in args.file_patterns.split(",") if p.strip()]
+
+        config = ScanConfig(
+            input_dir=args.scan_dir,
+            output_dir=args.output_dir,
+            recursive=True,
+            file_patterns=patterns,
+            max_file_size=args.max_size,
+            workers=args.workers,
+            in_place=args.in_place,
+            backup=args.backup,
+            dry_run=args.dry_run,
+            enable_dce=args.dce,
+            preserve_vars=preserve_set,
+            fail_fast=args.fail_fast,
+        )
+
+        def progress_cb(item, current, total):
+            if not args.quiet:
+                status_symbol = "[✓]" if item.status == FileScanStatus.SUCCESS else (
+                    "[=]" if item.status == FileScanStatus.UNCHANGED else (
+                        "[!]" if item.status == FileScanStatus.FAILED else "[-]"
+                    )
+                )
+                print(f"{status_symbol} [{current}/{total}] {item.status.value:<9} {item.relative_path} ({item.elapsed_ms:.1f}ms)")
+
+        if not args.quiet:
+            print(f"\n=== [DIRECTORY BATCH SCANNER: {os.path.abspath(args.scan_dir)}] ===")
+            print(f"[*] Workers: {config.workers} | DCE: {config.enable_dce} | In-Place: {config.in_place} | Dry-Run: {config.dry_run}")
+
+        scanner = DirectoryScanner(config)
+        summary = scanner.scan_and_deobfuscate(config, progress_callback=progress_cb)
+
+        if not args.quiet:
+            print("\n" + summary.to_markdown())
+
+        DirectoryScanner.export_reports(
+            summary,
+            json_path=args.report_json,
+            csv_path=args.report_csv,
+            markdown_path=args.report_md,
+        )
+        if args.report_json:
+            print(f"[✓] JSON scan report written to {args.report_json}")
+        if args.report_csv:
+            print(f"[✓] CSV scan report written to {args.report_csv}")
+        if args.report_md:
+            print(f"[✓] Markdown scan report written to {args.report_md}")
+
+        sys.exit(0 if summary.failed_count == 0 else 1)
 
     if args.code:
         source = args.code

@@ -449,6 +449,18 @@ python src/cli.py -i script.bat --diff-stats
 # Launch interactive terminal AST pipeline debugger (TUI)
 python src/cli.py -i script.bat --inspect
 
+# Recursively scan and deobfuscate all batch files in a directory to a target folder
+python src/cli.py --scan-dir ./malware_corpus/ --output-dir ./cleaned_corpus/
+
+# Perform high-throughput multi-threaded scan (8 workers) with JSON and CSV reports
+python src/cli.py --scan-dir ./samples/ --output-dir ./dist/ --workers 8 --report-json scan_report.json --report-csv scan_report.csv
+
+# In-place deobfuscation with automatic .bak backup creation
+python src/cli.py --scan-dir ./work_scripts/ --in-place --backup
+
+# Dry-run analysis and entropy delta reporting without modifying files
+python src/cli.py --scan-dir ./archive/ --dry-run --report-md scan_summary.md
+
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
@@ -461,7 +473,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 444 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), and real-world benchmark invariants:
+The test suite validates 458 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, and real-world benchmark invariants:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -691,6 +703,11 @@ OK
       <td>Real-world sample evaluation suite, Shannon entropy metrics, and multi-engine verification</td>
     </tr>
     <tr>
+      <td><strong><code>src/scanner/</code></strong></td>
+      <td>Directory Batch Scanner</td>
+      <td>High-throughput parallel directory scanner, thread-pool worker coordinator, recursive path traversal defense, and report generator</td>
+    </tr>
+    <tr>
       <td><strong><code>src/visualizer.py</code></strong></td>
       <td>Visualizer Engine</td>
       <td>Multi-target visualizer emitting ASCII syntax trees, Mermaid flowcharts, and JSON</td>
@@ -758,6 +775,16 @@ OK
       <td><strong><code>tests/test_ir_transpiler_suite.py</code></strong></td>
       <td>IR &amp; Transpiler Tests</td>
       <td>Unit &amp; integration tests for IR models, ASTToIRBuilder, PythonEmitter, PowerShellEmitter, and CLI transpiler flags</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_tui_inspector_suite.py</code></strong></td>
+      <td>TUI &amp; Diff Tests</td>
+      <td>Unit &amp; integration tests for terminal pipeline debugger, unified/side-by-side diff renderer, and colorized AST trees</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_scanner_suite.py</code></strong></td>
+      <td>Directory Scanner Tests</td>
+      <td>Unit &amp; integration tests for directory batch scanner, FileCollector, multi-encoding fallback, mirror/in-place persistence, and CLI flags</td>
     </tr>
     <!-- Auxiliary Directories -->
     <tr>

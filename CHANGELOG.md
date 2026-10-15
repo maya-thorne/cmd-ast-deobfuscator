@@ -5,6 +5,31 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.0] - 2026-10-15
+
+### Added
+- **High-Throughput Directory Batch Scanner Engine (`src/scanner/`)**:
+  - Implemented parallel directory scanner (`src/scanner/engine.py`) featuring `DirectoryScanner` for bulk discovery, parsing, AST optimization pass execution, and persistence across entire filesystem directory trees.
+  - Added thread-pool worker orchestration (`ThreadPoolExecutor`) with configurable concurrency levels (`--workers`), fail-fast execution control (`--fail-fast`), and real-time per-file progress callbacks.
+  - Implemented automated report export (`DirectoryScanner.export_reports`) generating structured JSON telemetry, CSV item records, and Markdown summary tables.
+- **Batch File Discovery & Security Path Traversal Defenses (`src/scanner/collector.py`)**:
+  - Implemented `FileCollector` supporting recursive file tree traversal, customizable file extensions (`*.bat`, `*.cmd`, `*.btm`), depth restrictions (`max_depth`), and pattern-based directory exclusions (`.git`, `node_modules`, `__pycache__`, virtualenvs).
+  - Enforced path traversal defense using canonical realpath resolution (`os.path.commonpath`) and symlink cycle detection to prevent directory escape attacks.
+- **Multi-Encoding Ingestion & Safe File Persistence (`src/scanner/worker.py`)**:
+  - Implemented `ScannerWorker` with multi-encoding fallback loader (`utf-8-sig`, `utf-8`, `cp437`, `cp1252`, `cp949`, `latin-1`) and automatic BOM stripping.
+  - Implemented single-file deobfuscation pipeline with AST node counting, Shannon entropy calculation before/after, and reduction ratio metrics.
+  - Added safe in-place file modification with automatic `.bak` backup generation and output directory mirroring preserving relative subdirectory paths.
+  - Implemented file size caps (`max_file_size`, default 10MB) to skip oversized or non-script binaries safely.
+- **Data Models, Telemetry & Zeroize Memory Sanitization (`src/scanner/models.py`)**:
+  - Added `ScanConfig`, `FileScanStatus` (`SUCCESS`, `UNCHANGED`, `FAILED`, `SKIPPED`), `ScanItem`, and `ScanSummary`.
+  - Added aggregate metrics computing throughput (files/second, MB/second), overall bytes processed, and average Shannon entropy reduction.
+  - Implemented in-memory zeroization protocol (`zeroize()`) across `ScanItem` and `ScanSummary` to wipe file paths, hash digests, and error buffers from memory upon task completion.
+- **CLI Options**:
+  - Added `--scan-dir`, `--output-dir`, `--in-place`, `--backup` / `--no-backup`, `--workers`, `--max-size`, `--file-patterns`, `--report-json`, `--report-csv`, `--report-md`, `--dry-run`, `--fail-fast`, and `-q` / `--quiet` flags to `src/cli.py`.
+- **Comprehensive Test Suite**:
+  - Added `tests/test_scanner_suite.py` with 14 unit and integration tests covering path discovery, recursion and depth limits, directory exclusions, multi-encoding fallback, file size caps, in-place backup, output directory mirroring, parallel execution, report export, memory zeroization, and CLI flags.
+  - Repository test suite expanded to 458 tests with 100% pass rate.
+
 ## [0.16.0] - 2026-10-15
 
 ### Added
