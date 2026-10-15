@@ -63,6 +63,16 @@ from .ir import (
     IRMetrics,
 )
 
+from .scanner import (
+    DirectoryScanner,
+    FileCollector,
+    ScannerWorker,
+    ScanConfig,
+    ScanItem,
+    ScanSummary,
+    FileScanStatus,
+)
+
 __all__ = [
     'ASTNode',
     'ASTVisitor',
@@ -131,5 +141,13 @@ __all__ = [
     'IRProgram',
     'IRBlock',
     'IRMetrics',
+    'DirectoryScanner',
+    'FileCollector',
+    'ScannerWorker',
+    'ScanConfig',
+    'ScanItem',
+    'ScanSummary',
+    'FileScanStatus',
 ]
+
 
