@@ -461,6 +461,18 @@ python src/cli.py --scan-dir ./work_scripts/ --in-place --backup
 # Dry-run analysis and entropy delta reporting without modifying files
 python src/cli.py --scan-dir ./archive/ --dry-run --report-md scan_summary.md
 
+# Extract malware Indicators of Compromise (IOCs) with Markdown report to console
+python src/cli.py -i malware.bat --ioc
+
+# Display IOC extraction telemetry metrics summary
+python src/cli.py -i malware.bat --ioc-stats
+
+# Export extracted IOCs to JSON, CSV, Markdown, and OASIS STIX 2.1 Threat Intelligence bundle
+python src/cli.py -i malware.bat --ioc-json ioc_report.json --ioc-csv ioc_report.csv --ioc-md ioc_report.md --ioc-stix stix_bundle.json
+
+# Filter extracted IOCs by type and minimum confidence threshold
+python src/cli.py -i malware.bat --ioc --ioc-filter url,ipv4,file_drop,lolbin --ioc-min-confidence 0.85
+
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
@@ -473,7 +485,8 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 458 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, and real-world benchmark invariants:
+The test suite validates 484 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, AST-based Malware IOC Extractor (M18), and real-world benchmark invariants:
+
 
 ```bash
 python -m unittest discover -s tests -v
@@ -708,6 +721,11 @@ OK
       <td>High-throughput parallel directory scanner, thread-pool worker coordinator, recursive path traversal defense, and report generator</td>
     </tr>
     <tr>
+      <td><strong><code>src/ioc/</code></strong></td>
+      <td>Malware IOC Extractor</td>
+      <td>AST-based malware indicator extraction engine, LOLBins registry, MITRE ATT&amp;CK behavior mapping, automated defanging, and STIX 2.1 threat intelligence exporter</td>
+    </tr>
+    <tr>
       <td><strong><code>src/visualizer.py</code></strong></td>
       <td>Visualizer Engine</td>
       <td>Multi-target visualizer emitting ASCII syntax trees, Mermaid flowcharts, and JSON</td>
@@ -785,6 +803,11 @@ OK
       <td><strong><code>tests/test_scanner_suite.py</code></strong></td>
       <td>Directory Scanner Tests</td>
       <td>Unit &amp; integration tests for directory batch scanner, FileCollector, multi-encoding fallback, mirror/in-place persistence, and CLI flags</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_ioc_suite.py</code></strong></td>
+      <td>Malware IOC Extractor Tests</td>
+      <td>Unit &amp; integration tests for IPv4/IPv6, URLs, domains, PE/script drops, LOLBins, MITRE ATT&amp;CK mapping, defanging, multi-format exports (JSON, CSV, MD, STIX 2.1), and CLI flags</td>
     </tr>
     <!-- Auxiliary Directories -->
     <tr>

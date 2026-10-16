@@ -86,6 +86,15 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Perform discovery, AST parsing, and analysis without writing output")
     parser.add_argument("--fail-fast", action="store_true", help="Halt directory scan immediately upon encountering first error")
     parser.add_argument("-q", "--quiet", action="store_true", help="Suppress per-file progress log during directory scan")
+    parser.add_argument("--ioc", "--extract-iocs", action="store_true", dest="extract_iocs", help="Extract malware Indicators of Compromise (IOCs) from AST")
+    parser.add_argument("--ioc-stats", action="store_true", help="Print malware IOC extraction telemetry metrics")
+    parser.add_argument("--ioc-filter", help="Comma-separated IOC types to filter (e.g. ipv4,url,domain,file_drop,lolbin)")
+    parser.add_argument("--ioc-min-confidence", type=float, default=0.0, help="Minimum confidence threshold for extracted IOCs (0.0 to 1.0)")
+    parser.add_argument("--ioc-defang", action="store_true", help="Defang indicators in output (e.g. hxxp://, evil[.]com, 192.168.1[.]1)")
+    parser.add_argument("--ioc-json", help="Path to export extracted IOCs as JSON")
+    parser.add_argument("--ioc-csv", help="Path to export extracted IOCs as CSV")
+    parser.add_argument("--ioc-md", help="Path to export extracted IOCs as Markdown report")
+    parser.add_argument("--ioc-stix", help="Path to export extracted IOCs as STIX 2.1 JSON bundle")
 
     args = parser.parse_args()
 
@@ -326,6 +335,66 @@ def main():
     norm_ast = normalizer.normalize(ast)
     clean_code = normalizer.to_source(norm_ast)
 
+    if args.extract_iocs or args.ioc_stats or args.ioc_json or args.ioc_csv or args.ioc_md or args.ioc_stix or args.ioc_defang:
+        from src.ioc import IOCExtractor, IOCType
+        extractor = IOCExtractor(min_confidence=args.ioc_min_confidence)
+        ioc_res = extractor.extract_from_ast(norm_ast, source_file=args.input, source_text=source)
+        if clean_code:
+            extractor._scan_raw_source_fallback(clean_code)
+            ioc_res = extractor._build_result()
+        elif source:
+            extractor._scan_raw_source_fallback(source)
+            ioc_res = extractor._build_result()
+
+        if args.ioc_filter:
+            filter_types = []
+            for t_str in args.ioc_filter.split(","):
+                norm_t = t_str.strip().lower()
+                if norm_t in ("ip", "ips"):
+                    filter_types.extend([IOCType.IPV4, IOCType.IPV6])
+                elif norm_t in ("hash", "hashes"):
+                    filter_types.extend([IOCType.HASH_MD5, IOCType.HASH_SHA1, IOCType.HASH_SHA256])
+                elif norm_t in ("file", "files"):
+                    filter_types.extend([IOCType.FILE_DROP, IOCType.FILE_PATH])
+                else:
+                    try:
+                        filter_types.append(IOCType(norm_t))
+                    except ValueError:
+                        pass
+            if filter_types:
+                ioc_res = ioc_res.filter(ioc_types=filter_types)
+
+
+        if args.ioc_defang:
+            ioc_res = ioc_res.defang()
+
+        if args.ioc_stats:
+            print("\n=== [MALWARE IOC EXTRACTION STATS] ===")
+            print(ioc_res.metrics.summary())
+
+        if args.ioc_json:
+            with open(args.ioc_json, "w", encoding="utf-8") as f:
+                f.write(ioc_res.to_json())
+            print(f"[✓] IOC JSON report written to {args.ioc_json}")
+
+        if args.ioc_csv:
+            with open(args.ioc_csv, "w", encoding="utf-8") as f:
+                f.write(ioc_res.to_csv())
+            print(f"[✓] IOC CSV report written to {args.ioc_csv}")
+
+        if args.ioc_md:
+            with open(args.ioc_md, "w", encoding="utf-8") as f:
+                f.write(ioc_res.to_markdown())
+            print(f"[✓] IOC Markdown report written to {args.ioc_md}")
+
+        if args.ioc_stix:
+            with open(args.ioc_stix, "w", encoding="utf-8") as f:
+                f.write(ioc_res.to_stix_json())
+            print(f"[✓] STIX 2.1 bundle written to {args.ioc_stix}")
+
+        if args.extract_iocs:
+            print("\n" + ioc_res.to_markdown())
+
 
     if args.to_python or args.to_powershell or args.emit_ir or args.ir_stats:
         from src.ir import BatchTranspiler, ASTToIRBuilder
@@ -388,7 +457,7 @@ def main():
         with open(args.output, "w", encoding="utf-8") as f:
             f.write(clean_code + "\n")
         print(f"[✓] Deobfuscated code written to {args.output}")
-    elif not (args.tree or args.mermaid or args.json or args.cfg or args.cfg_mermaid or args.cfg_dot or args.diff or args.side_by_side):
+    elif not (args.tree or args.mermaid or args.json or args.cfg or args.cfg_mermaid or args.cfg_dot or args.diff or args.side_by_side or args.extract_iocs):
         print(clean_code)
 
 

@@ -73,6 +73,30 @@ from .scanner import (
     FileScanStatus,
 )
 
+from .ioc import (
+    IOCExtractor,
+    IOCTransformPass,
+    extract_iocs,
+    IOCType,
+    IOCSeverity,
+    MitreTactic,
+    MitreAttackMapping,
+    IOCItem,
+    IOCMetrics,
+    IOCExtractionResult,
+    defang_ipv4,
+    defang_ipv6,
+    defang_domain,
+    defang_url,
+    defang_ioc,
+    export_csv,
+    export_markdown,
+    export_stix_bundle,
+    LOLBIN_REGISTRY,
+    MITRE_CATALOG,
+    get_mitre_mapping,
+)
+
 __all__ = [
     'ASTNode',
     'ASTVisitor',
@@ -148,6 +172,27 @@ __all__ = [
     'ScanItem',
     'ScanSummary',
     'FileScanStatus',
+    'IOCExtractor',
+    'IOCTransformPass',
+    'extract_iocs',
+    'IOCType',
+    'IOCSeverity',
+    'MitreTactic',
+    'MitreAttackMapping',
+    'IOCItem',
+    'IOCMetrics',
+    'IOCExtractionResult',
+    'defang_ipv4',
+    'defang_ipv6',
+    'defang_domain',
+    'defang_url',
+    'defang_ioc',
+    'export_csv',
+    'export_markdown',
+    'export_stix_bundle',
+    'LOLBIN_REGISTRY',
+    'MITRE_CATALOG',
+    'get_mitre_mapping',
 ]
 
 

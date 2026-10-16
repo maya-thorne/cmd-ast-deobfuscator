@@ -21,6 +21,7 @@ from .quote_normalizer import QuoteNormalizerPass
 from .redirection_pass import RedirectionPass, RedirectNormalizerPass
 from .dosfuscation_pass import DosfuscationPass
 from .deflat_pass import DeflatPass
+from .ioc_pass import IOCTransformPass
 
 __all__ = [
     'TransformPass',
@@ -33,6 +34,7 @@ __all__ = [
     'RedirectNormalizerPass',
     'DosfuscationPass',
     'DeflatPass',
+    'IOCTransformPass',
     'ParamResolverPass',
     'ArithmeticFolderPass',
     'fold_arithmetic',
