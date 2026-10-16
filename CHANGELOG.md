@@ -5,6 +5,33 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] - 2026-10-16
+
+### Added
+- **AST-based Malware Indicator of Compromise (IOC) Extractor (`src/ioc/`)**:
+  - Implemented syntax-tree-aware malware indicator extraction engine (`src/ioc/extractor.py`) featuring `IOCExtractor` traversing command nodes, string literals, variable expansions, and stream redirection targets.
+  - Implemented multi-class IOC identification: IPv4 addresses (with port support and octet validation), IPv6 addresses, URLs (HTTP, HTTPS, FTP, SFTP), standalone domain names, email addresses, cryptographic hashes (MD5, SHA1, SHA256), registry run keys, and file drop artifacts.
+  - Implemented LOLBins (Living Off The Land Binaries) detection registry (`src/ioc/patterns.py`) tracking 30+ native Windows system binaries (`powershell.exe`, `certutil.exe`, `bitsadmin.exe`, `mshta.exe`, `rundll32.exe`, `regsvr32.exe`, `wmic.exe`, `vssadmin.exe`, `schtasks.exe`, etc.).
+  - Added MITRE ATT&CK technique mapping and command flag disambiguation supporting T1059 (Command/Scripting Interpreter), T1105 (Ingress Tool Transfer), T1140 (Deobfuscate/Decode), T1197 (BITS Jobs), T1218 (Proxy Execution), T1490 (Inhibit Recovery), T1547.001 (Registry Run Keys), T1053.005 (Scheduled Task), and T1070.001 (Clear Event Logs).
+- **Automated Defanging Protocols & Threat Intelligence Formatting (`src/ioc/models.py`)**:
+  - Implemented safe indicator defanging protocols (`defang_ipv4`, `defang_ipv6`, `defang_domain`, `defang_url`, `defang_ioc`) neutralizing active C2 endpoints for secure SOC analysis (`hxxp://`, `evil[.]com`, `192.168.1[.]1`).
+  - Added data models (`IOCType`, `IOCSeverity`, `MitreTactic`, `MitreAttackMapping`, `IOCItem`, `IOCMetrics`, and `IOCExtractionResult`).
+  - Added subset filtering methods (`filter()`) by indicator type, confidence threshold, and MITRE technique ID.
+  - Implemented in-memory cryptographic zeroization (`zeroize()`) across items, metrics, and extraction result containers.
+- **Multi-Format Threat Intelligence Exporters (`src/ioc/exporters.py`)**:
+  - Implemented standard CSV serialization (`export_csv`) with full metadata attributes.
+  - Implemented human-readable Markdown summary tables (`export_markdown`) with MITRE ATT&CK technique matrices.
+  - Implemented OASIS STIX 2.1 Threat Intelligence Bundle exporter (`export_stix_bundle`, `export_stix_json`) generating compliant `indicator`, `attack-pattern`, and `relationship` objects.
+- **AST Compiler Transform Pass Integration (`src/ioc/transforms.py`, `src/transforms/ioc_pass.py`)**:
+  - Implemented `IOCTransformPass` subclasses of `TransformPass` for plug-and-play inclusion in the AST `PassManager` pipeline.
+  - Added high-level convenience function `extract_iocs()` supporting AST nodes and raw script sources.
+- **CLI Options**:
+  - Added `--ioc` / `--extract-iocs`, `--ioc-stats`, `--ioc-filter`, `--ioc-min-confidence`, `--ioc-defang`, `--ioc-json`, `--ioc-csv`, `--ioc-md`, and `--ioc-stix` flags to `src/cli.py`.
+- **Comprehensive Test Suite**:
+  - Added `tests/test_ioc_suite.py` with 26 unit and integration tests covering IP addresses, URLs, domains, file drops, LOLBins, MITRE ATT&CK techniques, defanging protocols, CSV/MD/JSON/STIX 2.1 exports, memory zeroization, and CLI flags.
+  - Repository test suite expanded to 484 tests with 100% pass rate.
+
+
 ## [0.17.0] - 2026-10-15
 
 ### Added
