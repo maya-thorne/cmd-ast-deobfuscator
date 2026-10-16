@@ -5,6 +5,31 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0] - 2026-10-16
+
+### Added
+- **Standard C ABI Header & Interface (`include/cmd_deobfuscator.h`)**:
+  - Implemented standard C99/C11 compatible header with `extern "C"` linkage guards for seamless cross-language integration with C, C++, Go, and Python.
+  - Defined C ABI data structures: `cmd_ffi_options_t`, `cmd_ffi_metrics_t`, `cmd_ffi_status_t` (`CMD_FFI_OK`, `CMD_FFI_ERR_NULL_POINTER`, `CMD_FFI_ERR_INVALID_UTF8`, etc.), and transformation flag bitmasks (`CMD_FFI_FLAG_*`).
+  - Declared full lifecycle APIs: `cmd_ffi_version()`, `cmd_ffi_context_create()`, `cmd_ffi_context_destroy()`, `cmd_ffi_deobfuscate()`, `cmd_ffi_extract_iocs()`, `cmd_ffi_parse_ast()`, result accessors, and memory zeroization (`cmd_ffi_zeroize()`).
+- **High-Performance Native Rust Core (`rust/`)**:
+  - Implemented safe and idiomatic native Rust deobfuscator core (`rust/lib.rs`) featuring `CmdDeobfuscator`, `NativeFastPath`, and `DeobfuscateOptions`.
+  - Added ultra-fast zero-copy routines: caret unmasking (`NativeFastPath::strip_carets`), command delimiter normalization (`NativeFastPath::normalize_delimiters`), empty quote collapse, and variable evaluation.
+  - Implemented C ABI exports (`rust/ffi.rs`) matching `cmd_deobfuscator.h` with thread-safe opaque context handles and null pointer validation.
+  - Added secure memory zeroization (`zeroize_bytes`, `cmd_ffi_zeroize`) utilizing volatile writes and `std::sync::atomic::compiler_fence(Ordering::SeqCst)` to eliminate dead-store optimization elision.
+  - Added root `Cargo.toml` configuring dual crate targets (`rlib` for Rust toolchains, `cdylib` generating dynamic libraries `.dll` / `.so` / `.dylib`).
+- **Python FFI Subsystem & Bridge (`src/ffi/`)**:
+  - Implemented `src/ffi/models.py` defining `FFIStatusCode`, `FFIFlags`, `FFIOptions`, `FFIMetrics`, `FFIResult`, `FFIContext`, and `zeroize_buffer`.
+  - Implemented `src/ffi/c_api.py` with ctypes memory structures, binary alignment, and dynamic library search loader.
+  - Implemented `src/ffi/bridge.py` featuring `CmdDeobfuscatorBridge` providing transparent dispatch between the native compiled cdylib and the pure-Python AST pushdown automaton with 100% semantic equivalence.
+  - Implemented `src/ffi/standalone.py` with C header exporter (`export_c_header`), Cargo build runner (`build_native_library`), and automated roundtrip verification suite (`verify_roundtrip`).
+- **CLI Options**:
+  - Added `--ffi-export-header [PATH]` and `--ffi-test-roundtrip` flags to `src/cli.py`.
+- **Comprehensive Test Suite**:
+  - Added `tests/test_ffi_suite.py` with 24 unit and integration tests covering models, ctypes structure offsets, bridge dispatch, native and fallback execution, memory zeroization, and CLI flags.
+  - Added 9 native Rust unit and integration tests in `rust/lib.rs` passing `cargo test --all-targets` and `cargo clippy --all-targets -- -D warnings`.
+  - Repository test suite expanded to 508 tests with 100% pass rate.
+
 ## [0.18.0] - 2026-10-16
 
 ### Added
@@ -129,7 +154,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.13.0] - 2026-10-14
 
 ### Added
-- **Invoke-DOSfuscation Concatenation Heuristic Engine (M13)**:
+- **Invoke-DOSfuscation Concatenation Heuristic Engine**:
   - Implemented dedicated domain package (`src/dosfuscation/`):
     - `DosfuscationConcatenationDecoder` (`src/dosfuscation/concatenation.py`): Multi-phase heuristic deobfuscator specifically tuned for Daniel Bohannon's Invoke-DOSfuscation concatenation techniques, resolving environment variable fragment chains (`%a%%b%%c%`), stripping interleaved junk/empty variables (`%junk%c%junk%m%junk%d`), normalizing scrambled parameter delimiters (commas `,`, semicolons `;`) outside quotes, slices, and loops into canonical single spaces, resolving FOR token accumulation loops (`for %x in (c a l c) do set out=!out!%x`), and unwrapping dynamic CALL execution trampolines (`call %cmd% -> cmd`).
     - `DosfuscationDetector` (`src/dosfuscation/detector.py`): Heuristic classifier and scoring engine analyzing token fragmentation density, delimiter scrambling index, variable expansion ratios, and entropy to detect and classify Invoke-DOSfuscation Levels 1 through 5.
@@ -152,7 +177,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.12.0] - 2026-10-13
 
 ### Added
-- **I/O Redirection & Stream Routing Engine (M12)**:
+- **I/O Redirection & Stream Routing Engine**:
   - Implemented dedicated redirection domain package (`src/redirection/`):
     - `StreamRouter` (`src/redirection/router.py`): Simulates cmd.exe stream redirection handle routing, sequential left-to-right descriptor state tracking, handle duplication chains (`>&`, `<&`), circular forwarding cycle protection with recursion depth limiting (`MAX_FORWARD_DEPTH = 10`), and stealth command execution detection.
     - Token extractor and AST builder (`src/redirection/extractor.py`): Extracts prefix, middle, and suffix redirections from token streams, supporting all source handles 0..9, handle duplication (`2>&1`, `1>&2`, `>&2`), handle closing (`2>&-`), quoted destination paths, and DOS reserved device classification (`nul`, `con`, `prn`, `aux`, `com1`..`com9`, `lpt1`..`lpt9`) with DoS boundary guards (`MAX_REDIRECTS_PER_COMMAND = 64`).
@@ -330,7 +355,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.0] - 2026-10-13
 
 ### Added
-- **Caret Normalization AST Transform (M04)**:
+- **Caret Normalization AST Transform**:
   - Implemented `CaretNormalizerPass` and `normalize_carets` in `src/transforms/caret_normalizer.py` for comprehensive resolution of cmd.exe caret (`^`) escape sequences.
   - Multi-level and nested caret reduction collapsing exponential escape multipliers (e.g., `c^^^a^^^l^^^c` -> `calc`, `s^^^^e^^^^t` -> `set`, `^^^^^^^c` -> `c`).
   - Quoting boundary tracking preserving literal carets inside double quotes (`"c^a^l^c"` preserved) while unmasking outside quotes.
@@ -374,7 +399,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2026-10-13
 
 ### Added
-- **Delayed Expansion (`!VAR!`) AST Support (M02)**:
+- **Delayed Expansion (`!VAR!`) AST Support**:
   - Lexical tokenization of delayed expansion variables in `src/lexer.py` via `CmdTokenType.EXCLAM_VAR`.
   - Full support for delayed expansion substring slicing syntax (`!VAR:~start,len!`, `!VAR:~start!`, negative offsets and negative lengths).
   - String substitution support for delayed expansion (`!VAR:old=new!`, `!VAR:search=!`, whitespace replacement `!VAR: =_!`, and wildcard replacement `!VAR:*pattern=rep!`).
@@ -394,7 +419,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2026-10-12
 
 ### Added
-- Initial project scaffold and core compiler pipeline (M01).
+- Initial project scaffold and core compiler pipeline.
 - Character-level lexical scanner (`src/lexer.py`) modeling cmd.exe Phase 1 and Phase 2 parsing.
 - Pushdown automaton state machine (`src/automaton.py`) tracking block nesting and command boundaries.
 - Abstract Syntax Tree node hierarchy (`src/ast_nodes.py`) and recursive descent parser (`src/parser.py`).

