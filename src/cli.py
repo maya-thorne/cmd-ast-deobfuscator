@@ -95,8 +95,24 @@ def main():
     parser.add_argument("--ioc-csv", help="Path to export extracted IOCs as CSV")
     parser.add_argument("--ioc-md", help="Path to export extracted IOCs as Markdown report")
     parser.add_argument("--ioc-stix", help="Path to export extracted IOCs as STIX 2.1 JSON bundle")
+    parser.add_argument("--ffi-export-header", nargs="?", const="", default=None, help="Export C ABI header (include/cmd_deobfuscator.h) to target path")
+    parser.add_argument("--ffi-test-roundtrip", action="store_true", help="Execute C/Rust FFI native acceleration roundtrip verification")
 
     args = parser.parse_args()
+
+    if args.ffi_export_header is not None:
+        from src.ffi import export_c_header
+        target = args.ffi_export_header if args.ffi_export_header != "" else None
+        out_file = export_c_header(target)
+        print(f"[✓] C ABI header exported to: {out_file}")
+        sys.exit(0)
+
+    if args.ffi_test_roundtrip:
+        import json
+        from src.ffi import verify_roundtrip
+        report = verify_roundtrip()
+        print(json.dumps(report, indent=2))
+        sys.exit(0 if report["status"] == "PASS" else 1)
 
     if args.benchmark:
         runner = BenchmarkRunner(engine=args.benchmark_engine)

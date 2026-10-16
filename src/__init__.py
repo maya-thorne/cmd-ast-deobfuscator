@@ -97,6 +97,19 @@ from .ioc import (
     get_mitre_mapping,
 )
 
+from .ffi import (
+    FFIStatusCode,
+    FFIFlags,
+    FFIOptions,
+    FFIMetrics,
+    FFIResult,
+    FFIContext,
+    zeroize_buffer,
+    CmdDeobfuscatorBridge,
+    export_c_header,
+    verify_roundtrip,
+)
+
 __all__ = [
     'ASTNode',
     'ASTVisitor',
@@ -193,6 +206,16 @@ __all__ = [
     'LOLBIN_REGISTRY',
     'MITRE_CATALOG',
     'get_mitre_mapping',
+    'FFIStatusCode',
+    'FFIFlags',
+    'FFIOptions',
+    'FFIMetrics',
+    'FFIResult',
+    'FFIContext',
+    'zeroize_buffer',
+    'CmdDeobfuscatorBridge',
+    'export_c_header',
+    'verify_roundtrip',
 ]
 
 

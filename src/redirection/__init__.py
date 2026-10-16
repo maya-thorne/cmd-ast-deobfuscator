@@ -1,5 +1,5 @@
 """
-Package interface for I/O Redirection and Stream Routing engine (M12).
+Package interface for I/O Redirection and Stream Routing engine.
 """
 
 from .models import (
