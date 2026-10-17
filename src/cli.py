@@ -97,8 +97,24 @@ def main():
     parser.add_argument("--ioc-stix", help="Path to export extracted IOCs as STIX 2.1 JSON bundle")
     parser.add_argument("--ffi-export-header", nargs="?", const="", default=None, help="Export C ABI header (include/cmd_deobfuscator.h) to target path")
     parser.add_argument("--ffi-test-roundtrip", action="store_true", help="Execute C/Rust FFI native acceleration roundtrip verification")
+    parser.add_argument("--ebnf-validate", action="store_true", help="Validate input batch script against formal cmd.exe EBNF grammar specifications")
+    parser.add_argument("--ebnf-report", action="store_true", help="Generate formal cmd.exe EBNF grammar conformance and coverage report")
+    parser.add_argument("--ebnf-audit-suite", action="store_true", help="Execute canonical cmd.exe EBNF test corpus audit suite")
+    parser.add_argument("--ebnf-json", help="Path to export EBNF conformance/audit report as JSON")
+    parser.add_argument("--ebnf-md", help="Path to export EBNF conformance/audit report as Markdown")
 
     args = parser.parse_args()
+
+    if args.ebnf_audit_suite or args.ebnf_validate or args.ebnf_report:
+        from src.ebnf import handle_ebnf_cli
+        src_code = args.code
+        if src_code is None and args.input:
+            if not os.path.isfile(args.input):
+                print(f"[!] Error: File not found: {args.input}", file=sys.stderr)
+                sys.exit(1)
+            with open(args.input, "r", encoding="utf-8", errors="ignore") as f:
+                src_code = f.read()
+        sys.exit(handle_ebnf_cli(args, source=src_code))
 
     if args.ffi_export_header is not None:
         from src.ffi import export_c_header
@@ -380,7 +396,6 @@ def main():
             if filter_types:
                 ioc_res = ioc_res.filter(ioc_types=filter_types)
 
-
         if args.ioc_defang:
             ioc_res = ioc_res.defang()
 
@@ -411,7 +426,6 @@ def main():
         if args.extract_iocs:
             print("\n" + ioc_res.to_markdown())
 
-
     if args.to_python or args.to_powershell or args.emit_ir or args.ir_stats:
         from src.ir import BatchTranspiler, ASTToIRBuilder
         builder = ASTToIRBuilder()
@@ -429,45 +443,32 @@ def main():
             print("\n=== [INTERMEDIATE REPRESENTATION (IR) DUMP] ===")
             print(json.dumps(ir_prog.to_dict(), indent=2))
 
-        transpiler = BatchTranspiler()
-        if args.to_python:
-            trans_res = transpiler.transpile(norm_ast, target="python", wrap_in_main=not args.ir_no_main)
-            final_output = trans_res.emitted_code
-            if args.output:
-                with open(args.output, "w", encoding="utf-8") as f:
-                    f.write(final_output)
-                print(f"[✓] Transpiled Python code written to {args.output}")
-            else:
-                print(final_output)
-            sys.exit(0)
-        elif args.to_powershell:
-            trans_res = transpiler.transpile(norm_ast, target="powershell")
-            final_output = trans_res.emitted_code
-            if args.output:
-                with open(args.output, "w", encoding="utf-8") as f:
-                    f.write(final_output)
-                print(f"[✓] Transpiled PowerShell code written to {args.output}")
-            else:
-                print(final_output)
-            sys.exit(0)
+        target_lang = "python" if args.to_python else "powershell"
+        trans_res = transpiler.transpile(norm_ast, target=target_lang, wrap_in_main=not args.ir_no_main)
+        final_output = trans_res.emitted_code
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as f:
+                f.write(final_output)
+            print(f"[✓] Transpiled {target_lang.capitalize()} code written to {args.output}")
+        else:
+            print(final_output)
+        sys.exit(0)
 
-    if args.diff or args.side_by_side:
+    if args.diff or args.side_by_side or args.diff_stats:
         from src.tui import ColoredDiffRenderer, ColorMode
         color_mode = ColorMode.NEVER if args.no_color else ColorMode.AUTO
         diff_renderer = ColoredDiffRenderer(color_mode=color_mode)
-        print("\n=== [DEOBFUSCATION DIFF] ===")
-        if args.side_by_side:
-            print(diff_renderer.render_side_by_side(source, clean_code, width=args.diff_width))
-        else:
-            print(diff_renderer.render_unified(source, clean_code))
-
-    if args.diff_stats:
-        from src.tui import ColoredDiffRenderer
-        diff_renderer = ColoredDiffRenderer()
-        metrics = diff_renderer.compute_metrics(source, clean_code)
-        print("\n=== [DEOBFUSCATION DIFF STATS] ===")
-        for k, v in metrics.to_dict().items():
-            print(f"  {k:<20}: {v}")
+        if args.diff or args.side_by_side:
+            print("\n=== [DEOBFUSCATION DIFF] ===")
+            if args.side_by_side:
+                print(diff_renderer.render_side_by_side(source, clean_code, width=args.diff_width))
+            else:
+                print(diff_renderer.render_unified(source, clean_code))
+        if args.diff_stats:
+            metrics = diff_renderer.compute_metrics(source, clean_code)
+            print("\n=== [DEOBFUSCATION DIFF STATS] ===")
+            for k, v in metrics.to_dict().items():
+                print(f"  {k:<20}: {v}")
 
     if args.output:
         with open(args.output, "w", encoding="utf-8") as f:

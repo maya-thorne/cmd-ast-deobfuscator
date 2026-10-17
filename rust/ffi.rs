@@ -50,7 +50,7 @@ pub struct CmdFfiResult {
 
 #[no_mangle]
 pub extern "C" fn cmd_ffi_version() -> *const c_char {
-    static VERSION_C: &[u8] = b"0.19.0\0";
+    static VERSION_C: &[u8] = b"0.20.0\0";
     VERSION_C.as_ptr() as *const c_char
 }
 

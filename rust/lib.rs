@@ -10,7 +10,7 @@ use std::sync::atomic::{compiler_fence, Ordering};
 use std::time::Instant;
 
 /// Version string of the native engine.
-pub const VERSION: &str = "0.19.0";
+pub const VERSION: &str = "0.20.0";
 
 /// Transformation and optimization flags.
 pub const FLAG_NONE: u32 = 0x00000000;

@@ -148,7 +148,7 @@ class TestCAPIBindings(unittest.TestCase):
             self.assertIsNotNone(lib)
             self.assertEqual(resolved, lib_path)
             ver = lib.cmd_ffi_version()
-            self.assertEqual(ver.decode("utf-8"), "0.19.0")
+            self.assertEqual(ver.decode("utf-8"), "0.20.0")
 
 
 class TestCmdDeobfuscatorBridge(unittest.TestCase):
@@ -251,7 +251,7 @@ class TestStandaloneAndCLI(unittest.TestCase):
         report = verify_roundtrip()
         self.assertEqual(report["status"], "PASS")
         self.assertTrue(report["zeroize_verified"])
-        self.assertEqual(report["version"], "0.19.0")
+        self.assertEqual(report["version"], "0.20.0")
         self.assertIn("deobfuscation", report)
         self.assertIn("iocs", report)
         self.assertIn("ast", report)

@@ -109,6 +109,30 @@ from .ffi import (
     export_c_header,
     verify_roundtrip,
 )
+from .ebnf import (
+    GrammarRuleType,
+    GrammarRule,
+    GrammarSpecification,
+    ValidationStatus,
+    RuleValidationResult,
+    SyntaxViolation,
+    ConformanceReport,
+    CMD_EBNF_SPEC,
+    build_cmd_ebnf_rules,
+    get_default_grammar,
+    export_ebnf_specification,
+    CorpusSample,
+    CANONICAL_CORPUS,
+    get_canonical_corpus,
+    get_corpus_by_category,
+    get_corpus_by_rule,
+    EBNFConformanceValidator,
+    validate_source,
+    audit_ebnf_suite,
+    handle_ebnf_cli,
+)
+
+__version__ = "0.20.0"
 
 __all__ = [
     'ASTNode',
@@ -216,6 +240,26 @@ __all__ = [
     'CmdDeobfuscatorBridge',
     'export_c_header',
     'verify_roundtrip',
+    'GrammarRuleType',
+    'GrammarRule',
+    'GrammarSpecification',
+    'ValidationStatus',
+    'RuleValidationResult',
+    'SyntaxViolation',
+    'ConformanceReport',
+    'CMD_EBNF_SPEC',
+    'build_cmd_ebnf_rules',
+    'get_default_grammar',
+    'export_ebnf_specification',
+    'CorpusSample',
+    'CANONICAL_CORPUS',
+    'get_canonical_corpus',
+    'get_corpus_by_category',
+    'get_corpus_by_rule',
+    'EBNFConformanceValidator',
+    'validate_source',
+    'audit_ebnf_suite',
+    'handle_ebnf_cli',
 ]
 
 

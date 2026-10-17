@@ -5,6 +5,35 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - 2026-10-17
+
+### Added
+- **Formal cmd.exe EBNF Grammar Models & Specification (`src/ebnf/models.py`, `src/ebnf/grammar.py`)**:
+  - Implemented 49 formal EBNF production rules modeling the complete syntax and semantics of the Microsoft Windows Command Processor (`cmd.exe`).
+  - Hierarchical grammar categorizations covering:
+    - *Lexical & Characters*: `Character`, `Newline`, `Whitespace`, `Digit`, `Letter`, `SpecialChar`, `DoubleQuote`, `SeqOp` (`&`), `AndOp` (`&&`), `OrOp` (`||`), `PipeOp` (`|`), `AssignOp` (`=`).
+    - *Elementary Atoms*: `CaretEscape` (`^x`), `EmptyQuotePair` (`""`), `QuotedString`, `LiteralText`, `Atom`.
+    - *Variable & Parameter Expansions*: `VarName`, `SliceStart`, `SliceLen`, `PercentVar` (`%VAR%`), `PercentSlice` (`%VAR:~s,l%`), `PercentSubst` (`%VAR:s=r%`), `DelayedVar` (`!VAR!`), `DelayedSlice` (`!VAR:~s,l%`), `ParamExpand` (`%0`..`%9`, `%*`, `%%i`, `%~dp0`).
+    - *Syntactic Productions*: `Script`, `Line`, `Statement`, `ChainOperator`, `Pipeline`, `CommandOrBlock`, `Block` (`(...)`), `Assignment` (`SET`), `Command`, `CommandTarget`, `Argument`, `Redirection`.
+    - *Redirection Operators*: `RedirOut` (`>`), `RedirAppend` (`>>`), `RedirIn` (`<`), `RedirDup` (`2>&1`).
+    - *Control Flow*: `IfStatement`, `ForLoop`, `LabelDef` (`:LABEL`), `GotoStatement`, `CallStatement`, `ExitStatement`, `Comment` (`REM`, `::`).
+  - Added `GrammarSpecification` with programmatic rule registry, category query API, and `export_ebnf_specification()` producing clean formal EBNF notation.
+- **EBNF Conformance Validator (`src/ebnf/validator.py`)**:
+  - Implemented `EBNFConformanceValidator` evaluating parsed AST trees against formal grammar productions with structural verification.
+  - Generates comprehensive `ConformanceReport` capturing total rules, tested/covered counts, grammar coverage percentage, conformance percentage, per-rule status breakdown, and detailed `SyntaxViolation` telemetry.
+  - Added export capabilities for JSON (`to_json()`) and Markdown (`to_markdown()`) audit reports.
+- **Canonical cmd.exe Test Corpus (`src/ebnf/corpus.py`)**:
+  - Built 25-sample canonical batch script corpus (`CANONICAL_CORPUS`) specifically designed to exercise every production rule in the grammar.
+  - Achieves 100.0% rule coverage (49/49 rules) and 100.0% conformance across atomic commands, chains, pipelines, blocks, variable expansions, slices, substitutions, redirections, control-flow statements, and complex obfuscated batch payloads.
+  - Added category and targeted-rule query helpers (`get_canonical_corpus`, `get_corpus_by_category`, `get_corpus_by_rule`).
+- **CLI Options Integration (`src/cli.py`)**:
+  - Added `--ebnf-validate` to validate arbitrary batch scripts against formal EBNF specifications.
+  - Added `--ebnf-report` to generate detailed grammar conformance and rule coverage reports.
+  - Added `--ebnf-audit-suite` to execute the full canonical corpus and output audit metrics.
+  - Added `--ebnf-json` and `--ebnf-md` report file export options.
+- **Comprehensive Test Suite (`tests/test_ebnf_suite.py`)**:
+  - Added 29 unit and integration tests verifying models, grammar specification, canonical corpus structure, AST validator, audit suite execution, dynamic slice expressions, empty block & malformed keyword violation detection, and CLI command integration.
+
 ## [0.19.0] - 2026-10-16
 
 ### Added
