@@ -566,7 +566,7 @@ zeroize_buffer(secret_buffer)
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 508 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, AST-based Malware IOC Extractor, Native C/Rust FFI Bindings & Standalone Binary Distribution Pipeline, and real-world benchmark invariants:
+The test suite validates 542 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, AST-based Malware IOC Extractor, Native C/Rust FFI Bindings & Standalone Binary Distribution Pipeline, Formal cmd.exe EBNF Grammar Conformance Validation, and real-world benchmark invariants:
 
 
 ```bash
@@ -836,6 +836,11 @@ OK
       <td>Unified C/Rust FFI subsystem providing ctypes data structures, bridge dispatch, memory zeroization, and standalone verifier</td>
     </tr>
     <tr>
+      <td><strong><code>src/ebnf/</code></strong></td>
+      <td>EBNF Grammar &amp; Validator</td>
+      <td>cmd.exe formal EBNF production rules, grammar conformance validator, canonical 25-sample test corpus, and coverage telemetry</td>
+    </tr>
+    <tr>
       <td><strong><code>src/visualizer.py</code></strong></td>
       <td>Visualizer Engine</td>
       <td>Multi-target visualizer emitting ASCII syntax trees, Mermaid flowcharts, and JSON</td>
@@ -924,6 +929,11 @@ OK
       <td>C/Rust FFI Tests</td>
       <td>Unit &amp; integration tests for C ABI structures, Rust native core bindings, Python bridge fallback, memory zeroization, and CLI flags</td>
     </tr>
+    <tr>
+      <td><strong><code>tests/test_ebnf_suite.py</code></strong></td>
+      <td>EBNF Grammar &amp; Validator Tests</td>
+      <td>Unit &amp; integration tests for formal EBNF models, conformance validator, canonical test corpus, and CLI telemetry flags</td>
+    </tr>
     <!-- Auxiliary Directories -->
     <tr>
       <td colspan="3" bgcolor="#0f172a"><strong>📚 Supporting Directories &amp; Research Assets</strong></td>
@@ -990,6 +1000,12 @@ cmd-ast-deobfuscator/
 │   │   └── visualizer.py              # Mermaid, Graphviz DOT, ASCII & JSON exporters
 │   ├── cli.py                         # UTF-8 CLI runner with --tree, --mermaid, --cfg
 │   ├── deobfuscator_engine.py         # Multi-pass static AST evaluation engine
+│   ├── ebnf/                          # Formal cmd.exe EBNF grammar models, validator & corpus
+│   │   ├── __init__.py                # EBNF models, validator, and corpus exports
+│   │   ├── corpus.py                  # 25 canonical cmd.exe test corpus samples
+│   │   ├── grammar.py                 # 49 formal cmd.exe EBNF production rules
+│   │   ├── models.py                  # Rule, validation result, and report dataclasses
+│   │   └── validator.py               # EBNFConformanceValidator and audit runner
 │   ├── lexer.py                       # cmd.exe 5-phase lexical analyzer
 │   ├── modifiers.py                   # FOR parameter path modifier resolver (~dp, ~f)
 │   ├── normalizer.py                  # Environment variable expansion & AST normalizer
@@ -1010,6 +1026,7 @@ cmd-ast-deobfuscator/
 │   ├── test_cfg_suite.py              # Control Flow Graph & jump table test suite
 │   ├── test_delayed_expansion.py      # Delayed expansion (!VAR!) test suite
 │   ├── test_deobfuscator.py           # Evaluation engine invariant test suite
+│   ├── test_ebnf_suite.py             # EBNF grammar & conformance validator test suite
 │   ├── test_for_param_expansion.py    # FOR variable & path modifier test suite
 │   └── test_slicing_folder.py         # Substring slicing constant folding tests
 ├── CHANGELOG.md                       # Release notes and version history

@@ -55,7 +55,7 @@ class CmdDeobfuscatorBridge:
                     return raw.decode("utf-8")
             except Exception:
                 pass
-        return "0.19.0"
+        return "0.20.0"
 
     def deobfuscate(
         self,
