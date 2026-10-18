@@ -7,6 +7,7 @@ Certutil self-extracting stubs, Bat2Exe drop scripts, and generic CFF packers.
 import re
 from typing import List, Dict, Optional, Tuple, Set
 from .models import PackerType, PackerSignature, PackerDetectionResult, PackerMetrics
+from .heuristics import PackerHeuristicDetector
 
 # Maximum source lines to inspect for signature detection (DoS defense)
 MAX_SCAN_LINES = 10000
@@ -42,8 +43,9 @@ class PackerSignatureDetector:
     RE_STATE_GOTO = re.compile(r'if\s+(?:/i\s+)?["\']?[!%]([a-zA-Z0-9_]+)[!%]["\']?\s*(?:==|equ)\s*["\']?([^"\'\s]+)["\']?\s+goto\s+:([a-zA-Z0-9_]+)', re.IGNORECASE)
     RE_COMPUTED_GOTO = re.compile(r'goto\s+:([a-zA-Z0-9_]*[!%][a-zA-Z0-9_]+[!%][a-zA-Z0-9_]*)', re.IGNORECASE)
 
-    def __init__(self):
+    def __init__(self, heuristics: Optional[PackerHeuristicDetector] = None):
         self.metrics = PackerMetrics()
+        self.heuristics = heuristics or PackerHeuristicDetector()
 
     def detect(self, source: str) -> PackerDetectionResult:
         """
@@ -84,6 +86,24 @@ class PackerSignatureDetector:
         sig_cff = self._check_generic_cff(lines)
         if sig_cff and not any(s.packer_type == PackerType.OXIDIZ3R for s in signatures):
             signatures.append(sig_cff)
+
+        # 6. Check for Heuristic signatures (PowerShell, Echo Droppers, Trampolines, Char Codes)
+        heuristic_sigs = self.heuristics.scan(lines, source)
+        if heuristic_sigs:
+            signatures.extend(heuristic_sigs)
+
+        # 7. Check if container encloses multiple packaging types
+        distinct_types = {s.packer_type for s in signatures if s.packer_type != PackerType.CLEAN_BATCH}
+        if len(distinct_types) >= 2 and not any(s.packer_type == PackerType.MULTI_LAYER_CONTAINER for s in signatures):
+            signatures.append(
+                PackerSignature(
+                    packer_type=PackerType.MULTI_LAYER_CONTAINER,
+                    name="Multi-Layer Cascading Wrapper / Packer Container",
+                    confidence=0.72,
+                    indicators=[f"Multi-tier packaging container combining {len(distinct_types)} distinct mechanisms ({', '.join(t.value for t in distinct_types)})"],
+                    metadata={"distinct_types": [t.value for t in distinct_types]}
+                )
+            )
 
         if signatures:
             # Sort signatures by confidence descending

@@ -5,6 +5,37 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.0] - 2026-10-18
+
+### Added
+- **Multi-Stage Batch Packer & Heuristic Unpacking Engine (`src/packers/engine.py`, `src/packers/heuristics.py`)**:
+  - Implemented `MultiStagePackerEngine` providing recursive layer-by-layer unpacking across nested batch wrapper architectures up to `MAX_UNPACK_LAYERS` (default 8).
+  - Added specialized decoders for complex evasion stubs:
+    - *CertUtil Base64 / Hex*: Resolves embedded PEM boundaries (`-----BEGIN CERTIFICATE-----`), certificate trailing blocks, and hexadecimal string dumps.
+    - *PowerShell EncodedCommand*: Automatically decodes UTF-16LE Base64 commands (`-enc` / `-e` / `-encodedcommand`).
+    - *PowerShell Compressed Streams*: Extracts and decompresses embedded Gzip and raw Deflate streams (`[IO.Compression.DeflateStream]`, `FromBase64String`).
+    - *Echo Droppers*: Reassembles multi-line staging scripts written to disk (`echo ... >> %TEMP%\\stage.bat`) with caret escape sequence recovery.
+    - *0xidiz3r & Somalifuscator*: Strips noise banners, anti-debugging wrapper guards, and resolves variable substring substitution cipher tables.
+  - Built-in DoS defense enforcing `MAX_PAYLOAD_SIZE = 10MB` per layer to prevent decompression bombs.
+  - Cryptographic cycle and infinite loop detection tracking SHA-256 payload digests to halt recursive self-referential wrappers gracefully.
+  - Per-layer Shannon entropy calculation ($H = -\\sum p \\log_2 p$) recording entropy shifts and quantitative reduction metrics.
+- **Domain Models & Cryptographic Provenance (`src/packers/models.py`)**:
+  - Added new `PackerType` enumerations: `POWERSHELL_BASE64`, `POWERSHELL_DEFLATE`, `ECHO_DROPPER`, `DYNAMIC_TRAMPOLINE`, `CHAR_CODE_STUB`, and `MULTI_LAYER_CONTAINER`.
+  - Implemented `LayerTransition` capturing layer depth, transition packer types, unpacker strategy, entropy deltas, payload SHA-256 digests, and metadata.
+  - Implemented `LayeredUnpackResult` tracking complete unpacking provenance, cycle status, and memory zeroization (`zeroize()`) across buffers.
+  - Updated `PackerMetrics` with multi-stage telemetry counters: `total_input_bytes`, `decompressed_bytes`, `entropy_reduction`, and `cycles_halted`.
+- **Heuristic Detector Scanner (`src/packers/heuristics.py`, `src/packers/detector.py`)**:
+  - Implemented `PackerHeuristicDetector` identifying PowerShell Base64 stubs, Deflate/GZip decompressors, echo dropper staging sequences, dynamic trampolines (`cmd /c %VAR%`), and character code arrays (`[char]0x...`).
+  - Integrated heuristic analysis directly into `PackerSignatureDetector`.
+- **CLI Options & Formatting Engine (`src/cli.py`, `src/packers/cli_helper.py`)**:
+  - Added `--packers-detect` for multi-tier heuristic detection of packer wrappers.
+  - Added `--packers-unpack` for recursive unpacking and payload recovery.
+  - Added `--packers-layers` for detailed layer transition provenance and entropy deltas.
+  - Supported multi-format presentation across plaintext, structured JSON (`--json`), and Markdown tables (`--md`).
+- **Comprehensive Test Suite (`tests/test_multi_stage_packers_suite.py`)**:
+  - Added 10 unit and integration tests covering PowerShell Base64/Deflate/Gzip decoding, echo dropper reassembly, multi-tier CertUtil cascading unpacking, loop detection, DoS payload limits, entropy tracking, memory zeroize, and CLI flags.
+  - Repository test suite expanded to 552 tests with 100% pass rate.
+
 ## [0.20.0] - 2026-10-17
 
 ### Added
