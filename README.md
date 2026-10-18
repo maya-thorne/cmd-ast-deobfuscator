@@ -415,7 +415,14 @@ python src/cli.py -i script.bat --dosfuscation -o cleaned.bat
 python src/cli.py -i script.bat --dosfuscation --dosf-stats
 
 # Detect 0xidiz3r, Somalifuscator, CertUtil, and batch packer signatures
-python src/cli.py -i script.bat --packer-detect
+python src/cli.py -i script.bat --packers-detect
+
+# Recursively unpack multi-stage batch wrappers, droppers, and compressed streams
+python src/cli.py -i script.bat --packers-unpack -o unpacked.bat
+
+# Inspect layer transition provenance and Shannon entropy reduction (JSON / Markdown)
+python src/cli.py -i script.bat --packers-layers --json
+python src/cli.py -i script.bat --packers-layers --md
 
 # Perform Control Flow De-flattening (Anti-CFF) and state machine unrolling
 python src/cli.py -i script.bat --deflat -o cleaned.bat
@@ -566,7 +573,7 @@ zeroize_buffer(secret_buffer)
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 542 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, AST-based Malware IOC Extractor, Native C/Rust FFI Bindings & Standalone Binary Distribution Pipeline, Formal cmd.exe EBNF Grammar Conformance Validation, and real-world benchmark invariants:
+The test suite validates 552 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, AST-based Malware IOC Extractor, Native C/Rust FFI Bindings & Standalone Binary Distribution Pipeline, Formal cmd.exe EBNF Grammar Conformance Validation, Multi-Stage Batch Packer Recursive Unpacking & Multi-Tier Heuristic Deobfuscation, and real-world benchmark invariants:
 
 
 ```bash
@@ -798,7 +805,7 @@ OK
     <tr>
       <td><strong><code>src/packers/</code></strong></td>
       <td>Packers &amp; Stubs</td>
-      <td>Signature detector, multi-layer payload unpacker, CertUtil base64/hex extractor, and 0xidiz3r noise stripper</td>
+      <td>Multi-stage recursive unpacker, heuristic detector, CertUtil base64/hex, PowerShell streams, echo droppers, and transition provenance</td>
     </tr>
     <tr>
       <td><strong><code>src/cff/</code></strong></td>
@@ -933,6 +940,11 @@ OK
       <td><strong><code>tests/test_ebnf_suite.py</code></strong></td>
       <td>EBNF Grammar &amp; Validator Tests</td>
       <td>Unit &amp; integration tests for formal EBNF models, conformance validator, canonical test corpus, and CLI telemetry flags</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_multi_stage_packers_suite.py</code></strong></td>
+      <td>Multi-Stage Packer Tests</td>
+      <td>Unit &amp; integration tests for multi-stage packer unpacking, PowerShell streams, echo droppers, cycle detection, DoS limits, and CLI flags</td>
     </tr>
     <!-- Auxiliary Directories -->
     <tr>

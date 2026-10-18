@@ -55,7 +55,10 @@ def main():
     parser.add_argument("--dosf-stats", action="store_true", help="Print Invoke-DOSfuscation concatenation metrics summary")
     parser.add_argument("--deflat", action="store_true", help="Perform Control Flow De-flattening (Anti-CFF) and state machine unrolling")
     parser.add_argument("--deflat-stats", action="store_true", help="Print Control Flow De-flattening metrics summary")
-    parser.add_argument("--packer-detect", action="store_true", help="Detect 0xidiz3r, Somalifuscator, CertUtil, and batch packer signatures")
+    parser.add_argument("--packer-detect", "--packers-detect", action="store_true", dest="packers_detect", help="Detect 0xidiz3r, Somalifuscator, CertUtil, and batch packer signatures")
+    parser.add_argument("--packers-unpack", action="store_true", help="Recursively unpack multi-stage batch packers and stubs")
+    parser.add_argument("--packers-layers", action="store_true", help="Print multi-stage layer transitions, entropy deltas, and provenance")
+    parser.add_argument("--md", "--packers-md", action="store_true", dest="md", help="Format output as Markdown table or document")
     parser.add_argument("--to-python", "--to-py", action="store_true", dest="to_python", help="Transpile batch script to clean Python 3 script via IR")
     parser.add_argument("--to-powershell", "--to-ps1", action="store_true", dest="to_powershell", help="Transpile batch script to clean PowerShell script via IR")
     parser.add_argument("--emit-ir", action="store_true", help="Print Intermediate Representation (IR) JSON dump")
@@ -250,7 +253,7 @@ def main():
         print("\n=== [MERMAID FLOWCHART] ===")
         print(ASTVisualizer.render_mermaid(ast))
 
-    if args.json:
+    if args.json and not (args.packers_detect or args.packers_unpack or args.packers_layers):
         print("\n=== [JSON AST DUMP] ===")
         print(ASTVisualizer.render_json(ast))
 
@@ -327,18 +330,9 @@ def main():
             print(f"  Loops accumulated        : {dosf_pass.metrics.loops_accumulated}")
             print(f"  Trampolines unrolled     : {dosf_pass.metrics.trampolines_unrolled}")
 
-    if args.packer_detect:
-        from src.packers import PackerSignatureDetector
-        p_detector = PackerSignatureDetector()
-        p_res = p_detector.detect(source)
-        print("\n=== [BATCH PACKER & OBFUSCATOR DETECTION] ===")
-        print(f"  Primary packer : {p_res.primary_packer.value}")
-        print(f"  Is packed      : {p_res.is_packed}")
-        print(f"  Confidence     : {p_res.confidence:.2f}")
-        for sig in p_res.detected_signatures:
-            print(f"  - [{sig.packer_type.value}] {sig.name} (conf: {sig.confidence:.2f})")
-            for ind in sig.indicators:
-                print(f"      * {ind}")
+    if args.packers_detect or args.packers_unpack or args.packers_layers:
+        from src.packers.cli_helper import handle_packers_cli
+        handle_packers_cli(source, args)
 
     if args.deflat or args.deflat_stats:
         from src.transforms.deflat_pass import DeflatPass
@@ -474,7 +468,7 @@ def main():
         with open(args.output, "w", encoding="utf-8") as f:
             f.write(clean_code + "\n")
         print(f"[✓] Deobfuscated code written to {args.output}")
-    elif not (args.tree or args.mermaid or args.json or args.cfg or args.cfg_mermaid or args.cfg_dot or args.diff or args.side_by_side or args.extract_iocs):
+    elif not (args.tree or args.mermaid or args.json or args.cfg or args.cfg_mermaid or args.cfg_dot or args.diff or args.side_by_side or args.extract_iocs or args.packers_detect or args.packers_unpack or args.packers_layers):
         print(clean_code)
 
 

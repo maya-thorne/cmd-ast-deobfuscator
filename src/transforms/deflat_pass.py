@@ -10,7 +10,14 @@ from ..ast_nodes import (
     ASTNode, ScriptNode, BlockNode, LabelNode, AssignmentNode,
     CommandNode, IfNode, GotoNode, ExitNode
 )
-from ..packers import PackerSignatureDetector, PackerUnpacker, PackerDetectionResult, PackerType
+from ..packers import (
+    PackerSignatureDetector,
+    PackerUnpacker,
+    PackerDetectionResult,
+    PackerType,
+    MultiStagePackerEngine,
+    LayeredUnpackResult,
+)
 from ..cff import CFFAnalyzer, CFFLinearizer, CFFStateMachine, DeflatResult, DeflatMetrics
 
 
@@ -23,27 +30,30 @@ class DeflatPass(TransformPass):
     def __init__(self, env: Optional[Dict[str, str]] = None):
         super().__init__(name="DeflatPass", env=env)
         self.detector = PackerSignatureDetector()
-        self.unpacker = PackerUnpacker(detector=self.detector)
+        self.packer_engine = MultiStagePackerEngine(detector=self.detector)
+        self.unpacker = PackerUnpacker(detector=self.detector, engine=self.packer_engine)
         self.cff_analyzer = CFFAnalyzer()
         self.linearizer = CFFLinearizer()
         self.deflat_metrics = DeflatMetrics()
         self.packer_detection: Optional[PackerDetectionResult] = None
+        self.layered_unpack_result: Optional[LayeredUnpackResult] = None
 
     def transform(self, root: ASTNode, env: Optional[Dict[str, str]] = None) -> ASTNode:
-        """Runs packer inspection, unpacking, and CFF de-flattening."""
+        """Runs packer inspection, multi-stage unpacking, and CFF de-flattening."""
         if env:
             for k, v in env.items():
                 self.env[k.lower()] = v
         self.modified = False
 
-        # Phase 1: Check for outer packaging layers (e.g. CertUtil base64 or 0xidiz3r noise)
+        # Phase 1: Multi-stage recursive unpacking (CertUtil base64/hex, PowerShell, droppers, 0xidiz3r)
         source = self.to_source(root)
+        self.layered_unpack_result = self.packer_engine.unpack(source)
         self.packer_detection = self.unpacker.unpack(source)
 
-        if self.packer_detection and self.packer_detection.unpacked_source:
+        if self.layered_unpack_result and self.layered_unpack_result.layers_unpacked > 0:
             from ..parser import CmdASTParser
             try:
-                new_ast = CmdASTParser.from_source(self.packer_detection.unpacked_source).parse()
+                new_ast = CmdASTParser.from_source(self.layered_unpack_result.final_source).parse()
                 root = new_ast
                 self.modified = True
             except Exception:
