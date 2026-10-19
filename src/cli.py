@@ -55,6 +55,10 @@ def main():
     parser.add_argument("--dosf-stats", action="store_true", help="Print Invoke-DOSfuscation concatenation metrics summary")
     parser.add_argument("--deflat", action="store_true", help="Perform Control Flow De-flattening (Anti-CFF) and state machine unrolling")
     parser.add_argument("--deflat-stats", action="store_true", help="Print Control Flow De-flattening metrics summary")
+    parser.add_argument("--cff-unroll", action="store_true", help="Force complete unrolling of deterministic CFF dispatcher loops")
+    parser.add_argument("--cff-max-unroll", type=int, default=50, help="Maximum iteration count for CFF loop unrolling (default: 50)")
+    parser.add_argument("--cff-structured", action="store_true", help="Reconstruct CFF loops with structured while/for loops instead of unrolling")
+    parser.add_argument("--cff-report", action="store_true", help="Print detailed CFF state machine and loop analysis report")
     parser.add_argument("--packer-detect", "--packers-detect", action="store_true", dest="packers_detect", help="Detect 0xidiz3r, Somalifuscator, CertUtil, and batch packer signatures")
     parser.add_argument("--packers-unpack", action="store_true", help="Recursively unpack multi-stage batch packers and stubs")
     parser.add_argument("--packers-layers", action="store_true", help="Print multi-stage layer transitions, entropy deltas, and provenance")
@@ -334,12 +338,23 @@ def main():
         from src.packers.cli_helper import handle_packers_cli
         handle_packers_cli(source, args)
 
-    if args.deflat or args.deflat_stats:
+    if args.deflat or args.deflat_stats or args.cff_unroll or args.cff_structured or args.cff_report:
         from src.transforms.deflat_pass import DeflatPass
-        deflat_pass = DeflatPass()
+        from src.cff import CFFUnrollConfig, UnrollMode
+        unroll_mode = UnrollMode.AUTO
+        if args.cff_unroll:
+            unroll_mode = UnrollMode.FULL_UNROLL
+        elif args.cff_structured:
+            unroll_mode = UnrollMode.STRUCTURED
+        cff_cfg = CFFUnrollConfig(
+            max_unroll_iterations=args.cff_max_unroll,
+            unroll_mode=unroll_mode
+        )
+        deflat_pass = DeflatPass(config=cff_cfg)
         ast = deflat_pass.transform(ast)
-        if args.deflat_stats:
-            print("\n=== [CONTROL FLOW DE-FLATTENING STATS] ===")
+        if args.deflat_stats or args.cff_report:
+            header_title = "CONTROL FLOW DE-FLATTENING & CFF REPORT" if args.cff_report else "CONTROL FLOW DE-FLATTENING STATS"
+            print(f"\n=== [{header_title}] ===")
             stats = deflat_pass.deflat_metrics.to_dict()
             for k, v in stats.items():
                 print(f"  {k:<32}: {v}")

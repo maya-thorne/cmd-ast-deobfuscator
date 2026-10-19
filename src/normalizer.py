@@ -372,6 +372,11 @@ class ASTNormalizer(ASTVisitor):
     def visit_ExitNode(self, node: ExitNode) -> ExitNode:
         return node
 
+    def visit_IfNode(self, node: IfNode) -> IfNode:
+        then_b = self.visit(node.then_block) if node.then_block else None
+        else_b = self.visit(node.else_block) if node.else_block else None
+        return IfNode(condition=node.condition, then_block=then_b, else_block=else_b, span=node.span)
+
     def to_source(self, node: ASTNode) -> str:
         """Serializes an AST hierarchy into clean batch script source code."""
         if isinstance(node, ScriptNode):

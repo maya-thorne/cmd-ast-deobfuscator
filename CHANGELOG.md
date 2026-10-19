@@ -5,6 +5,36 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.0] - 2026-10-19
+
+### Added
+- **Control Flow Flattening (CFF) Loop Unroller & Dispatcher Recovery (`src/cff/loop_detector.py`, `src/cff/unroller.py`)**:
+  - Implemented `CFFLoopDetector` computing graph reachability, dominator trees via iterative fixed-point analysis ($Dom(n) = \{n\} \cup \bigcap_{p \in Pred(n)} Dom(p)$), back-edges, and natural loop bodies ($Loop(u \to v)$).
+  - Designed bounded deterministic loop simulation engine supporting batch integer arithmetic assignments (`set /a i+=1`, `i-=1`, `i*=1`, etc.) and comparison operators (`==`, `equ`, `neq`, `lss`, `leq`, `gtr`, `geq`) to distinguish constant bounded cycles from data-dependent dynamic while loops.
+  - Implemented `CFFDispatcherUnroller` supporting configurable `UnrollMode` policies (`AUTO`, `FULL_UNROLL`, `STRUCTURED`, `PRESERVE_LOOPS`):
+    - *Deterministic Bounded Loops*: Completely unrolls bounded loops into linear straight-line AST sequences without dispatcher jumps or loop labels.
+    - *Data-Dependent While Loops*: Reconstructs structured loops (`:loop_<header> ... if <exit_cond> goto :loop_exit_<header> ... goto :loop_<header> ... :loop_exit_<header>`) without central dispatcher bounce.
+    - *Dead State Pruning*: Automatically purges unreachable dispatcher blocks from the state machine.
+    - *Branch Structuring*: Reconstructs conditional branches (`IfNode` with then and else blocks) and common join points.
+    - *Straight-line Fusion*: Prunes dead dispatcher jumps (`goto :dispatch`) and removes intermediate dispatcher state variable mutations.
+- **Enhanced CFF Analyzer (`src/cff/analyzer.py`)**:
+  - Extended switch-case detection to support case-insensitive comparison flags (`/i`), quoted and unquoted state expressions, delayed expansion (`!state!`), and batch comparison operators (`==`, `equ`, `neq`, `lss`, `leq`, `gtr`, `geq`).
+  - Added detection of fallthrough state updates (`if cond set state=X` followed by `set state=Y`).
+  - Added support for arithmetic state assignments (`set /a state=...`) and delayed expansion references.
+- **Data Models & Telemetry Metrics (`src/cff/models.py`)**:
+  - Added `CFFLoopType` (`DETERMINISTIC_UNROLLED`, `STRUCTURED_WHILE`, `STRUCTURED_FOR`, `COMPLEX_IRREDUCIBLE`).
+  - Added `UnrollMode` (`AUTO`, `FULL_UNROLL`, `STRUCTURED`, `PRESERVE_LOOPS`).
+  - Added `CFFLoopInfo` and `CFFUnrollConfig` dataclasses with full `to_dict()` serialization and memory `zeroize()` wiping.
+  - Updated `DeflatMetrics` with `loops_detected`, `loops_fully_unrolled`, and `dead_states_pruned`.
+  - Updated `DeflatResult` with detected `loops` collection and memory zeroization.
+- **CLI Options (`src/cli.py`)**:
+  - Added `--cff-unroll` to force complete unrolling of deterministic CFF dispatcher loops.
+  - Added `--cff-max-unroll <N>` to configure the maximum loop iteration unroll threshold (default: 50).
+  - Added `--cff-structured` to reconstruct CFF loops with structured while/for loops instead of unrolling.
+  - Added `--cff-report` for detailed CFF state machine and loop analysis reporting.
+- **Comprehensive Unit & Integration Test Suite (`tests/test_cff_unroller_suite.py`)**:
+  - Added 11 unit and integration tests covering linear switch unrolling, deterministic loops (3 and 5 iterations), structured while recovery, multi-state cycles, conditional branching, dead state pruning, fallthrough updates, DoS iteration limits, memory zeroization, and CLI flags.
+
 ## [0.21.0] - 2026-10-18
 
 ### Added

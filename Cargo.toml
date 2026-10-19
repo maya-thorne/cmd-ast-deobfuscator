@@ -1,6 +1,6 @@
 [package]
 name = "cmd-ast-deobfuscator"
-version = "0.21.0"
+version = "0.22.0"
 edition = "2021"
 description = "High-performance native Rust core and C FFI bindings for cmd.exe batch AST deobfuscator"
 authors = ["Security Research Team"]

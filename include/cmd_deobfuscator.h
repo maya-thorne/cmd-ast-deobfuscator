@@ -65,7 +65,7 @@ typedef struct cmd_ffi_metrics {
 /* --- Version & Initialization --- */
 
 /**
- * @brief Returns the version string of the native engine (e.g. "0.21.0").
+ * @brief Returns the version string of the native engine (e.g. "0.22.0").
  */
 const char* cmd_ffi_version(void);
 
