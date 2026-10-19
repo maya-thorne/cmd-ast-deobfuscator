@@ -18,7 +18,10 @@ from ..packers import (
     MultiStagePackerEngine,
     LayeredUnpackResult,
 )
-from ..cff import CFFAnalyzer, CFFLinearizer, CFFStateMachine, DeflatResult, DeflatMetrics
+from ..cff import (
+    CFFAnalyzer, CFFLinearizer, CFFStateMachine, DeflatResult,
+    DeflatMetrics, CFFUnrollConfig
+)
 
 
 class DeflatPass(TransformPass):
@@ -27,13 +30,18 @@ class DeflatPass(TransformPass):
     extracts packed payloads, and linearizes Control Flow Flattening (CFF) state machines.
     """
 
-    def __init__(self, env: Optional[Dict[str, str]] = None):
+    def __init__(
+        self,
+        env: Optional[Dict[str, str]] = None,
+        config: Optional[CFFUnrollConfig] = None
+    ):
         super().__init__(name="DeflatPass", env=env)
+        self.config = config or CFFUnrollConfig()
         self.detector = PackerSignatureDetector()
         self.packer_engine = MultiStagePackerEngine(detector=self.detector)
         self.unpacker = PackerUnpacker(detector=self.detector, engine=self.packer_engine)
         self.cff_analyzer = CFFAnalyzer()
-        self.linearizer = CFFLinearizer()
+        self.linearizer = CFFLinearizer(config=self.config)
         self.deflat_metrics = DeflatMetrics()
         self.packer_detection: Optional[PackerDetectionResult] = None
         self.layered_unpack_result: Optional[LayeredUnpackResult] = None
@@ -68,7 +76,7 @@ class DeflatPass(TransformPass):
         if not state_machine:
             return node
 
-        deflat_res = self.linearizer.linearize(state_machine)
+        deflat_res = self.linearizer.linearize(state_machine, config=self.config)
         if not deflat_res.success or not deflat_res.linearized_nodes:
             return node
 
@@ -85,7 +93,7 @@ class DeflatPass(TransformPass):
         if not state_machine:
             return node
 
-        deflat_res = self.linearizer.linearize(state_machine)
+        deflat_res = self.linearizer.linearize(state_machine, config=self.config)
         if not deflat_res.success or not deflat_res.linearized_nodes:
             return node
 

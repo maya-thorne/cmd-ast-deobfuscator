@@ -15,8 +15,12 @@ from .models import (
 )
 
 # Regular expressions for detecting state conditionals and computed jumps
-RE_IF_STATE_EQ = re.compile(
-    r'(?:/i\s+)?["\']?[!%]([a-zA-Z0-9_#$]+)[!%]["\']?\s*(?:==|equ)\s*["\']?([^"\'\s)]+)["\']?',
+RE_IF_STATE_OP = re.compile(
+    r'(?:/i\s+)?["\']?[!%]([a-zA-Z0-9_#$]+)[!%]["\']?\s*(==|equ|neq|lss|leq|gtr|geq)\s*["\']?([^"\'\s)]+)["\']?',
+    re.IGNORECASE
+)
+RE_IF_STATE_REV = re.compile(
+    r'(?:/i\s+)?["\']?([^"\'\s)]+)["\']?\s*(==|equ|neq|lss|leq|gtr|geq)\s*["\']?[!%]([a-zA-Z0-9_#$]+)[!%]["\']?',
     re.IGNORECASE
 )
 RE_COMPUTED_TARGET = re.compile(
@@ -42,15 +46,12 @@ class CFFAnalyzer:
         if len(stmts) < 4:
             return None
 
-        # Step 1: Partition statements into labeled sections
         sections = self._partition_by_labels(stmts)
         if len(sections) < 2:
             return None
 
-        # Step 2: Track initial environment variable assignments before labels
         entry_assignments = self._extract_entry_assignments(stmts)
 
-        # Step 3: Scan each labeled section for dispatcher patterns
         for label_name, section_stmts in sections.items():
             if not label_name:
                 continue
@@ -108,7 +109,8 @@ class CFFAnalyzer:
             if isinstance(s, LabelNode):
                 break
             if isinstance(s, AssignmentNode):
-                env[s.var_name.lower()] = s.raw_value.strip(' "\'')
+                val = self._clean_state_val(s.raw_value, s.is_arithmetic)
+                env[s.var_name.lower()] = val
         return env
 
     def _check_section_as_dispatcher(
@@ -119,10 +121,8 @@ class CFFAnalyzer:
         entry_assignments: Dict[str, str]
     ) -> Optional[CFFStateMachine]:
         """Inspects if label_name acts as a central CFF switch or computed dispatcher."""
-        # 1. Check for SWITCH_DISPATCHER (IF %state%==X goto :lbl)
         switch_cases = self._extract_switch_cases(section_stmts)
         if len(switch_cases) >= 1:
-            # Determine dominant state variable
             state_var_counts: Dict[str, int] = {}
             for var_name, _, _ in switch_cases:
                 v = var_name.lower()
@@ -135,7 +135,6 @@ class CFFAnalyzer:
                 if var.lower() == best_var
             }
 
-            # Construct state handlers
             blocks = self._build_state_blocks(
                 state_map=state_map,
                 sections=sections,
@@ -151,7 +150,6 @@ class CFFAnalyzer:
             )
 
             if is_valid_cff and len(blocks) >= 1:
-                # If initial_state wasn't set at entry, deduce from first switch case
                 if not initial_state and switch_cases:
                     initial_state = switch_cases[0][1]
 
@@ -166,12 +164,10 @@ class CFFAnalyzer:
                     all_cff_labels=all_labels
                 )
 
-        # 2. Check for COMPUTED_GOTO (goto :prefix_%state%)
         computed_info = self._extract_computed_goto(section_stmts)
         if computed_info:
             prefix, var_name, suffix = computed_info
             initial_state = entry_assignments.get(var_name.lower(), "")
-            # Find all labels matching prefix*suffix
             state_map = {}
             for lbl in sections.keys():
                 if not lbl or lbl == label_name:
@@ -206,14 +202,22 @@ class CFFAnalyzer:
         return None
 
     def _extract_switch_cases(self, stmts: List[ASTNode]) -> List[Tuple[str, str, str]]:
-        """Extracts (state_var, state_val, target_label) from IfNodes."""
+        """Extracts (state_var, state_val, target_label) supporting operators ==, equ, etc."""
         cases: List[Tuple[str, str, str]] = []
         for s in stmts:
             if isinstance(s, IfNode):
-                m = RE_IF_STATE_EQ.search(s.condition)
+                m = RE_IF_STATE_OP.search(s.condition)
                 if m:
                     var_name = m.group(1)
-                    val = m.group(2).strip(' "\'')
+                    val = m.group(3).strip(' "\'')
+                    tgt = self._extract_goto_target(s.then_block)
+                    if tgt:
+                        cases.append((var_name, val, tgt.lower()))
+                    continue
+                m_rev = RE_IF_STATE_REV.search(s.condition)
+                if m_rev:
+                    var_name = m_rev.group(3)
+                    val = m_rev.group(1).strip(' "\'')
                     tgt = self._extract_goto_target(s.then_block)
                     if tgt:
                         cases.append((var_name, val, tgt.lower()))
@@ -230,7 +234,7 @@ class CFFAnalyzer:
         return None
 
     def _extract_goto_target(self, node: ASTNode) -> Optional[str]:
-        """Extracts the target label from a GotoNode or BlockNode containing a GotoNode."""
+        """Extracts target label from GotoNode, BlockNode, ChainNode, or CommandNode."""
         if isinstance(node, GotoNode):
             return node.target.lstrip(':').strip()
         if isinstance(node, BlockNode):
@@ -238,8 +242,9 @@ class CFFAnalyzer:
                 tgt = self._extract_goto_target(child)
                 if tgt:
                     return tgt
+        if isinstance(node, ChainNode):
+            return self._extract_goto_target(node.left) or self._extract_goto_target(node.right)
         if isinstance(node, CommandNode):
-            # Sometimes goto is parsed as CommandNode('goto', args=[...])
             if node.target.lower() == 'goto' and node.arguments:
                 arg_str = "".join(getattr(a, 'value', str(a)) for a in node.arguments)
                 return arg_str.lstrip(':').strip()
@@ -252,7 +257,7 @@ class CFFAnalyzer:
         state_var: str,
         dispatcher_label: str
     ) -> Dict[str, CFFBlockInfo]:
-        """Analyzes each handler section to extract clean payload statements and state transitions."""
+        """Analyzes each handler section to extract clean statements, fallthroughs, and transitions."""
         blocks: Dict[str, CFFBlockInfo] = {}
 
         for state_val, lbl_name in state_map.items():
@@ -260,17 +265,16 @@ class CFFAnalyzer:
             payload_stmts: List[ASTNode] = []
             next_state: Optional[str] = None
             cond_transitions: List[Tuple[str, str]] = []
+            pending_fallthrough: Optional[Tuple[str, str]] = None
             is_terminal = False
             jumps_to_dispatcher = False
 
             for s in section_stmts:
-                # Check for terminal exit
                 if isinstance(s, ExitNode):
                     payload_stmts.append(s)
                     is_terminal = True
                     continue
 
-                # Check for goto :eof or goto dispatcher
                 if isinstance(s, GotoNode):
                     tgt = s.target.lstrip(':').lower()
                     if tgt == 'eof':
@@ -279,30 +283,38 @@ class CFFAnalyzer:
                     elif tgt == dispatcher_label.lower():
                         jumps_to_dispatcher = True
                     else:
-                        # Direct jump to another block
                         payload_stmts.append(s)
                     continue
 
-                # Check for state variable mutation: set state=next_val
-                if isinstance(s, AssignmentNode):
-                    if s.var_name.lower() == state_var.lower():
-                        next_state = s.raw_value.strip(' "\'')
-                        continue  # Skip state assignment from payload!
+                # State mutation: set state=X or set /a state=X
+                if isinstance(s, AssignmentNode) and s.var_name.lower() == state_var.lower():
+                    assigned = self._clean_state_val(s.raw_value, s.is_arithmetic)
+                    if pending_fallthrough:
+                        cond_str, if_val = pending_fallthrough
+                        cond_transitions.append((cond_str, if_val))
+                        cond_transitions.append((f"NOT ({cond_str})", assigned))
+                        pending_fallthrough = None
                     else:
-                        payload_stmts.append(s)
-                        continue
+                        next_state = assigned
+                    continue
 
-                # Check for conditional state mutation: if cond (set state=A) else (set state=B)
+                # Conditional state mutation: if cond (set state=A) else (set state=B)
                 if isinstance(s, IfNode):
                     cond_state = self._extract_conditional_state_updates(s, state_var)
                     if cond_state:
-                        cond_transitions.extend(cond_state)
-                        continue  # Skip conditional state setter
+                        if len(cond_state) == 1 and not s.else_block:
+                            pending_fallthrough = cond_state[0]
+                        else:
+                            cond_transitions.extend(cond_state)
+                        continue
                     else:
                         payload_stmts.append(s)
                         continue
 
                 payload_stmts.append(s)
+
+            if pending_fallthrough:
+                cond_transitions.append(pending_fallthrough)
 
             blocks[state_val] = CFFBlockInfo(
                 state_key=state_val,
@@ -322,9 +334,8 @@ class CFFAnalyzer:
         node: IfNode,
         state_var: str
     ) -> Optional[List[Tuple[str, str]]]:
-        """Extracts conditional state mutations like: if %x%==1 (set state=2) else (set state=3)."""
+        """Extracts conditional state mutations like if %x%==1 (set state=2) else (set state=3)."""
         transitions: List[Tuple[str, str]] = []
-
         then_val = self._extract_state_assignment_val(node.then_block, state_var)
         else_val = self._extract_state_assignment_val(node.else_block, state_var) if node.else_block else None
 
@@ -341,10 +352,28 @@ class CFFAnalyzer:
             return None
         if isinstance(node, AssignmentNode):
             if node.var_name.lower() == state_var.lower():
-                return node.raw_value.strip(' "\'')
+                return self._clean_state_val(node.raw_value, node.is_arithmetic)
         if isinstance(node, BlockNode):
             for child in node.statements:
                 v = self._extract_state_assignment_val(child, state_var)
                 if v:
                     return v
+        if isinstance(node, ChainNode):
+            return (self._extract_state_assignment_val(node.left, state_var) or
+                    self._extract_state_assignment_val(node.right, state_var))
         return None
+
+    def _clean_state_val(self, raw_val: str, is_arithmetic: bool = False) -> str:
+        """Cleans state variable values, resolving delayed expansion and simple arithmetic."""
+        val = raw_val.strip(' "\'')
+        m_var = re.match(r'^[%!]([a-zA-Z0-9_#$]+)[%!]$', val)
+        if m_var:
+            val = m_var.group(1)
+        if is_arithmetic:
+            clean_expr = re.sub(r'[^0-9+\-*/% ()]', '', val).strip()
+            if clean_expr:
+                try:
+                    val = str(eval(clean_expr, {"__builtins__": None}, {}))
+                except Exception:
+                    pass
+        return val

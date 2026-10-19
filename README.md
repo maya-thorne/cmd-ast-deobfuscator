@@ -427,8 +427,14 @@ python src/cli.py -i script.bat --packers-layers --md
 # Perform Control Flow De-flattening (Anti-CFF) and state machine unrolling
 python src/cli.py -i script.bat --deflat -o cleaned.bat
 
-# Display Control Flow De-flattening and packer extraction metrics summary
-python src/cli.py -i script.bat --deflat --deflat-stats
+# Force complete unrolling of deterministic CFF dispatcher loops (bounded iterations)
+python src/cli.py -i script.bat --cff-unroll --cff-max-unroll 50 -o unrolled.bat
+
+# Reconstruct CFF state machines into structured while-loops without dispatcher bounce
+python src/cli.py -i script.bat --cff-structured -o structured.bat
+
+# Display Control Flow De-flattening and CFF loop analysis report
+python src/cli.py -i script.bat --cff-report
 
 # Transpile batch script to clean PEP 8 Python 3 via IR
 python src/cli.py -i script.bat --to-python -o script.py
@@ -810,7 +816,7 @@ OK
     <tr>
       <td><strong><code>src/cff/</code></strong></td>
       <td>Control Flow De-flattening</td>
-      <td>CFF dispatcher analyzer, state machine topology builder, and linearizing AST decompiler</td>
+      <td>CFF dispatcher analyzer, loop detector, bounded loop unroller, state machine topology builder, and linearizing AST decompiler</td>
     </tr>
     <tr>
       <td><strong><code>src/ir/</code></strong></td>
@@ -910,6 +916,11 @@ OK
       <td><strong><code>tests/test_deflat_suite.py</code></strong></td>
       <td>Packers &amp; CFF Tests</td>
       <td>Unit &amp; integration tests for 0xidiz3r signature detection, CertUtil unpacking, CFF state analysis, and AST de-flattening</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/test_cff_unroller_suite.py</code></strong></td>
+      <td>CFF Unroller Tests</td>
+      <td>Unit &amp; integration tests for CFF dispatcher loop unrolling, dominators, bounded loops, structured while loops, zeroize &amp; CLI</td>
     </tr>
     <tr>
       <td><strong><code>tests/test_ir_transpiler_suite.py</code></strong></td>
