@@ -5,6 +5,51 @@ All notable changes to `cmd-ast-deobfuscator` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.0] - 2026-10-22
+
+### Added
+- **Enterprise SIEM & Sigma Obfuscation Primitive Detector (`src/sigma/detector.py`, `src/sigma/models.py`)**:
+  - Implemented `ObfuscationPrimitiveDetector` supporting hybrid AST traversal and lexical scanning across 13 distinct command-line obfuscation primitives:
+    - *Caret Insertion*: Character-level caret escaping within alphanumeric tokens (`c^m^d`, `p^o^w^e^r^s^h^e^l^l`) and multi-level escape sequences (`^^^`).
+    - *Quote Interleaving*: Fragmentation of command targets and arguments using alternating quotes (`"c"m"d"`, `""whoami""`).
+    - *Substring Slicing*: Dynamic single-character carving (`%COMSPEC:~0,1%`) and variable substring slice extractions.
+    - *Reverse Slicing*: Negative and reverse index slicing patterns (`%VAR:~-1%`).
+    - *Environment Variable Concatenation*: Multi-fragment variable assembly reconstructing execution commands (`%a%%b%%c%%d%`).
+    - *Delimiter Scrambling*: Scrambled separator tokens (`,`, `;`, `=`) used to disrupt tokenization in command shells.
+    - *Arithmetic Expression Encoding*: Compound comma-separated expressions and bitwise XOR/shift calculations via `set /a`.
+    - *String Reversal Loops*: Reverse-stepping iterative loops (`for /l %i in (len,-1,0)`) reconstructing reversed command payloads.
+    - *Dynamic CALL Trampolines*: Subroutine redirection through dynamic variable labels (`call :%dispatch%`, `call !TARGET!`).
+    - *I/O Stealth Redirection*: Stream output nullification to device sinks (`>nul 2>&1`, `1>nul 2>nul`).
+    - *Script Dropper Stubs*: High-risk execution wrappers including PowerShell encoded commands (`-enc`, `-EncodedCommand`) and CertUtil payload decoders (`-decode`, `-decodehex`).
+  - Added MITRE ATT&CK enterprise tactic and technique cross-mapping for every detected primitive (T1027, T1027.010, T1059.003, T1140, T1564, T1105).
+  - Added Shannon entropy calculation and composite threat scoring (`ObfuscationScore`) categorizing scripts into five risk tiers (`CLEAN`, `LOW_SUSPICION`, `MODERATELY_OBFUSCATED`, `HIGHLY_OBFUSCATED`, `MALICIOUS`).
+- **Automated Sigma v2.0 Rule Synthesizer (`src/sigma/generator.py`)**:
+  - Implemented `SigmaRuleGenerator` synthesizing compliant Sigma rules in pure Python without third-party dependencies:
+    - *Behavioral Rules*: Process creation detection rules targeting combinations of detected obfuscation primitives (`selection_carets`, `selection_quotes`, `selection_slices`, `selection_delimiters`, `selection_droppers`) with disjunctive condition logic (`1 of selection_*`).
+    - *Targeted Signature Rules*: Highly focused rules matching specific extracted command tokens and parameter fragments.
+    - Configured standard Windows process creation logsource metadata (`category: process_creation, product: windows`), ATT&CK tags, and unique UUID identification.
+- **Enterprise SIEM Dialect Transpiler (`src/sigma/transpiler.py`)**:
+  - Implemented `SIEMTranspiler` translating Sigma rules into production enterprise query dialects:
+    - *Splunk SPL*: Search processing language queries targeting Windows Security Event ID 4688 (`CommandLine="*...*"`).
+    - *Elasticsearch EQL & Query DSL*: Process execution queries mapping command lines to `process.command_line`.
+    - *Microsoft Sentinel KQL*: Kusto queries filtering `DeviceProcessEvents` with `has_any` / `contains` clauses.
+    - *IBM QRadar AQL*: Ariel queries selecting from security events with `ILIKE` pattern matching.
+    - *JSON / YAML*: Structured serialization for automated SOAR and SIEM ingestion pipelines.
+- **Compiler Transform Pipeline Integration (`src/sigma/transforms.py`)**:
+  - Implemented `SigmaTransformPass` inheriting from `TransformPass` for automated telemetry collection and rule synthesis inside `PassManager`.
+  - Added convenience helper `analyze_sigma_primitives` supporting both AST nodes and raw script strings.
+- **CLI Flags & Formatting Helper (`src/sigma/cli_helper.py`, `src/cli.py`)**:
+  - Added `--sigma-detect` to scan and display detected obfuscation primitives in formatted Markdown.
+  - Added `--sigma-score` to calculate and output the quantitative obfuscation risk score, threat level, and entropy.
+  - Added `--sigma-generate` to synthesize Sigma detection rules.
+  - Added `--sigma-target` supporting `yaml`, `splunk`, `elastic`, `sentinel`, `qradar`, and `json` dialects.
+  - Added `--sigma-out` to export generated detection rules or reports to disk.
+  - Added `--sigma-min-confidence` and `--sigma-min-severity` for fine-grained detection filtering.
+- **Comprehensive Unit & Integration Test Suite (`tests/test_sigma_suite.py`)**:
+  - Added 24 dedicated test cases verifying model serialization, memory zeroization, primitive detection accuracy, Sigma rule synthesis, SIEM query transpilation, transform passes, and CLI execution.
+- **Memory Security & Zeroization**:
+  - Integrated `zeroize()` protocols across `ObfuscationPrimitive`, `ObfuscationScore`, `SigmaRule`, and `SigmaAnalysisResult` to securely wipe token buffers and metadata from volatile memory upon task completion.
+
 ## [0.22.0] - 2026-10-19
 
 ### Added
