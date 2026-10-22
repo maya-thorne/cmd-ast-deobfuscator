@@ -498,6 +498,17 @@ python src/cli.py --ffi-test-roundtrip
 
 # Run benchmark evaluation with JSON report export
 python src/cli.py --benchmark --benchmark-engine ast --benchmark-export benchmark_report.json
+
+# Scan script for 13 obfuscation primitives and output risk score and threat level
+python src/cli.py -i malware.bat --sigma-detect --sigma-score
+
+# Synthesize compliant Sigma v2.0 YAML detection rules
+python src/cli.py -i malware.bat --sigma-generate --sigma-out rule.yaml
+
+# Transpile Sigma detection rules to enterprise SIEM queries (Splunk, Elastic, Sentinel, QRadar)
+python src/cli.py -i malware.bat --sigma-generate --sigma-target splunk
+python src/cli.py -i malware.bat --sigma-generate --sigma-target sentinel
+python src/cli.py -i malware.bat --sigma-generate --sigma-target elastic
 ```
 
 ---
@@ -579,7 +590,7 @@ zeroize_buffer(secret_buffer)
 <span id="automated-invariant-verification"></span>
 ## 📊 Automated Invariant Verification & Benchmarks
 
-The test suite validates 552 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, AST-based Malware IOC Extractor, Native C/Rust FFI Bindings & Standalone Binary Distribution Pipeline, Formal cmd.exe EBNF Grammar Conformance Validation, Multi-Stage Batch Packer Recursive Unpacking & Multi-Tier Heuristic Deobfuscation, and real-world benchmark invariants:
+The test suite validates 587 fundamental compiler, lexer, automaton, AST normalization, delayed expansion (`!VAR!`), caret normalization, substring slicing, FOR loop parameter modifier resolution (`%~dp0`, `%~f1`), Control Flow Graph (CFG) jump table construction, Dead Code Elimination (DCE), Arithmetic Expression Folding (`set /a`), String Reversal and Transposition Automata, Quote Toggle Boundary Normalization, I/O Redirection Stream Routing, Invoke-DOSfuscation Concatenation Heuristics, 0xidiz3r & Batch Packer Signature Detection, Control Flow De-flattening (Anti-CFF), Intermediate Representation (IR) Multi-Target Transpiler (Python 3 & PowerShell), Interactive Terminal AST Inspector & Colored Diff Visualizer (TUI Debugger), High-Throughput Directory Batch Scanner & Bulk Deobfuscation Pipeline, AST-based Malware IOC Extractor, Native C/Rust FFI Bindings & Standalone Binary Distribution Pipeline, Formal cmd.exe EBNF Grammar Conformance Validation, Multi-Stage Batch Packer Recursive Unpacking, Control Flow Flattening (CFF) Loop Unrolling, Enterprise SIEM / Sigma Obfuscation Primitive Detection, and real-world benchmark invariants:
 
 
 ```bash

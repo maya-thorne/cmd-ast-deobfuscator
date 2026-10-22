@@ -109,6 +109,15 @@ def main():
     parser.add_argument("--ebnf-audit-suite", action="store_true", help="Execute canonical cmd.exe EBNF test corpus audit suite")
     parser.add_argument("--ebnf-json", help="Path to export EBNF conformance/audit report as JSON")
     parser.add_argument("--ebnf-md", help="Path to export EBNF conformance/audit report as Markdown")
+    parser.add_argument("--sigma-detect", action="store_true", help="Detect obfuscation primitives and output Markdown report")
+    parser.add_argument("--sigma-generate", action="store_true", help="Synthesize compliant Sigma v2.0 YAML detection rules")
+    parser.add_argument("--sigma-target", choices=["yaml", "splunk", "elastic", "sentinel", "qradar", "json"], default="yaml", help="SIEM query dialect for synthesized rules")
+    parser.add_argument("--sigma-score", action="store_true", help="Print quantitative obfuscation score and risk classification")
+    parser.add_argument("--sigma-min-confidence", type=float, default=0.5, help="Minimum confidence threshold for detected primitives")
+    parser.add_argument("--sigma-min-severity", choices=["INFORMATIONAL", "LOW", "MEDIUM", "HIGH", "CRITICAL"], help="Filter primitives by minimum severity")
+    parser.add_argument("--sigma-rule-id", help="Custom UUID for generated Sigma rule")
+    parser.add_argument("--sigma-title", help="Custom title for generated Sigma rule")
+    parser.add_argument("--sigma-out", help="Path to write generated Sigma SIEM rules or report")
 
     args = parser.parse_args()
 
@@ -257,7 +266,7 @@ def main():
         print("\n=== [MERMAID FLOWCHART] ===")
         print(ASTVisualizer.render_mermaid(ast))
 
-    if args.json and not (args.packers_detect or args.packers_unpack or args.packers_layers):
+    if args.json and not (args.packers_detect or args.packers_unpack or args.packers_layers or args.sigma_detect or args.sigma_generate or args.sigma_score or args.sigma_out):
         print("\n=== [JSON AST DUMP] ===")
         print(ASTVisualizer.render_json(ast))
 
@@ -462,6 +471,10 @@ def main():
         else:
             print(final_output)
         sys.exit(0)
+
+    if args.sigma_detect or args.sigma_generate or args.sigma_score or args.sigma_out:
+        from src.sigma.cli_helper import handle_sigma_cli
+        handle_sigma_cli(args, norm_ast, source, clean_code)
 
     if args.diff or args.side_by_side or args.diff_stats:
         from src.tui import ColoredDiffRenderer, ColorMode
